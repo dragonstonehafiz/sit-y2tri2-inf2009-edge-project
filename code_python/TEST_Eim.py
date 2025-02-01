@@ -1,11 +1,12 @@
-#!/usr/bin/env python
+'''
+This file is 
+'''
 
 import cv2
-import time
 from edge_impulse_linux.image import ImageImpulseRunner
 
 runner = None
-modelfile = "model/test-image-linux-armv7-v8.eim"
+modelfile = "model/test-image-linux-aarch64-v9.eim"
 
 print('MODEL: ' + modelfile)
 
@@ -32,8 +33,6 @@ with ImageImpulseRunner(modelfile) as runner:
         next_frame = 0 # limit to ~10 fps here
 
         for img in runner.get_frames(videoCaptureDeviceId):
-            if (next_frame > time.now()):
-                time.sleep((next_frame - time.now()) / 1000)
 
             # make two cuts from the image, one on the left and one on the right
             features_l, cropped_l = runner.get_features_from_image(img, 'left')
@@ -65,8 +64,6 @@ with ImageImpulseRunner(modelfile) as runner:
 
             print_classification(res_l, 'LEFT')
             print_classification(res_r, 'RIGHT')
-
-            next_frame = time.now() + 100
             
     except Exception as e:
         print(f"Error: {e}")

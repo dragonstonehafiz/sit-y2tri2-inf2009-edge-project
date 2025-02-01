@@ -1,7 +1,7 @@
 import cv2
 
 # Open the default camera
-cap = cv2.VideoCapture(1)
+cap = cv2.VideoCapture(0)
 
 face_classifier = cv2.CascadeClassifier(
     cv2.data.haarcascades + "haarcascade_frontalface_default.xml"
