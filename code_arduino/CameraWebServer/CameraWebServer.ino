@@ -36,8 +36,8 @@
 // ===========================
 // Enter your WiFi credentials
 // ===========================
-const char *ssid = "SINGTEL-WWY2";
-const char *password = "fefkxa7v34";
+const char *ssid = "bighowdy";
+const char *password = "yeedyourlasthaw";
 
 void startCameraServer();
 void setupLedFlash(int pin);

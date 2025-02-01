@@ -14,7 +14,7 @@ This repository stores the code for a program that uses a laser pointer and a co
 - Wires + Breadboard + Breadboard Power Module
 - Any USB webcam (for testing)
 
-## Installation on Raspberry Pi 5.
+## Installation on Raspberry Pi 5
 
 You need to install git to clone this repository.
 
@@ -39,7 +39,7 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Testing a controller and mouse object detection model
+## Testing a controller model trained on Edge Impulse
 
 Before we can test a model, we need to change permissions on the downloaded eim file.
 
@@ -47,25 +47,17 @@ Before we can test a model, we need to change permissions on the downloaded eim 
 chmod +x model/test-image-linux-aarch64-v9.eim
 ```
 
-Connect your USB webcam and run the code below. What this does is run the python script `TEST_Eim.py` in the code_python folder. The script takes the image captured by the webcam and splits it into two, performing object detection on the left and right side of the image. If it is able to detect an object, it will print data to the terminal. 
+Connect your USB webcam and run the code below. What this does is run the python script `TEST_EimBoundingBoxes.py` in the code_python folder. The script looks at each frame recorded by the webcam and runs inference using the `test-image-linux-aarch64-v9.eim` model. However, it ignores classifications that are for 'mouse', and only considers bounding boxes with confidence scores larger than 0.95. It then tracks the bounding box with the largest confidence score and renders it as an overlay.
 
 ```bash
-python code_python/TEST_Eim.py
+python code_python/TEST_EimBoundingBoxes.py
 ```
 
 **NOTE**: The model used in this script is `model/test-image-linux-aarch64-v9.eim` which is trained to detect video game controllers and computer mice.
 
 Expected output:
+![Screenshot of expected output](img/TEST_EimBoundingBoxes.png)
 
-```
-RIGHT: Found 0 bounding boxes (76 ms.)
-LEFT: Found 0 bounding boxes (84 ms.)
-RIGHT: Found 0 bounding boxes (76 ms.)
-LEFT: Found 0 bounding boxes (82 ms.)
-RIGHT: Found 1 bounding boxes (76 ms.)
-        controller (0.67): x=236 y=277 w=70 h=42
-LEFT: Found 0 bounding boxes (85 ms.)
-RIGHT: Found 2 bounding boxes (76 ms.)
-        mouse (0.83): x=223 y=111 w=36 h=8
-        mouse (0.73): x=171 y=220 w=103 h=68
-```
+## How to train a model on Edge Impulse
+
+todo
