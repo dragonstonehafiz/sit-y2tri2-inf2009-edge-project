@@ -12,3 +12,28 @@ This repository stores the code for a program that uses a laser pointer and a co
 - [Raspberry Pi 5](https://sg.cytron.io/p-raspberry-pi-5)
 - [ESP32-CAM with MB Programmer](https://shopee.sg/kuriosity.sg/8557052439)
 - Wires + Breadboard + Breadboard Power Module
+
+## Installation on Raspberry Pi 5.
+
+You need to install git to clone this repository.
+
+```bash
+sudo apt update
+sudo apt upgrade
+sudo apt install git
+```
+
+Then you can clone this repo.
+
+```bash
+git clone https://github.com/dragonstonehafiz/sit-y2tri2-inf2009-edge-project.git
+```
+
+Now, we will set up the virtual environment used for this program.
+
+```bash
+cd dragonstonehafiz/sit-y2tri2-inf2009-edge-project.git
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+```
