@@ -3,9 +3,14 @@
 python -m venv venv
 ```
 
-### Activate virtual environment
+### Activate virtual environment (Windows)
 ```bash
 venv\Scripts\activate
+```
+
+### Activate virtual environment (Linux)
+```bash
+source venv/bin/activate
 ```
 
 ### Load requirements
