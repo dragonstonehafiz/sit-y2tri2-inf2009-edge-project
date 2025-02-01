@@ -47,7 +47,11 @@ Before we can test a model, we need to change permissions on the downloaded eim 
 chmod +x model/test-image-linux-aarch64-v9.eim
 ```
 
-Connect your USB webcam and run the code below. What this does is run the python script `TEST_Eim.py` in the code_python folder. The script takes the image captured by the webcam and splits it into two, performing object detection on the left side of the image and the right side of the image. If it is able to detect an object, it will print data to the terminal. 
+Connect your USB webcam and run the code below. What this does is run the python script `TEST_Eim.py` in the code_python folder. The script takes the image captured by the webcam and splits it into two, performing object detection on the left and right side of the image. If it is able to detect an object, it will print data to the terminal. 
+
+```bash
+python code_python/TEST_Eim.py
+```
 
 **NOTE**: The model used in this script is `model/test-image-linux-aarch64-v9.eim` which is trained to detect video game controllers and computer mice.
 
@@ -65,9 +69,3 @@ RIGHT: Found 2 bounding boxes (76 ms.)
         mouse (0.83): x=223 y=111 w=36 h=8
         mouse (0.73): x=171 y=220 w=103 h=68
 ```
-
-```bash
-python code_python/TEST_Eim.py
-```
-
-What 
