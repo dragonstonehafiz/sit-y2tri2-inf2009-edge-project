@@ -5,7 +5,7 @@ import time
 from edge_impulse_linux.image import ImageImpulseRunner
 
 runner = None
-modelfile = "model/makeine-linux-x86_64-v6.eim"
+modelfile = "model/test-image-linux-armv7-v8.eim"
 
 print('MODEL: ' + modelfile)
 
@@ -16,7 +16,7 @@ with ImageImpulseRunner(modelfile) as runner:
 
         print('Loaded runner for "' + model_info['project']['owner'] + ' / ' + model_info['project']['name'] + '"')
         labels = model_info['model_parameters']['labels']
-        videoCaptureDeviceId = 1
+        videoCaptureDeviceId = 0
 
         camera = cv2.VideoCapture(videoCaptureDeviceId)
         ret = camera.read()[0]
