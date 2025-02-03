@@ -55,9 +55,29 @@ python code_python/TEST_EimBoundingBoxes.py
 
 **NOTE**: The model used in this script is `model/detect-controller-v9.eim` which is trained to detect video game controllers and computer mice.
 
+**NOTE**: The code written in the script above was adapted from code in [this repo](https://github.com/edgeimpulse/linux-sdk-python). There are additional examples in this repo that you can make reference to when writing your own code using the inference library.
+
+
 Expected output:
+
 ![Screenshot of expected output](img/TEST_EimBoundingBoxes.png)
 
-## How to train a model on Edge Impulse
+## Edge Impulse Model Settings
 
-todo
+[Edge Impulse](https://edgeimpulse.com/) is a website that lets you **train object detection and audio classification models for edge devices** with minimal data. We will be using this site to train all our models. You can follow this [video guide](https://www.youtube.com/watch?v=dY3OSiJyne0). The remainder of this section will go through the settings we set for our model before training.
+
+ In `Create Impulse` tab, set **Image width and Image height to 320**. We have to do this as the model we will be using only works with this input size.
+
+ ![Edge Impulse Screenshot](img/EdgeImpulse1.png)
+
+ In the `Image` tab, make sure **Color Depth is RGB**.  Like before, inputs for the model we are using must be RGB.
+
+ ![Edge Impulse Screenshot](img/EdgeImpulse2.png)
+
+ In the `Object Detection` tab, **change the model to MobileNetV2 SSD FPN-Lite 320x320**.
+
+ ![Edge Impulse Screenshot](img/EdgeImpulse3.png)
+
+ In the `Deployment` tab, set **deployment environment to Linux (AARCH64)**.
+
+ ![Edge Impulse Screenshot](img/EdgeImpulse4.png)
