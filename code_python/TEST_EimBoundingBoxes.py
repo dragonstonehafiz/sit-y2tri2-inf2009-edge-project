@@ -7,7 +7,7 @@ videoCaptureID = 0
 cap = cv2.VideoCapture(videoCaptureID)
 
 # Load eim model
-modelfile = "model/test-image-linux-aarch64-v9.eim"
+modelfile = "model/detect-controller-v9.eim"
 objDetRunner = ImageImpulseRunner(modelfile)
 try:
     model_info = objDetRunner.init()

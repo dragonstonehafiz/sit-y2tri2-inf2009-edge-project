@@ -44,16 +44,16 @@ pip install -r requirements.txt
 Before we can test a model, we need to change permissions on the downloaded eim file.
 
 ```bash
-chmod +x model/test-image-linux-aarch64-v9.eim
+chmod +x model/detect-controller-v9.eim
 ```
 
-Connect your USB webcam and run the code below. What this does is run the python script `TEST_EimBoundingBoxes.py` in the code_python folder. The script looks at each frame recorded by the webcam and runs inference using the `test-image-linux-aarch64-v9.eim` model. However, it ignores classifications that are for 'mouse', and only considers bounding boxes with confidence scores larger than 0.95. It then tracks the bounding box with the largest confidence score and renders it as an overlay.
+Connect your USB webcam and run the code below. What this does is run the python script `TEST_EimBoundingBoxes.py` in the code_python folder. The script looks at each frame recorded by the webcam and runs inference using the `detect-controller-v9.eim` model. However, it ignores classifications that are for 'mouse', and only considers bounding boxes with confidence scores larger than 0.95. It then tracks the bounding box with the largest confidence score and renders it as an overlay.
 
 ```bash
 python code_python/TEST_EimBoundingBoxes.py
 ```
 
-**NOTE**: The model used in this script is `model/test-image-linux-aarch64-v9.eim` which is trained to detect video game controllers and computer mice.
+**NOTE**: The model used in this script is `model/detect-controller-v9.eim` which is trained to detect video game controllers and computer mice.
 
 Expected output:
 ![Screenshot of expected output](img/TEST_EimBoundingBoxes.png)
