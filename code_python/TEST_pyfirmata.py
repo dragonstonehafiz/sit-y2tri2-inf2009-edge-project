@@ -1,3 +1,7 @@
+"""
+For this file to work, you need to push the stabdard firmata sketch to the Arduino Uno board before running this code.
+"""
+
 import pyfirmata2
 import argparse
 import serial.tools.list_ports
@@ -26,9 +30,17 @@ def main():
     else:
         print(f"Connecting to serial port: {args.port}.")
         board = pyfirmata2.Arduino(args.port)
-        time.sleep(2)
         print("Connected to board:", board)
-
+        
+        servo1 = board.get_pin('d:6:s')
+        servo2 = board.get_pin('d:8:s')
+        servoVal = 0
+        servoDir = True
+        print("Zeroing servos")
+        servo1.write(servoVal)
+        servo2.write(servoVal)
+        time.sleep(2)
+        
         while True:
             board.digital[2].write(True)
             board.digital[4].write(True)
@@ -36,6 +48,21 @@ def main():
             board.digital[2].write(False)
             board.digital[4].write(False)
             time.sleep(0.5)
+            
+            if servoDir:
+                servoVal += 20
+            else:
+                servoVal -= 20
+            if (servoVal >= 180):
+                servoVal = 180
+                servoDir = not servoDir
+            elif (servoVal <= 0):
+                servoVal = 0
+                servoDir = not servoDir
+                
+            print(servoVal)
+            servo1.write(servoVal)
+            servo2.write(servoVal)
 
         board.exit()
 
