@@ -8,6 +8,7 @@ cap = cv2.VideoCapture(videoCaptureID)
 
 # Load eim model
 modelfile = "model/detect-controller-v9.eim"
+# modelfile = "model/bird-detect-model-v1.eim"
 objDetRunner = ImageImpulseRunner(modelfile)
 try:
     model_info = objDetRunner.init()
@@ -39,11 +40,11 @@ while True:
         highest_confidence_bb = None
         for bb in response['result']['bounding_boxes']:
             # Skip objects that are not controllers
-            if bb["label"] != "controller":
+            if bb["label"] not in ["controller", "bird"]:
                 continue
             # I think value is the confidence score
             value = bb["value"]
-            if value < 0.95:
+            if value < 0.9:
                 continue
             elif value > highest_confidence:
                 highest_confidence = value

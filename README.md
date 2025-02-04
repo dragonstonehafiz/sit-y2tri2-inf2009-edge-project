@@ -39,13 +39,17 @@ source venv/bin/activate
 pip install -r requirements.txt
 ```
 
-## Testing a controller model trained on Edge Impulse
+## Testing a controller detection model and a clap detection model trained on Edge Impulse
 
-Before we can test a model, we need to change permissions on the downloaded eim file.
+Before we can test the models, we need to change permissions on the downloaded eim file.
 
 ```bash
 chmod +x model/detect-controller-v9.eim
+chmod +x model/bird-detect-model-v1.eim
+chmod +x model/detect-clap-v1.eim
 ```
+
+### Controller detection model
 
 Connect your USB webcam and run the code below. What this does is run the python script `TEST_EimBoundingBoxes.py` in the code_python folder. The script looks at each frame recorded by the webcam and runs inference using the `detect-controller-v9.eim` model. However, it ignores classifications that are for 'mouse', and only considers bounding boxes with confidence scores larger than 0.95. It then tracks the bounding box with the largest confidence score and renders it as an overlay.
 
@@ -57,10 +61,23 @@ python code_python/TEST_EimBoundingBoxes.py
 
 **NOTE**: The code written in the script above was adapted from code in [this repo](https://github.com/edgeimpulse/linux-sdk-python). There are additional examples in this repo that you can make reference to when writing your own code using the inference library.
 
-
 Expected output:
 
 ![Screenshot of expected output](img/TEST_EimBoundingBoxes.png)
+
+### Clap detection model
+
+Connect your USB webcam (or a microphone) and run the code below. The code listens in on microphone zero and prints the message "Clapped!" if you clap near it.
+
+```bash
+python code_python/TEST_ClapDetect.py
+```
+
+**NOTE**: This code will use whatever microphone has the device id 0.
+
+Expected output:
+
+![Screenshot of expected output](img/TEST_ClapDetect.png)
 
 ## Edge Impulse Model Settings
 
