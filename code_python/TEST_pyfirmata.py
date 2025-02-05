@@ -50,9 +50,9 @@ def main():
             time.sleep(0.5)
             
             if servoDir:
-                servoVal += 20
+                servoVal += 30
             else:
-                servoVal -= 20
+                servoVal -= 30
             if (servoVal >= 180):
                 servoVal = 180
                 servoDir = not servoDir
