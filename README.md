@@ -23,6 +23,7 @@ sudo apt install git
 sudo apt install portaudio19-dev
 sudo apt install python3
 sudo apt install python3-pip
+sudo apt-get install rpi.gpio
 ```
 
 Then you can clone this repo with git. The second line renames the repo's directory to edge-project.
