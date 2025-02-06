@@ -3,8 +3,8 @@ import time
 
 class RaspberryPiZero2:
     def __init__(self):
-        self._servoXPin = 17  # Servo 1 GPIO Pin
-        self._servoYPin = 18  # Servo 2 GPIO Pin
+        self._servoXPin = 13  # Servo 1 GPIO Pin
+        self._servoYPin = 12  # Servo 2 GPIO Pin
 
         # GPIO setup
         GPIO.setmode(GPIO.BCM)
@@ -14,8 +14,10 @@ class RaspberryPiZero2:
         # Start PWM at 50Hz
         self._servoX = GPIO.PWM(self._servoXPin, 50)
         self._servoX.start(0)
+        self.setServoX(0)
         self._servoY = GPIO.PWM(self._servoYPin, 50)
         self._servoY.start(0)
+        self.setServoY(0)
         
         
     def _convertAngleToDutyCycle(self, angle):
@@ -29,15 +31,15 @@ class RaspberryPiZero2:
     def setServoX(self, angle):
         dutyCycle = self._convertAngleToDutyCycle(angle)
         self._servoX.ChangeDutyCycle(dutyCycle)
-        time.sleep(0.5)
+        time.sleep(0.2)
         self._servoX.ChangeDutyCycle(0)
         
         
     def setServoY(self, angle):
         dutyCycle = self._convertAngleToDutyCycle(angle)
-        self._servoX.ChangeDutyCycle(dutyCycle)
-        time.sleep(0.5)
-        self._servoX.ChangeDutyCycle(0)
+        self._servoY.ChangeDutyCycle(dutyCycle)
+        time.sleep(0.2)
+        self._servoY.ChangeDutyCycle(0)
 
 
     def cleanup(self):
@@ -54,15 +56,15 @@ if __name__ == "__main__":
         piZero = RaspberryPiZero2()
         while True:
             piZero.setServoX(0)
-            piZero.setServoY(0)
-            time.sleep(1)
-
-            piZero.setServoX(90)
-            piZero.setServoY(90)
             time.sleep(1)
 
             piZero.setServoX(180)
+            time.sleep(1)
+
             piZero.setServoY(180)
+            time.sleep(1)
+
+            piZero.setServoY(0)
             time.sleep(1)
 
     except KeyboardInterrupt:
