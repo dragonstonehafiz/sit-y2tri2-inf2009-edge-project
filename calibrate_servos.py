@@ -39,7 +39,7 @@ def main(serial_port: str):
             
             # Check if servo is valid
             servo = split_text[0]
-            if servo not in ["x", "y"]:
+            if servo not in ["x", "y", "laser1", "laser2"]:
                 print("Invalid servo")
                 continue
             
@@ -60,6 +60,10 @@ def main(serial_port: str):
                     board.write_servo_x(angle)
                 elif servo == "y":
                     board.write_servo_y(angle)
+                elif servo == "laser1":
+                    board.write_laser1(angle)
+                elif servo == "laser2":
+                    board.write_laser2(angle)
                           
     
     board.exit()

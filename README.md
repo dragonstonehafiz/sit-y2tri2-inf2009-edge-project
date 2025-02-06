@@ -22,6 +22,7 @@ You need to install git to clone this repository.
 sudo apt update
 sudo apt upgrade
 sudo apt install git
+sudo apt install portaudio19-dev
 ```
 
 Then you can clone this repo.
