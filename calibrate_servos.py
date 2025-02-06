@@ -1,4 +1,3 @@
-import argparse
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 
 def help():
