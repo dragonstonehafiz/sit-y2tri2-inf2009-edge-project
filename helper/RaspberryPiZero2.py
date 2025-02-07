@@ -10,6 +10,7 @@ class RaspberryPiZero2:
         # GPIO setup
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self._servoXPin, GPIO.OUT)
+        GPIO.setup(self._servoYPin, GPIO.OUT)
         GPIO.setup(self._laser, GPIO.OUT)
 
         # Start PWM at 50Hz
