@@ -2,58 +2,95 @@ import RPi.GPIO as GPIO
 import time
 
 class RaspberryPiZero2:
+    class _Servo:
+        _currentAngle = 0
+        
+        def __init__(self, pin):
+            self._pin = pin
+            GPIO.setup(self._pin, GPIO.OUT)
+            self._servo = GPIO.PWM(self._pin, 50)
+            self._servo.start(0)
+        
+        def _convertAngleToDutyCycle(self, angle):
+            if angle < 0:
+                angle = 0
+            elif angle > 180:
+                angle = 180
+            return 2 + (angle / 18.0)
+        
+        def _boundAngle(self, angle):
+            if angle < 0:
+                return 0
+            elif angle > 180:
+                return 180
+            return angle
+        
+        def turn(self, angle):
+            self.setAngle(self._currentAngle + angle)
+            
+        def setAngle(self, angle):
+            self._currentAngle = self._boundAngle(angle)
+            dutyCycle = self._convertAngleToDutyCycle(angle)
+            self._servo.ChangeDutyCycle(dutyCycle)
+            time.sleep(0.2)
+            self._servo.ChangeDutyCycle(0)
+            
+        def cleanup(self):
+            self.setAngle(0)
+            self._servo.stop()
+    
+    
     def __init__(self):
-        self._laser = 17
-        self._servoXPin = 13  # Servo 1 GPIO Pin
-        self._servoYPin = 12  # Servo 2 GPIO Pin
-
-        # GPIO setup
         GPIO.setmode(GPIO.BCM)
-        GPIO.setup(self._servoXPin, GPIO.OUT)
-        GPIO.setup(self._servoYPin, GPIO.OUT)
-        GPIO.setup(self._laser, GPIO.OUT)
 
-        # Start PWM at 50Hz
-        self._servoX = GPIO.PWM(self._servoXPin, 50)
-        self._servoX.start(0)
-        self.setServoX(0)
-        self._servoY = GPIO.PWM(self._servoYPin, 50)
-        self._servoY.start(0)
-        self.setServoY(0)
+        # Laser Set Up
+        self._laser = 17
+        GPIO.setup(self._laser, GPIO.OUT)
         
-        
-    def _convertAngleToDutyCycle(self, angle):
-        if angle < 0:
-            angle = 0
-        elif angle > 180:
-            angle = 180
-        return 2 + (angle / 18.0)
+        # Servo Set Up
+        self._servoX = self._Servo(13)
+        self._servoY = self._Servo(12)
         
         
     def setServoX(self, angle):
-        dutyCycle = self._convertAngleToDutyCycle(angle)
-        self._servoX.ChangeDutyCycle(dutyCycle)
-        time.sleep(0.2)
-        self._servoX.ChangeDutyCycle(0)
+        """
+        Set the X servo's current turning angle (only +)
+        """
+        self._servoX.setAngle(angle)
         
+    def turnServoX(self, angle):
+        """
+        Turns the X servo by a specified angle (+ or -)
+        """
+        self._servoX.turn(angle)
         
     def setServoY(self, angle):
-        dutyCycle = self._convertAngleToDutyCycle(angle)
-        self._servoY.ChangeDutyCycle(dutyCycle)
-        time.sleep(0.2)
-        self._servoY.ChangeDutyCycle(0)
+        """
+        Set the Y servo's current turning angle (only +)
+        """
+        self._servoY.setAngle(angle)
+        
+    def turnServoY(self, angle):
+        """
+        Turns the Y servo by a specified angle (+ or -)
+        """
+        self._servoY.setAngle(angle)
 
-    def setLaser(self, val: int):
+    def setLaser(self, val: bool):
+        """
+        True = ON, False = OFF
+        """
         if val > 0:
             GPIO.output(self._laser, GPIO.HIGH)
         else:
             GPIO.output(self._laser, GPIO.LOW)
 
     def cleanup(self):
-        self.setServoX(0)
-        self.setServoY(0)
-        self._servoX.stop()
-        self._servoY.stop()
+        """
+        Call this when the program is exiting to clean up the GPIO pins
+        """
+        self._servoX.cleanup()
+        self._servoY.cleanup()
         self.setLaser(0)
         GPIO.cleanup()
 

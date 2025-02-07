@@ -5,12 +5,11 @@ def help():
 Servo Calibration Tool
 Commands:
 
-    <servo>:<angle> - Set the angle of the servo
-    <servo> - x or y
-    <angle> - 0 to 180
-    Example - x:180
-    Example - laser:0
-    Example - laser:1
+    setx:<angle> - Set the x servo to the specified angle (+)
+    turnx:<angle> - Turn the x servo by the specified angle (+-)
+    sety:<angle> - Set the y servo to the specified angle (+)
+    turny:<angle> - Turn the y servo by the specified angle (+-)
+    laser:<boolean> - Turn the laser on or off (1 or 0)
     
     quit - Exit the program
     
@@ -36,7 +35,7 @@ if __name__ == "__main__":
             
             # Check if servo is valid
             servo = split_text[0]
-            if servo not in ["x", "y", "laser"]:
+            if servo not in ["setx", "turnx", "turny", "sety", "laser"]:
                 print("Invalid Pin")
                 continue
             
@@ -53,11 +52,15 @@ if __name__ == "__main__":
                     angle = 0
                     
                 # Turn Servo
-                if servo == "x":
+                if servo == "setx":
                     board.setServoX(angle)
-                elif servo == "y":
+                elif servo == "turnx":
+                    board.turnServoX(angle)
+                elif servo == "sety":
                     board.setServoY(angle)
+                elif servo == "turny":
+                    board.turnServoY(angle)
                 elif servo == "laser":
-                    board.setLaser(angle)
+                    board.setLaser(bool(angle))
    
     board.cleanup()
