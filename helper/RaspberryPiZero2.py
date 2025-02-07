@@ -74,7 +74,7 @@ class RaspberryPiZero2:
         """
         Turns the Y servo by a specified angle (+ or -)
         """
-        self._servoY.setAngle(angle)
+        self._servoY.turn(angle)
 
     def setLaser(self, val: bool):
         """

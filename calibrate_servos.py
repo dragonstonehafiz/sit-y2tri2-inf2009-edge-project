@@ -46,11 +46,6 @@ if __name__ == "__main__":
                 print(f"error {e}")
                 continue
             else:
-                if angle > 180:
-                    angle = 180
-                elif angle < 0:
-                    angle = 0
-                    
                 # Turn Servo
                 if servo == "setx":
                     board.setServoX(angle)
