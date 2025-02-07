@@ -9,6 +9,8 @@ Commands:
     <servo> - x or y
     <angle> - 0 to 180
     Example - x:180
+    Example - laser:0
+    Example - laser:1
     
     quit - Exit the program
     
@@ -34,8 +36,8 @@ if __name__ == "__main__":
             
             # Check if servo is valid
             servo = split_text[0]
-            if servo not in ["x", "y", "laser1", "laser2"]:
-                print("Invalid servo")
+            if servo not in ["x", "y", "laser"]:
+                print("Invalid Pin")
                 continue
             
             # Compute angle part
@@ -55,9 +57,7 @@ if __name__ == "__main__":
                     board.setServoX(angle)
                 elif servo == "y":
                     board.setServoY(angle)
-                # elif servo == "laser1":
-                #     board.write_laser1(angle)
-                # elif servo == "laser2":
-                #     board.write_laser2(angle)
+                elif servo == "laser1":
+                    board.setLaser(angle)
    
     board.cleanup()

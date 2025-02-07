@@ -3,13 +3,14 @@ import time
 
 class RaspberryPiZero2:
     def __init__(self):
+        self._laser = 17
         self._servoXPin = 13  # Servo 1 GPIO Pin
         self._servoYPin = 12  # Servo 2 GPIO Pin
 
         # GPIO setup
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self._servoXPin, GPIO.OUT)
-        GPIO.setup(self._servoYPin, GPIO.OUT)
+        GPIO.setup(self._laser, GPIO.OUT)
 
         # Start PWM at 50Hz
         self._servoX = GPIO.PWM(self._servoXPin, 50)
@@ -41,12 +42,18 @@ class RaspberryPiZero2:
         time.sleep(0.2)
         self._servoY.ChangeDutyCycle(0)
 
+    def setLaser(self, val: int):
+        if val > 0:
+            GPIO.output(self._laser, GPIO.HIGH)
+        else:
+            GPIO.output(self._laser, GPIO.LOW)
 
     def cleanup(self):
         self.setServoX(0)
         self.setServoY(0)
         self._servoX.stop()
         self._servoY.stop()
+        self.setLaser(0)
         GPIO.cleanup()
 
 
