@@ -57,7 +57,7 @@ if __name__ == "__main__":
                     board.setServoX(angle)
                 elif servo == "y":
                     board.setServoY(angle)
-                elif servo == "laser1":
+                elif servo == "laser":
                     board.setLaser(angle)
    
     board.cleanup()
