@@ -35,6 +35,9 @@ class RaspberryPiZero2:
             time.sleep(0.2)
             self._servo.ChangeDutyCycle(0)
             
+        def getAngle(self):
+            return self._currentAngle
+            
         def cleanup(self):
             self.setAngle(0)
             self._servo.stop()
@@ -69,6 +72,18 @@ class RaspberryPiZero2:
         Set the Y servo's current turning angle (only +)
         """
         self._servoY.setAngle(angle)
+        
+    def getServoXAngle(self):
+        """
+        Get the current angle of the X servo
+        """
+        return self._servoX.getAngle()
+    
+    def getServoYAngle(self):
+        """
+        Get the current angle of the Y servo
+        """
+        return self._servoY.getAngle()
         
     def turnServoY(self, angle):
         """
