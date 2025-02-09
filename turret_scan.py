@@ -6,7 +6,13 @@ def help():
 Turret Scan Test
 Commands:
 
-    mode:<mode> - Set the mode of the turret (0: stationary, 1: scanning x, 2: scanning y, 3: scanning xy)
+    mode:<mode> - Set the mode of the turret 
+        0: stationary
+        1: scanning x
+        2: scanning y
+        3: scanning xy
+        
+        To leave this mode, press CTRL+C
     
     quit - Exit the program
     
@@ -69,16 +75,24 @@ if __name__ == "__main__":
                 print(f"error {e}")
                 continue
             else:
-                if mode == 0:
-                    continue
-                elif mode == 1:
-                    xTurningDir = turnX(board, turnAmount=1, xTurningDir=xTurningDir)
-                elif mode == 2:
-                    yTurningDir = turnY(board, turnAmount=1, yTurningDir=yTurningDir)
-                elif mode == 3:
-                    xTurningDir = turnX(board, turnAmount=1, xTurningDir=xTurningDir)
-                    yTurningDir = turnY(board, turnAmount=1, yTurningDir=yTurningDir)
-                time.sleep(0.5)
+                if mode in [0, 1, 2, 3]:
+                    print("Press CTRL+C to exit mode")
+                    while True:
+                        try:
+                            if mode == 0:
+                                continue
+                            elif mode == 1:
+                                xTurningDir = turnX(board, turnAmount=1, xTurningDir=xTurningDir)
+                            elif mode == 2:
+                                yTurningDir = turnY(board, turnAmount=1, yTurningDir=yTurningDir)
+                            elif mode == 3:
+                                xTurningDir = turnX(board, turnAmount=1, xTurningDir=xTurningDir)
+                                yTurningDir = turnY(board, turnAmount=1, yTurningDir=yTurningDir)
+                            time.sleep(0.5)
+                        except KeyboardInterrupt:
+                            "Leaving Scanning Mode"
+                else:
+                    print("Invalid Mode")
+                
 
-   
     board.cleanup()
