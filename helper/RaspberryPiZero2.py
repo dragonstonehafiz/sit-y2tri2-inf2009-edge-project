@@ -28,12 +28,14 @@ class RaspberryPiZero2:
         def turn(self, angle):
             self.setAngle(self._currentAngle + angle)
             
-        def setAngle(self, angle):
+        def setAngle(self, angle, debug=False):
             self._currentAngle = self._boundAngle(angle)
             dutyCycle = self._convertAngleToDutyCycle(angle)
             self._servo.ChangeDutyCycle(dutyCycle)
             time.sleep(0.2)
             self._servo.ChangeDutyCycle(0)
+            if debug:
+                print(f"Angle: {angle}")
             
         def getAngle(self):
             return self._currentAngle
@@ -43,7 +45,8 @@ class RaspberryPiZero2:
             self._servo.stop()
     
     
-    def __init__(self):
+    def __init__(self, debug=False):
+        self._debug = debug
         GPIO.setmode(GPIO.BCM)
 
         # Laser Set Up
@@ -99,6 +102,9 @@ class RaspberryPiZero2:
             GPIO.output(self._laser, GPIO.HIGH)
         else:
             GPIO.output(self._laser, GPIO.LOW)
+            
+    def setDebug(self, debug):
+        self._debug = debug
 
     def cleanup(self):
         """

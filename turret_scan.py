@@ -43,13 +43,14 @@ def turnY(board: RaspberryPiZero2, turnAmount=1, yTurningDir=True):
     return yTurningDir
 
 if __name__ == "__main__":
-    board = RaspberryPiZero2()
+    board = RaspberryPiZero2(debug=True)
     help()
     
     # Set the initial turning direction
     # True = +, False = -
     xTurningDir = True
     yTurningDir = True
+    turnAmount = 2
     
     while True:
         action = input("Command: ")
@@ -82,12 +83,12 @@ if __name__ == "__main__":
                             if mode == 0:
                                 continue
                             elif mode == 1:
-                                xTurningDir = turnX(board, turnAmount=1, xTurningDir=xTurningDir)
+                                xTurningDir = turnX(board, turnAmount=turnAmount, xTurningDir=xTurningDir)
                             elif mode == 2:
-                                yTurningDir = turnY(board, turnAmount=1, yTurningDir=yTurningDir)
+                                yTurningDir = turnY(board, turnAmount=turnAmount, yTurningDir=yTurningDir)
                             elif mode == 3:
-                                xTurningDir = turnX(board, turnAmount=1, xTurningDir=xTurningDir)
-                                yTurningDir = turnY(board, turnAmount=1, yTurningDir=yTurningDir)
+                                xTurningDir = turnX(board, turnAmount=turnAmount, xTurningDir=xTurningDir)
+                                yTurningDir = turnY(board, turnAmount=turnAmount, yTurningDir=yTurningDir)
                             time.sleep(0.5)
                         except KeyboardInterrupt as e:
                             "Leaving Scanning Mode"
