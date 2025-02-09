@@ -18,12 +18,13 @@ Before this project can work, you will need to install some packages used by thi
 
 ```bash
 sudo apt update
-sudo apt upgrade
-sudo apt install git
-sudo apt install portaudio19-dev
-sudo apt install python3
-sudo apt install python3-pip
-sudo apt-get install rpi.gpio
+sudo apt upgrade -y
+sudo apt install -y git
+sudo apt install -y portaudio19-dev
+sudo apt install -y python3
+sudo apt install -y python3-pip
+sudo apt-get install -y python3-rpi.gpio
+sudo apt install -y python3-picamera2
 ```
 
 Then you can clone this repo with git. The second line renames the repo's directory to edge-project.
