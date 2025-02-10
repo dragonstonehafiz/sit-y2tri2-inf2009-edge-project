@@ -81,7 +81,7 @@ if __name__ == "__main__":
                     while True:
                         try:
                             if mode == 0:
-                                continue
+                                pass
                             elif mode == 1:
                                 xTurningDir = turnX(board, turnAmount=turnAmount, xTurningDir=xTurningDir)
                             elif mode == 2:
@@ -89,9 +89,8 @@ if __name__ == "__main__":
                             elif mode == 3:
                                 xTurningDir = turnX(board, turnAmount=turnAmount, xTurningDir=xTurningDir)
                                 yTurningDir = turnY(board, turnAmount=turnAmount, yTurningDir=yTurningDir)
-                            time.sleep(0.1)
                         except KeyboardInterrupt as e:
-                            "Leaving Scanning Mode"
+                            print("Leaving Scanning Mode")
                             break
                 else:
                     print("Invalid Mode")
