@@ -10,6 +10,7 @@ Commands:
     sety:<angle> - Set the y servo to the specified angle (+)
     turny:<angle> - Turn the y servo by the specified angle (+-)
     laser:<boolean> - Turn the laser on or off (1 or 0)
+    debug:<boolean> - Turn debug mode on or off (1 or 0)
     
     quit - Exit the program
     
@@ -57,5 +58,7 @@ if __name__ == "__main__":
                     board.turnServoY(angle)
                 elif servo == "laser":
                     board.setLaser(bool(angle))
+                elif servo == "debug":
+                    board.setDebug(bool(angle))
    
     board.cleanup()

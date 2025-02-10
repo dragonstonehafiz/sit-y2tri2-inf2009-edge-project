@@ -13,6 +13,8 @@ Commands:
         3: scanning xy
         
         To leave this mode, press CTRL+C
+        
+    debug:<boolean> - Turn debug mode on or off (1 or 0)
     
     quit - Exit the program
     
@@ -43,7 +45,7 @@ def turnY(board: RaspberryPiZero2, turnAmount=1, yTurningDir=True):
     return yTurningDir
 
 if __name__ == "__main__":
-    board = RaspberryPiZero2(debug=True)
+    board = RaspberryPiZero2()
     help()
     
     # Set the initial turning direction
@@ -65,7 +67,7 @@ if __name__ == "__main__":
             
             # Check if command is valid
             command = split_text[0]
-            if command != "mode":
+            if command not in ["mode", "debug"]:
                 print("Command invalid")
                 continue
             
@@ -76,7 +78,7 @@ if __name__ == "__main__":
                 print(f"error {e}")
                 continue
             else:
-                if mode in [0, 1, 2, 3]:
+                if mode in [0, 1, 2, 3] and command == "mode":
                     print("Press CTRL+C to exit mode")
                     while True:
                         try:
@@ -92,6 +94,8 @@ if __name__ == "__main__":
                         except KeyboardInterrupt as e:
                             print("Leaving Scanning Mode")
                             break
+                elif command == "debug":
+                    board.setDebug(bool(mode))
                 else:
                     print("Invalid Mode")
                 
