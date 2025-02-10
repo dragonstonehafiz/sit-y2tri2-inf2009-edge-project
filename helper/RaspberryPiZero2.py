@@ -30,7 +30,7 @@ class RaspberryPiZero2:
             
         def setAngle(self, angle, debug=False):
             # Save previous angle to calculate how long the system should wait before stopping the servo
-            prevAngle = angle
+            prevAngle = self._currentAngle
             # Calculate duty cycle to turn to the required angle
             self._currentAngle = self._boundAngle(angle)
             dutyCycle = self._convertAngleToDutyCycle(angle)
@@ -39,7 +39,8 @@ class RaspberryPiZero2:
             # Use abs() so sleep time is always positive
             # Turning from 0 to 180 degrees should take 0.2 seconds
             # Turning from 0 to 45 degrees should take 0.05 seconds
-            sleepTime = abs(self._currentAngle - prevAngle) / 180 * 0.2
+            sleepTime = abs(self._currentAngle - prevAngle) / 180.0 * 0.25
+            sleepTime = max(sleepTime, 0.05)
             time.sleep(sleepTime)
             self._servo.ChangeDutyCycle(0)
             if debug:
