@@ -25,8 +25,8 @@ class RaspberryPiZero2:
                 return 180
             return angle
         
-        def turn(self, angle):
-            self.setAngle(self._currentAngle + angle)
+        def turn(self, angle, debug=False):
+            self.setAngle(self._currentAngle + angle, debug)
             
         def setAngle(self, angle, debug=False):
             self._currentAngle = self._boundAngle(angle)
@@ -62,20 +62,27 @@ class RaspberryPiZero2:
         """
         Set the X servo's current turning angle (only +)
         """
-        self._servoX.setAngle(angle)
+        self._servoX.setAngle(angle, debug=self._debug)
         
     def turnServoX(self, angle):
         """
         Turns the X servo by a specified angle (+ or -)
         """
-        self._servoX.turn(angle)
+        self._servoX.turn(angle, debug=self._debug)
         
     def setServoY(self, angle):
         """
         Set the Y servo's current turning angle (only +)
         """
-        self._servoY.setAngle(angle)
+        self._servoY.setAngle(angle, debug=self._debug)
         
+
+    def turnServoY(self, angle):
+        """
+        Turns the Y servo by a specified angle (+ or -)
+        """
+        self._servoY.turn(angle, debug=self._debug)
+
     def getServoXAngle(self):
         """
         Get the current angle of the X servo
@@ -88,11 +95,6 @@ class RaspberryPiZero2:
         """
         return self._servoY.getAngle()
         
-    def turnServoY(self, angle):
-        """
-        Turns the Y servo by a specified angle (+ or -)
-        """
-        self._servoY.turn(angle)
 
     def setLaser(self, val: bool):
         """

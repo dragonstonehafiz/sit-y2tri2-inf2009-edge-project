@@ -37,8 +37,8 @@ def turnY(board: RaspberryPiZero2, turnAmount=1, yTurningDir=True):
         if board.getServoYAngle() >= 180:
             yTurningDir = False
     else:
-        board.turnServoX(-turnAmount)
-        if board.getServoXAngle() <= 0:
+        board.turnServoY(-turnAmount)
+        if board.getServoYAngle() <= 0:
             yTurningDir = True
     return yTurningDir
 
@@ -50,7 +50,7 @@ if __name__ == "__main__":
     # True = +, False = -
     xTurningDir = True
     yTurningDir = True
-    turnAmount = 2
+    turnAmount = 10
     
     while True:
         action = input("Command: ")
@@ -89,7 +89,7 @@ if __name__ == "__main__":
                             elif mode == 3:
                                 xTurningDir = turnX(board, turnAmount=turnAmount, xTurningDir=xTurningDir)
                                 yTurningDir = turnY(board, turnAmount=turnAmount, yTurningDir=yTurningDir)
-                            time.sleep(0.5)
+                            time.sleep(0.1)
                         except KeyboardInterrupt as e:
                             "Leaving Scanning Mode"
                             break
