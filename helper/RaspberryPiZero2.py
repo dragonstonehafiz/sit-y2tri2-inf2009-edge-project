@@ -1,7 +1,14 @@
 import RPi.GPIO as GPIO
+from picamera2 import Picamera2
 import time
 
 class RaspberryPiZero2:
+    _laser: int
+    _servoX: "_Servo"
+    _servoY: "_Servo"
+    _camera = Picamera2()
+    _cameraCenter = (240, 240)
+    
     class _Servo:
         _currentAngle = 0
         
@@ -66,7 +73,12 @@ class RaspberryPiZero2:
         self._servoX = self._Servo(13)
         self._servoY = self._Servo(12)
         
-        
+        # Set up cam
+        self._camera = Picamera2()
+        config = self._camera.create_preview_configuration(main={"size": (self._cameraCenter[0] * 2, self._cameraCenter[0] * 2)})
+        self._camera.configure(config)
+        self._camera.start()
+                      
     def setServoX(self, angle):
         """
         Set the X servo's current turning angle (only +)
@@ -85,7 +97,6 @@ class RaspberryPiZero2:
         """
         self._servoY.setAngle(angle, debug=self._debug)
         
-
     def turnServoY(self, angle):
         """
         Turns the Y servo by a specified angle (+ or -)
@@ -104,7 +115,6 @@ class RaspberryPiZero2:
         """
         return self._servoY.getAngle()
         
-
     def setLaser(self, val: bool):
         """
         True = ON, False = OFF
@@ -115,7 +125,16 @@ class RaspberryPiZero2:
             GPIO.output(self._laser, GPIO.LOW)
             
     def setDebug(self, debug):
+        """
+        Sets if debug messages are printed.
+        """
         self._debug = debug
+
+    def getCamCenter(self):
+        return self._cameraCenter
+
+    def getCamFrame(self):
+        return self._camera.capture_array()
 
     def cleanup(self):
         """
@@ -125,6 +144,7 @@ class RaspberryPiZero2:
         self._servoY.cleanup()
         self.setLaser(0)
         GPIO.cleanup()
+        self._camera.close()
 
 
 # Main program
