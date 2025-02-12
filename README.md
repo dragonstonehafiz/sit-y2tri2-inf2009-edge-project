@@ -25,7 +25,6 @@ sudo apt install -y python3
 sudo apt install -y python3-pip
 sudo apt-get install -y python3-rpi.gpio
 sudo apt install -y python3-picamera2
-sudo apt install -y libpcap0.8-dev
 ```
 
 Then you can clone this repo with git. The second line renames the repo's directory to edge-project.
@@ -39,7 +38,7 @@ cd edge-project
 Now we will set up the virtual environment that will be used for this project.
 
 ```bash
-python3 -m venv venv
+python3 -m venv --system-site-packages env
 source venv/bin/activate
 pip install -r requirements.txt
 ```
