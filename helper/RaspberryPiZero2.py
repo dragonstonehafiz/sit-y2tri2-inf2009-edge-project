@@ -6,8 +6,6 @@ class RaspberryPiZero2:
     _laser: int
     _servoX: "_Servo"
     _servoY: "_Servo"
-    _camera = Picamera2()
-    _cameraCenter = (240, 240)
     
     class _Servo:
         _currentAngle = 0
@@ -75,6 +73,7 @@ class RaspberryPiZero2:
         
         # Set up cam
         self._camera = Picamera2()
+        self._cameraCenter = (240, 240)
         config = self._camera.create_preview_configuration(main={"size": (self._cameraCenter[0] * 2, self._cameraCenter[0] * 2)})
         self._camera.configure(config)
         self._camera.start()

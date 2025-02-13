@@ -38,7 +38,7 @@ cd edge-project
 Now we will set up the virtual environment that will be used for this project.
 
 ```bash
-python3 -m venv --system-site-packages env
+python3 -m venv --system-site-packages venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
