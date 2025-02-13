@@ -7,6 +7,7 @@ class RaspberryPiZero2:
     _servoX: "_Servo"
     _servoY: "_Servo"
     _scanDir: bool
+
     
     class _Servo:
         _currentAngle = 0

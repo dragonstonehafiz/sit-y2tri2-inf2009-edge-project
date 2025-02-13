@@ -1,5 +1,5 @@
 from enum import Enum
-from RaspberryPiZero2 import RaspberryPiZero2
+from helper.RaspberryPiZero2 import RaspberryPiZero2
 import time
 
 #1 鳥を待つ。鳥が鳴くと、次のモードに変更する
@@ -41,7 +41,6 @@ def stateScan(board: RaspberryPiZero2) -> int:
     frame = board.getCamFrame()
     birdDetected = False # Placeholder for bird detection
     if birdDetected:
-        
         return STATES.TRACKING
         
 def stateTracking(board: RaspberryPiZero2) -> int:
