@@ -6,10 +6,6 @@ import time
 #2 鳥を探す。カメラは回して、x-axisだけ動く180度でな
 #3 見つかった鳥を追跡する。カメラはその鳥を画面で真ん中にする
 
-# Turning from 0 to 180 degrees
-# set to negative when turning from 180 to 0
-turnPositive = True
-
 # If time since last bird seen is too large, go back to idle mode
 lastBirdSeenTime = time.time()
 
@@ -33,14 +29,14 @@ def stateScan(board: RaspberryPiZero2) -> int:
     """
     Rotates the camera in the x axis until it sees a bird. Then it changes to the next state.
     """
-    if turnPositive:
+    if board.getScanDir():
         board.turnServoX(1)
         if board.getServoXAngle() >= 180:
-            turnPositive = False
+            board.toggleScanDir()
     else:
         board.turnServoY(-1)
         if board.getServoXAngle() <= 0:
-            turnPositive = True
+            board.toggleScanDir()
             
     frame = board.getCamFrame()
     birdDetected = False # Placeholder for bird detection

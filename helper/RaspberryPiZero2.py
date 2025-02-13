@@ -6,8 +6,7 @@ class RaspberryPiZero2:
     _laser: int
     _servoX: "_Servo"
     _servoY: "_Servo"
-    _camera = Picamera2()
-    _cameraCenter = (240, 240)
+    _scanDir: bool
     
     class _Servo:
         _currentAngle = 0
@@ -74,10 +73,13 @@ class RaspberryPiZero2:
         self._servoY = self._Servo(12)
         
         # Set up cam
+        self._scanDir = True
         self._camera = Picamera2()
+        self._cameraCenter = (240, 240)
         config = self._camera.create_preview_configuration(main={"size": (self._cameraCenter[0] * 2, self._cameraCenter[0] * 2)})
         self._camera.configure(config)
         self._camera.start()
+
                       
     def setServoX(self, angle):
         """
@@ -136,6 +138,12 @@ class RaspberryPiZero2:
     def getCamFrame(self):
         return self._camera.capture_array()
 
+    def toggleScanDir(self):
+        self._scanDir = not self._scanDir
+
+    def getScanDir(self):
+        return self._scanDir
+
     def cleanup(self):
         """
         Call this when the program is exiting to clean up the GPIO pins
@@ -145,6 +153,7 @@ class RaspberryPiZero2:
         self.setLaser(0)
         GPIO.cleanup()
         self._camera.close()
+
 
 
 # Main program
