@@ -23,6 +23,7 @@ sudo apt install -y git
 sudo apt install -y portaudio19-dev
 sudo apt install -y python3
 sudo apt install -y python3-pip
+sudo apt install -y python3-venv
 sudo apt-get install -y python3-rpi.gpio
 sudo apt install -y python3-picamera2
 ```

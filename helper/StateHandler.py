@@ -30,11 +30,11 @@ def stateScan(board: RaspberryPiZero2) -> int:
     Rotates the camera in the x axis until it sees a bird. Then it changes to the next state.
     """
     if board.getScanDir():
-        board.turnServoX(1)
+        board.turnServoX(5)
         if board.getServoXAngle() >= 180:
             board.toggleScanDir()
     else:
-        board.turnServoY(-1)
+        board.turnServoX(-5)
         if board.getServoXAngle() <= 0:
             board.toggleScanDir()
             
@@ -42,6 +42,8 @@ def stateScan(board: RaspberryPiZero2) -> int:
     birdDetected = False # Placeholder for bird detection
     if birdDetected:
         return STATES.TRACKING
+    else:
+        return STATES.SCAN
         
 def stateTracking(board: RaspberryPiZero2) -> int:
     """
@@ -72,7 +74,12 @@ def stateTracking(board: RaspberryPiZero2) -> int:
         
         # Update last seen time  
         lastBirdSeenTime = now
+        
+        # Return current state
+        return STATES.TRACKING
     else:
         # If no bird is seed for more than 15 seconds, go back to idle mode
         if now - lastBirdSeenTime > 15:
             return STATES.IDLE
+        else:
+            return STATES.TRACKING
