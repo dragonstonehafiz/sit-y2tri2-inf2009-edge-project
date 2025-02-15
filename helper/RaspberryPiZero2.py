@@ -6,7 +6,6 @@ class RaspberryPiZero2:
     _laser: int
     _servoX: "_Servo"
     _servoY: "_Servo"
-    _scanDir: bool
 
     
     class _Servo:
@@ -74,7 +73,6 @@ class RaspberryPiZero2:
         self._servoY = self._Servo(12)
         
         # Set up cam
-        self._scanDir = True
         self._camera = Picamera2()
         self._cameraCenter = (240, 240)
         config = self._camera.create_preview_configuration(main={"size": (self._cameraCenter[0] * 2, self._cameraCenter[0] * 2)})
@@ -138,12 +136,6 @@ class RaspberryPiZero2:
 
     def getCamFrame(self):
         return self._camera.capture_array()
-
-    def toggleScanDir(self):
-        self._scanDir = not self._scanDir
-
-    def getScanDir(self):
-        return self._scanDir
 
     def cleanup(self):
         """
