@@ -24,6 +24,7 @@ class StateHandler:
     
     def setState(self, state: STATES):
         self._currentState = state
+        print(state)
         if state == STATES.IDLE:
             self._board.setServoX(90)
             self._board.setServoY(90)
@@ -77,11 +78,11 @@ class StateHandler:
         
         # If the board reaches it's maximum/minimum angle, change direction
         if scanDir:
-            board.turnServoX(1)
+            board.turnServoX(3)
             if board.getServoXAngle() >= 180:
                 scanDir = False
         else:
-            board.turnServoX(-1)
+            board.turnServoX(-3)
             if board.getServoXAngle() <= 0:
                 scanDir = True
         
@@ -111,17 +112,19 @@ class StateHandler:
             xDisplacement = birdPos[0] - board.getCamCenter()[0]
             yDisplacement = birdPos[1] - board.getCamCenter()[1]
             
+            print(f"{xDisplacement}, {yDisplacement}")
+            print(f"{x}, {y}, {w}, {h}")
             # We're only turning one servo at a time
             if abs(xDisplacement) > abs(yDisplacement):
                 if xDisplacement > 0:
-                    board.turnServoX(1)
+                    board.turnServoX(3)
                 else:
-                    board.turnServoX(-1)
+                    board.turnServoX(-3)
             else:
                 if yDisplacement > 0:
-                    board.turnServoY(1)
+                    board.turnServoY(3)
                 else:
-                    board.turnServoY(-1)
+                    board.turnServoY(-3)
             
             # Update last seen time  
             self._lastBirdSeenTime = now
