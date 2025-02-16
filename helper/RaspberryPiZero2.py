@@ -12,11 +12,15 @@ class RaspberryPiZero2:
     
     class _Servo:
         _currentAngle = 0
+        _maxAngle = 180
+        _minAngle = 0
         
-        def __init__(self, pin):
+        def __init__(self, pin, minAngle=0, maxAngle=180):
             self._pin = pin
             GPIO.setup(self._pin, GPIO.OUT)
             self._servo = GPIO.PWM(self._pin, 50)
+            self._maxAngle = maxAngle
+            self._minAngle = minAngle
             self._servo.start(0)
         
         def _convertAngleToDutyCycle(self, angle):
@@ -27,10 +31,10 @@ class RaspberryPiZero2:
             return 2 + (angle / 18.0)
         
         def _boundAngle(self, angle):
-            if angle < 0:
-                return 0
-            elif angle > 180:
-                return 180
+            if angle < self._minAngle:
+                return self._minAngle
+            elif angle > self._maxAngle:
+                return self._maxAngle
             return angle
         
         def turn(self, angle, debug=False):
@@ -45,9 +49,9 @@ class RaspberryPiZero2:
             self._servo.ChangeDutyCycle(dutyCycle)
             # Make the servo sleep for a period proportional to the angle it needs to turn
             # Use abs() so sleep time is always positive
-            # Turning from 0 to 180 degrees should take 0.2 seconds
+            # Turning from 0 to 180 degrees should take 0.25 seconds
             # Turning from 0 to 45 degrees should take 0.05 seconds
-            sleepTime = abs(self._currentAngle - prevAngle) / 180.0 * 0.225
+            sleepTime = abs(self._currentAngle - prevAngle) / 180.0 * 0.25
             sleepTime = max(sleepTime, 0.05)
             time.sleep(sleepTime)
             self._servo.ChangeDutyCycle(0)
@@ -72,7 +76,7 @@ class RaspberryPiZero2:
         
         # Servo Set Up
         self._servoX = self._Servo(13)
-        self._servoY = self._Servo(12)
+        self._servoY = self._Servo(12, minAngle=45, maxAngle=135)
         
         # Set up cam
         self._camera = Picamera2()

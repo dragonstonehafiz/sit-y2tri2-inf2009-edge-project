@@ -146,21 +146,20 @@ class StateHandler:
             
             xDisplacement, yDisplacement = getObjectDisplacement(face, board.getCamCenter(), board.getCamSize())
             # We have to invert the y axis because the coordinate system is from top to bottom rather than bottom to top
-            # yDisplacement = -yDisplacement
+            yDisplacement = -yDisplacement
 
-            # print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
-            # print(f"x,turnx:{board.getServoXAngle()},{turnX}")
+            print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
             if xDisplacement != 0:
                 board.turnServoX(xDisplacement)
             
-            if yDisplacement != 0:
-                board.turnServoY(yDisplacement)
+            # if yDisplacement != 0:
+            #     board.turnServoY(yDisplacement)
             
             print(f"{xDisplacement},{yDisplacement}")
             # Update last seen time  
             self._lastBirdSeenTime = now
         else:
-            # If no bird is seed for more than 15 seconds, go back to idle mode
-            if now - self._lastBirdSeenTime > 15:
+            # If no bird is seed for more than 7 seconds, go back to idle mode
+            if now - self._lastBirdSeenTime > 7:
                 self.setState(STATES.QUIT)
     
