@@ -1,4 +1,5 @@
 import RPi.GPIO as GPIO
+import cv2
 from picamera2 import Picamera2
 import time
 
@@ -139,7 +140,10 @@ class RaspberryPiZero2:
         return self._cameraSize
 
     def getCamFrame(self):
-        return self._camera.capture_array()
+        frame = self._camera.capture_array()
+        # since the camera is actually upside down on the gimbal, we have to flip the frame on the y-axis
+        frame = cv2.flip(frame, 0)
+        return frame
 
     def cleanup(self):
         """
