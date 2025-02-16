@@ -1,6 +1,7 @@
 from enum import Enum
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.FaceDetector import FaceDetector
+from helper.RefreshRateLimiter import RefreshRateLimiter
 import time
 
 class STATES(Enum):
@@ -14,6 +15,10 @@ class StateHandler:
     _faceDetector = FaceDetector() # This is just a temp thing to test turning the servos
     _currentState = STATES.IDLE
     _lastBirdSeenTime: float = time.time()
+    
+    # Variable to control frame rate of camera
+    _rrl: RefreshRateLimiter = RefreshRateLimiter(12)
+    
     
     # Board Specific Variables
     _scanDir: bool = True # True means turn right, False means turn left
@@ -39,26 +44,41 @@ class StateHandler:
         elif state == STATES.QUIT:
             self._board.cleanup()
             
-    def mainLoop(self):
+    def main(self):
+        """
+        Main loop for the state machine
+        """
         while True:
-            try:
-                if self._currentState == STATES.IDLE:
-                    self._stateIdle()
-                elif self._currentState == STATES.SCAN:
-                    self._stateScan()
-                elif self._currentState == STATES.TRACKING:
-                    self._stateTracking()
-                else:
-                    print("No State. Quitting")
-                    break
-            except KeyboardInterrupt as e:
-                print("Exiting...")
+            self._rrl.startFrame()
+            
+            continueLoop = self._mainloop()
+            if not continueLoop:
                 break
-            except Exception as e:
-                print(f"Exception: {e}")
-                break
+            
+            self._rrl.limit()
         
-        
+    def _mainloop(self) -> bool:
+        """returns true if the loop should continue, false if it should exit
+        """
+        try:
+            if self._currentState == STATES.IDLE:
+                self._stateIdle()
+            elif self._currentState == STATES.SCAN:
+                self._stateScan()
+            elif self._currentState == STATES.TRACKING:
+                self._stateTracking()
+            else:
+                print("No State. Quitting")
+                return False
+        except KeyboardInterrupt as e:
+            print("Exiting...")
+            return False
+        except Exception as e:
+            print(f"Exception: {e}")
+            return False
+
+        return True
+              
     def _stateIdle(self):
         """
         Stays in this function until a sound is detected.
@@ -113,8 +133,7 @@ class StateHandler:
             # We have to invert the y axis because the coordinate system is from top to bottom rather than bottom to top
             yDisplacement = -yDisplacement
 
-            print(f"{xDisplacement}, {yDisplacement}")
-            print(f"{objectCenterX}, {objectCenterY}")
+            print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
             
             # We're only turning one servo at a time
             # if abs(xDisplacement) > abs(yDisplacement):

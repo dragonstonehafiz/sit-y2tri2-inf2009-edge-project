@@ -1,16 +1,19 @@
 import cv2
 from helper.FaceDetector import FaceDetector
+from helper.RefreshRateLimiter import RefreshRateLimiter
 
 if __name__ == '__main__':
     # Open the default camera
     cap = cv2.VideoCapture(0)
     faceDetector = FaceDetector()
+    rrl = RefreshRateLimiter(12)
 
     # Get the default frame width and height
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
 
     while True:
+        rrl.startFrame()
         # Read the frame
         ret, frame = cap.read()
         
@@ -35,5 +38,7 @@ if __name__ == '__main__':
         # Press 'q' to exit the loop
         if cv2.waitKey(1) == ord('q'):
             break
+        
+        rrl.limit()
 
     cap.release()
