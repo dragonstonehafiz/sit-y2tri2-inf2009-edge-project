@@ -6,6 +6,7 @@ class RaspberryPiZero2:
     _laser: int
     _servoX: "_Servo"
     _servoY: "_Servo"
+    _cameraCenter = (240, 240)
 
     
     class _Servo:
@@ -74,11 +75,11 @@ class RaspberryPiZero2:
         
         # Set up cam
         self._camera = Picamera2()
-        self._cameraCenter = (240, 240)
         config = self._camera.create_preview_configuration(main={"size": (self._cameraCenter[0] * 2, self._cameraCenter[0] * 2)})
         self._camera.configure(config)
         self._camera.start()
-                     
+       
+
     def setServoX(self, angle):
         """
         Set the X servo's current turning angle (only +)

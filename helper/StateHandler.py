@@ -17,12 +17,12 @@ class StateHandler:
     _lastBirdSeenTime: float = time.time()
     
     # Variable to control frame rate of camera
-    _rrl: RefreshRateLimiter = RefreshRateLimiter(12)
+    _rrl: RefreshRateLimiter = RefreshRateLimiter(24)
     
     
     # Board Specific Variables
     _scanDir: bool = True # True means turn right, False means turn left
-    _board = RaspberryPiZero2()
+    _board = RaspberryPiZero2(debug=False)
     
     def __init__(self):
         pass
@@ -98,11 +98,11 @@ class StateHandler:
         
         # If the board reaches it's maximum/minimum angle, change direction
         if scanDir:
-            board.turnServoX(3)
+            board.turnServoX(5)
             if board.getServoXAngle() >= 180:
                 scanDir = False
         else:
-            board.turnServoX(-3)
+            board.turnServoX(-5)
             if board.getServoXAngle() <= 0:
                 scanDir = True
         
@@ -134,12 +134,17 @@ class StateHandler:
             yDisplacement = -yDisplacement
 
             # print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
+            print(f"servo angles: {board.getServoXAngle()}, {board.getServoYAngle()}")
+            if xDisplacement > 0:
+                board.turnServoX(2)
+            elif xDisplacement < 0:
+                board.turnServoX(-2)
             
-            if xDisplacement > 10:
-                board.turnServoX(3)
-            elif xDisplacement < -10:
-                board.turnServoX(-3)
-            
+            if yDisplacement > 0:
+                board.turnServoY(2)
+            elif yDisplacement < 0:
+                board.turnServoY(-2)
+
             # We're only turning one servo at a time
             # if abs(xDisplacement) > abs(yDisplacement):
             #     if xDisplacement > 0:
@@ -156,6 +161,6 @@ class StateHandler:
             self._lastBirdSeenTime = now
         else:
             # If no bird is seed for more than 15 seconds, go back to idle mode
-            if now - self._lastBirdSeenTime > 5:
+            if now - self._lastBirdSeenTime > 15:
                 self.setState(STATES.QUIT)
     
