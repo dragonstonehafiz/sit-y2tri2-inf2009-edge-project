@@ -29,10 +29,12 @@ class StateHandler:
             self._board.setServoX(90)
             self._board.setServoY(90)
         elif state == STATES.SCAN:
+            self._board.setLaser(False)
             self._board.setServoX(90)
             self._board.setServoY(90)
             self._scanDir = True
         elif state == STATES.TRACKING:
+            self._board.setLaser(True)
             self._lastBirdSeenTime = time.time()
         elif state == STATES.QUIT:
             self._board.cleanup()
@@ -56,9 +58,7 @@ class StateHandler:
                 print(f"Exception: {e}")
                 break
         
-        # Reset board values
-        self._board.cleanup()
-            
+        
     def _stateIdle(self):
         """
         Stays in this function until a sound is detected.
@@ -107,12 +107,15 @@ class StateHandler:
             # We will then get the position of the detected bird relative to origin and turn the servos accordingly
             # Example, if the bird is at position (50, 0), we will turn the x-servo to the right (speed/turn rate is not important, we only care about direction). Conversely, if the bird is at position (-50, 0), we will turn x-servo to the left. 
             
-            (objectCenterX, objectCenterY) = face # just track the first face
-            # xDisplacement = birdPos[0] - board.getCamCenter()[0]
-            # yDisplacement = birdPos[1] - board.getCamCenter()[1]
-            
-            # print(f"{xDisplacement}, {yDisplacement}")
+            (objectCenterX, objectCenterY) = face
+            xDisplacement = objectCenterX - board.getCamCenter()[0]
+            yDisplacement = objectCenterY - board.getCamCenter()[1]
+            # We have to invert the y axis because the coordinate system is from top to bottom rather than bottom to top
+            yDisplacement = -yDisplacement
+
+            print(f"{xDisplacement}, {yDisplacement}")
             print(f"{objectCenterX}, {objectCenterY}")
+            
             # We're only turning one servo at a time
             # if abs(xDisplacement) > abs(yDisplacement):
             #     if xDisplacement > 0:
