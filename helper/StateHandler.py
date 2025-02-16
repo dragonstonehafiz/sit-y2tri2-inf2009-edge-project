@@ -4,6 +4,23 @@ from helper.FaceDetector import FaceDetector
 from helper.RefreshRateLimiter import RefreshRateLimiter
 import time
 
+def normalizeDisplacement(displacement: tuple[int, int], frameSize: tuple[int, int]) -> tuple[int, int]:
+    """
+    Normalizes the displacement of an object from the center of the screen.
+    """
+    xDisplacement, yDisplacement = displacement
+    xDisplacement = (int) (xDisplacement / (frameSize[0] / 10))
+    yDisplacement = (int) (yDisplacement / (frameSize[1] / 10))
+    return (xDisplacement, yDisplacement)
+
+def getObjectDisplacement(objectCenter, screenCenter, screenSize) -> tuple[int, int]:
+    """
+    Returns the displacement of an object from the center of the screen.
+    """
+    xDisplacement = objectCenter[0] - screenCenter[0]
+    yDisplacement = objectCenter[1] - screenCenter[1]
+    return normalizeDisplacement((xDisplacement, yDisplacement), screenSize)
+
 class STATES(Enum):
     IDLE = 0
     SCAN = 1
@@ -17,8 +34,7 @@ class StateHandler:
     _lastBirdSeenTime: float = time.time()
     
     # Variable to control frame rate of camera
-    _rrl: RefreshRateLimiter = RefreshRateLimiter(24)
-    
+    _rrl: RefreshRateLimiter = RefreshRateLimiter(30)
     
     # Board Specific Variables
     _scanDir: bool = True # True means turn right, False means turn left
@@ -127,35 +143,21 @@ class StateHandler:
             # We will then get the position of the detected bird relative to origin and turn the servos accordingly
             # Example, if the bird is at position (50, 0), we will turn the x-servo to the right (speed/turn rate is not important, we only care about direction). Conversely, if the bird is at position (-50, 0), we will turn x-servo to the left. 
             
-            (objectCenterX, objectCenterY) = face
-            xDisplacement = objectCenterX - board.getCamCenter()[0]
-            yDisplacement = objectCenterY - board.getCamCenter()[1]
+            xDisplacement, yDisplacement = getObjectDisplacement(face, board.getCamCenter(), board.getCamSize())
             # We have to invert the y axis because the coordinate system is from top to bottom rather than bottom to top
             yDisplacement = -yDisplacement
 
-            # print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
-            print(f"servo angles: {board.getServoXAngle()}, {board.getServoYAngle()}")
-            if xDisplacement > 0:
-                board.turnServoX(2)
-            elif xDisplacement < 0:
-                board.turnServoX(-2)
+            print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
+            # print(f"servo angles: {board.getServoXAngle()}, {board.getServoYAngle()}")
+            # if xDisplacement > 0:
+            #     board.turnServoX(2)
+            # elif xDisplacement < 0:
+            #     board.turnServoX(-2)
             
-            if yDisplacement > 0:
-                board.turnServoY(2)
-            elif yDisplacement < 0:
-                board.turnServoY(-2)
-
-            # We're only turning one servo at a time
-            # if abs(xDisplacement) > abs(yDisplacement):
-            #     if xDisplacement > 0:
-            #         board.turnServoX(3)
-            #     else:
-            #         board.turnServoX(-3)
-            # else:
-            #     if yDisplacement > 0:
-            #         board.turnServoY(3)
-            #     else:
-            #         board.turnServoY(-3)
+            # if yDisplacement > 0:
+            #     board.turnServoY(2)
+            # elif yDisplacement < 0:
+            #     board.turnServoY(-2)
             
             # Update last seen time  
             self._lastBirdSeenTime = now

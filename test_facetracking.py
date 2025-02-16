@@ -10,7 +10,9 @@ if __name__ == '__main__':
 
     # Get the default frame width and height
     frame_width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    frame_width_over_10 = frame_width / 10
     frame_height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    frame_height_over_10 = frame_height / 10
 
     while True:
         rrl.startFrame()
@@ -25,8 +27,8 @@ if __name__ == '__main__':
         for (x, y, w, h) in faces:
             objCenterX = (int)(x + w / 2) 
             objCenterY = (int)(y + h / 2)
-            displacementX = objCenterX - centerX
-            displacementY = -(objCenterY - centerY)
+            displacementX = (int)(objCenterX - centerX) / frame_width_over_10
+            displacementY = -((int)(objCenterY - centerY) / frame_height_over_10)
             # cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 4)
             cv2.circle(frame, (objCenterX, objCenterY), 5, (0, 255, 0), 5)
             cv2.putText(frame, f'{displacementX:0.2f}, {displacementY:0.2f}', (objCenterX, objCenterY-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (36,255,12), 2)
