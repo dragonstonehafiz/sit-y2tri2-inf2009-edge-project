@@ -47,7 +47,7 @@ class RaspberryPiZero2:
             # Use abs() so sleep time is always positive
             # Turning from 0 to 180 degrees should take 0.2 seconds
             # Turning from 0 to 45 degrees should take 0.05 seconds
-            sleepTime = abs(self._currentAngle - prevAngle) / 180.0 * 0.25
+            sleepTime = abs(self._currentAngle - prevAngle) / 180.0 * 0.225
             sleepTime = max(sleepTime, 0.05)
             time.sleep(sleepTime)
             self._servo.ChangeDutyCycle(0)

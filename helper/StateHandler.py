@@ -74,7 +74,8 @@ class StateHandler:
             self._rrl.limit()
         
     def _mainloop(self) -> bool:
-        """returns true if the loop should continue, false if it should exit
+        """
+        Returns true if the loop should continue, false if it should exit
         """
         try:
             if self._currentState == STATES.IDLE:
@@ -114,11 +115,11 @@ class StateHandler:
         
         # If the board reaches it's maximum/minimum angle, change direction
         if scanDir:
-            board.turnServoX(5)
+            board.turnServoX(3)
             if board.getServoXAngle() >= 180:
                 scanDir = False
         else:
-            board.turnServoX(-5)
+            board.turnServoX(-3)
             if board.getServoXAngle() <= 0:
                 scanDir = True
         
@@ -145,20 +146,17 @@ class StateHandler:
             
             xDisplacement, yDisplacement = getObjectDisplacement(face, board.getCamCenter(), board.getCamSize())
             # We have to invert the y axis because the coordinate system is from top to bottom rather than bottom to top
-            yDisplacement = -yDisplacement
+            # yDisplacement = -yDisplacement
 
-            print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
-            # print(f"servo angles: {board.getServoXAngle()}, {board.getServoYAngle()}")
-            # if xDisplacement > 0:
-            #     board.turnServoX(2)
-            # elif xDisplacement < 0:
-            #     board.turnServoX(-2)
+            # print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
+            # print(f"x,turnx:{board.getServoXAngle()},{turnX}")
+            if xDisplacement != 0:
+                board.turnServoX(xDisplacement)
             
-            # if yDisplacement > 0:
-            #     board.turnServoY(2)
-            # elif yDisplacement < 0:
-            #     board.turnServoY(-2)
+            if yDisplacement != 0:
+                board.turnServoY(yDisplacement)
             
+            print(f"{xDisplacement},{yDisplacement}")
             # Update last seen time  
             self._lastBirdSeenTime = now
         else:
