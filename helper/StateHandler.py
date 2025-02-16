@@ -100,36 +100,35 @@ class StateHandler:
         board = self._board
         frame = board.getCamFrame()
         now = time.time()
-        faces = self._faceDetector.detect(frame)
-        birdSeen = len(faces) > 0
+        face = self._faceDetector.detectClosestFace(frame, board.getCamCenter())
+        birdSeen = face is not None
         if birdSeen:
             # To position the camera, we will be using the center of the image as the origin
             # We will then get the position of the detected bird relative to origin and turn the servos accordingly
             # Example, if the bird is at position (50, 0), we will turn the x-servo to the right (speed/turn rate is not important, we only care about direction). Conversely, if the bird is at position (-50, 0), we will turn x-servo to the left. 
             
-            (x, y, w, h) = faces[0]             # just track the first face
-            birdPos = (x + w / 2, y + h / 2)    # Get the center of the face
-            xDisplacement = birdPos[0] - board.getCamCenter()[0]
-            yDisplacement = birdPos[1] - board.getCamCenter()[1]
+            (objectCenterX, objectCenterY) = face # just track the first face
+            # xDisplacement = birdPos[0] - board.getCamCenter()[0]
+            # yDisplacement = birdPos[1] - board.getCamCenter()[1]
             
-            print(f"{xDisplacement}, {yDisplacement}")
-            print(f"{x}, {y}, {w}, {h}")
+            # print(f"{xDisplacement}, {yDisplacement}")
+            print(f"{objectCenterX}, {objectCenterY}")
             # We're only turning one servo at a time
-            if abs(xDisplacement) > abs(yDisplacement):
-                if xDisplacement > 0:
-                    board.turnServoX(3)
-                else:
-                    board.turnServoX(-3)
-            else:
-                if yDisplacement > 0:
-                    board.turnServoY(3)
-                else:
-                    board.turnServoY(-3)
+            # if abs(xDisplacement) > abs(yDisplacement):
+            #     if xDisplacement > 0:
+            #         board.turnServoX(3)
+            #     else:
+            #         board.turnServoX(-3)
+            # else:
+            #     if yDisplacement > 0:
+            #         board.turnServoY(3)
+            #     else:
+            #         board.turnServoY(-3)
             
             # Update last seen time  
             self._lastBirdSeenTime = now
         else:
             # If no bird is seed for more than 15 seconds, go back to idle mode
-            if now - self._lastBirdSeenTime > 15:
-                self.setState(STATES.IDLE)
+            if now - self._lastBirdSeenTime > 5:
+                self.setState(STATES.QUIT)
     

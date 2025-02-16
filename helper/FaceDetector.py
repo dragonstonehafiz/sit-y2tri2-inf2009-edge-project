@@ -20,4 +20,26 @@ class FaceDetector:
         )
         return faces, confidence
     
+    def detectClosestFace(self, frame, center: tuple[int, int]):
+        """Returns the center of the face closest to the center of the screen.
+        """
+        faces = self.detect(frame)
+        if len(faces) == 0:
+            return None
+        
+        shortestDistance = float("inf")
+        for (x, y, w, h) in faces:
+            # Calculate the position of the current face
+            objectCenterX = x + w / 2
+            objectCenterY = y + h / 2
+            # Calculate the distance of that face to the center of the screen
+            displacement = (objectCenterX - center[0], objectCenterY - center[1])
+            distance = displacement[0] ** 2 + displacement[1] ** 2
+            # Update tracker if the current face is the closest
+            if distance < shortestDistance:
+                shortestDistance = distance
+                closestFace = (objectCenterX, objectCenterY)
+                
+        return closestFace
+    
     

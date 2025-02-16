@@ -15,12 +15,20 @@ if __name__ == '__main__':
         ret, frame = cap.read()
         
         faces = faceDetector.detect(frame)
+        centerX = (int)(frame_width / 2)
+        centerY = (int)(frame_height / 2)
         
         # Draw rectangle around the faces
         for (x, y, w, h) in faces:
-            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 4)
-            cv2.putText(frame, f'x:{x:0.2f}, y:{y:0.2f}', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
+            objCenterX = (int)(x + w / 2) 
+            objCenterY = (int)(y + h / 2)
+            displacementX = objCenterX - centerX
+            displacementY = -(objCenterY - centerY)
+            # cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 0), 4)
+            cv2.circle(frame, (objCenterX, objCenterY), 5, (0, 255, 0), 5)
+            cv2.putText(frame, f'{displacementX:0.2f}, {displacementY:0.2f}', (objCenterX, objCenterY-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (36,255,12), 2)
 
+        cv2.circle(frame, (centerX, centerY), 5, (255, 0, 0), 5)
         # Display the captured frame
         cv2.imshow('Camera', frame)
 
