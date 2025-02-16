@@ -133,7 +133,12 @@ class StateHandler:
             # We have to invert the y axis because the coordinate system is from top to bottom rather than bottom to top
             yDisplacement = -yDisplacement
 
-            print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
+            # print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
+            
+            if xDisplacement > 10:
+                board.turnServoX(3)
+            elif xDisplacement < -10:
+                board.turnServoX(-3)
             
             # We're only turning one servo at a time
             # if abs(xDisplacement) > abs(yDisplacement):
