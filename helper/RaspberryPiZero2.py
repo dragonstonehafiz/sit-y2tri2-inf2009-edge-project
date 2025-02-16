@@ -1,34 +1,34 @@
-import RPi.GPIO as GPIO
+from gpiozero import Servo
+from gpiozero import LED
 import cv2
 from picamera2 import Picamera2
 import time
 
+def convert_angle_to_dutycycle(angle):
+    if angle > 180:
+        angle = 180
+    elif angle < 0:
+        angle = 0
+    output = (angle / 90) - 1
+    return output
+
 class RaspberryPiZero2:
-    _laser: int
+    _laser: LED
     _servoX: "_Servo"
     _servoY: "_Servo"
     _cameraSize = (640, 640)
     _cameraCenter: tuple[int, int]
     
     class _Servo:
+        _servo: Servo
         _currentAngle = 0
         _maxAngle = 180
         _minAngle = 0
         
         def __init__(self, pin, minAngle=0, maxAngle=180):
-            self._pin = pin
-            GPIO.setup(self._pin, GPIO.OUT)
-            self._servo = GPIO.PWM(self._pin, 50)
-            self._maxAngle = maxAngle
+            self._servo = Servo(pin, min_pulse_width=0.5/1000, max_pulse_width=2.5/1000)
             self._minAngle = minAngle
-            self._servo.start(0)
-        
-        def _convertAngleToDutyCycle(self, angle):
-            if angle < 0:
-                angle = 0
-            elif angle > 180:
-                angle = 180
-            return 2 + (angle / 18.0)
+            self._maxAngle = maxAngle
         
         def _boundAngle(self, angle):
             if angle < self._minAngle:
@@ -41,20 +41,12 @@ class RaspberryPiZero2:
             self.setAngle(self._currentAngle + angle, debug)
             
         def setAngle(self, angle, debug=False):
-            # Save previous angle to calculate how long the system should wait before stopping the servo
-            prevAngle = self._currentAngle
             # Calculate duty cycle to turn to the required angle
             self._currentAngle = self._boundAngle(angle)
-            dutyCycle = self._convertAngleToDutyCycle(angle)
-            self._servo.ChangeDutyCycle(dutyCycle)
+            dutyCycle = convert_angle_to_dutycycle(self._currentAngle)
             # Make the servo sleep for a period proportional to the angle it needs to turn
             # Use abs() so sleep time is always positive
-            # Turning from 0 to 180 degrees should take 0.25 seconds
-            # Turning from 0 to 45 degrees should take 0.05 seconds
-            sleepTime = abs(self._currentAngle - prevAngle) / 180.0 * 0.25
-            sleepTime = max(sleepTime, 0.05)
-            time.sleep(sleepTime)
-            self._servo.ChangeDutyCycle(0)
+            self._servo.value = dutyCycle
             if debug:
                 print(f"Angle: {angle}")
             
@@ -63,16 +55,13 @@ class RaspberryPiZero2:
             
         def cleanup(self):
             self.setAngle(0)
-            self._servo.stop()
     
     
     def __init__(self, debug=False):
         self._debug = debug
-        GPIO.setmode(GPIO.BCM)
 
         # Laser Set Up
-        self._laser = 17
-        GPIO.setup(self._laser, GPIO.OUT)
+        self._laser = LED(17)
         
         # Servo Set Up
         self._servoX = self._Servo(13)
@@ -127,9 +116,9 @@ class RaspberryPiZero2:
         True = ON, False = OFF
         """
         if val > 0:
-            GPIO.output(self._laser, GPIO.HIGH)
+            self._laser.on()
         else:
-            GPIO.output(self._laser, GPIO.LOW)
+            self._laser.off()
             
     def setDebug(self, debug):
         """
@@ -156,7 +145,6 @@ class RaspberryPiZero2:
         self._servoX.cleanup()
         self._servoY.cleanup()
         self.setLaser(0)
-        GPIO.cleanup()
         self._camera.close()
 
 

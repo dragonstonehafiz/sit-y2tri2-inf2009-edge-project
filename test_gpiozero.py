@@ -8,7 +8,6 @@ def convert_angle_to_dutycycle(angle):
     elif angle < 0:
         angle = 0
     output = (angle / 90) - 1
-    print(angle, output)
     return output
 
 if __name__ == "__main__":
