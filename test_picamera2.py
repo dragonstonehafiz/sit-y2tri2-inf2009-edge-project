@@ -22,6 +22,7 @@ def getObjectDisplacement(objectCenter, screenCenter, screenSize) -> tuple[int, 
 
 if __name__ == "__main__":
     picam = PiCameraInterface()
+    picam.start()
     faceDetector = FaceDetector()
 
     time.sleep(2)
@@ -31,7 +32,6 @@ if __name__ == "__main__":
     
     while True:
         frame = picam.capture()
-        frame = cv2.flip(frame, 0)
         objectCenter = faceDetector.detectClosestFace(frame, screenCenter)
 
         if objectCenter is not None:
