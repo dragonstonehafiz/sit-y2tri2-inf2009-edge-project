@@ -47,6 +47,7 @@ class RaspberryPiZero2:
             # Make the servo sleep for a period proportional to the angle it needs to turn
             # Use abs() so sleep time is always positive
             self._servo.value = dutyCycle
+            time.sleep(abs(dutyCycle - self._servo.value) * 0.1)
             if debug:
                 print(f"Angle: {angle}")
             
