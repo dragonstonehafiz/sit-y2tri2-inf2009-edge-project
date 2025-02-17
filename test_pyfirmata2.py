@@ -29,7 +29,7 @@ def main():
     rrl = RefreshRateLimiter(10)
     
     USE_WEBCAM = False
-    DRAW_PREVIEW = False 
+    DRAW_PREVIEW = True 
    
     start = time.time()
     
@@ -83,9 +83,9 @@ def main():
                 cv2.putText(frame, f'{displacementX:0.2f}, {displacementY:0.2f}', (objCenterX, objCenterY-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (36,255,12), 2)
             
             if displacementX >= 1 or displacementX <= -1:
-                arduino.turn_servoX(displacementX)
+                arduino.turn_servoX((int)(displacementX))
             elif displacementY >= 1 or displacementY <= -1:
-                arduino.turn_servoY(-displacementY)
+                arduino.turn_servoY((int)(-displacementY))
 
         if DRAW_PREVIEW:
            # Display a point to show the center of the screen
