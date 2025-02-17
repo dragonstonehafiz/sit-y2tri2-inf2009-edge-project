@@ -149,14 +149,14 @@ class StateHandler:
             yDisplacement = -yDisplacement
 
             # print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
-            if xDisplacement != 0:
-                board.turnServoX(xDisplacement)
+            # if xDisplacement != 0:
+            #     board.turnServoX(xDisplacement)
             
             # if yDisplacement != 0:
-            #     board.turnServoY(yDisplacement)
+                # board.turnServoY(yDisplacement)
             
-            print(f"{self._board.getServoXAngle()},{xDisplacement}")
-            # print(f"{self._board.getServoYAngle()},{yDisplacement}")
+            # print(f"{self._board.getServoXAngle()},{xDisplacement}")
+            print(f"{self._board.getServoYAngle()},{yDisplacement}")
             # Update last seen time  
             self._lastBirdSeenTime = now
         else:

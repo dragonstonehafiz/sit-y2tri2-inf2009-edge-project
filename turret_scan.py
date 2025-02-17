@@ -34,13 +34,14 @@ def turnX(board: RaspberryPiZero2, turnAmount=1, xTurningDir=True):
     return xTurningDir
 
 def turnY(board: RaspberryPiZero2, turnAmount=1, yTurningDir=True):
+    print(board.getServoYAngle())
     if yTurningDir == True:
         board.turnServoY(turnAmount)
-        if board.getServoYAngle() >= 180:
+        if board.getServoYAngle() >= 135:
             yTurningDir = False
     else:
         board.turnServoY(-turnAmount)
-        if board.getServoYAngle() <= 0:
+        if board.getServoYAngle() <= 45:
             yTurningDir = True
     return yTurningDir
 
@@ -81,6 +82,7 @@ if __name__ == "__main__":
                 if mode in [0, 1, 2, 3] and command == "mode":
                     print("Press CTRL+C to exit mode")
                     while True:
+                        time.sleep(0.25)
                         try:
                             if mode == 0:
                                 pass
