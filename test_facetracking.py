@@ -1,7 +1,6 @@
 import cv2
 from helper.FaceDetector import FaceDetector
 from helper.RefreshRateLimiter import RefreshRateLimiter
-import pyfirmata2
 
 if __name__ == '__main__':
     # Open the default camera

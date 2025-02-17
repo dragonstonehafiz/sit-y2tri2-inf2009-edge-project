@@ -35,14 +35,13 @@ if __name__ == "__main__":
     while True:
         frame = picam2.capture_array()
         frame = cv2.flip(frame, 0)
-        face = faceDetector.detect(frame)
+        objectCenter = faceDetector.detectClosestFace(frame, screenCenter)
 
-        # Draw rectangle around the faces
-        for (x, y, w, h) in face:
-            objectCenter = ((int) (x + w / 2), (int) (y + h / 2))
+        if objectCenter is not None:
             displacementX, displacementY = getObjectDisplacement(objectCenter, screenCenter, screenSize)
+            objectCenter = ((int)(objectCenter[0]), (int)(objectCenter[1]))
             cv2.circle(frame, (objectCenter[0], objectCenter[1]), 5, (0, 255, 0), 5)
-            cv2.putText(frame, f'{displacementX:0.2f},{displacementY:0.2f}', (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
+            cv2.putText(frame, f'{displacementX:0.2f},{displacementY:0.2f}', (objectCenter[0],objectCenter[1]-10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (36,255,12), 2)
         
         # Display the captured frame
         cv2.imshow("Raspberry Pi Camera", frame)

@@ -7,7 +7,7 @@ class RaspberryPiZero2:
     _laser: int
     _servoX: "_Servo"
     _servoY: "_Servo"
-    _cameraSize = (640, 640)
+    _cameraSize = (480, 480)
     _cameraCenter: tuple[int, int]
     
     class _Servo:
@@ -80,7 +80,7 @@ class RaspberryPiZero2:
         
         # Set up cam
         self._camera = Picamera2()
-        config = self._camera.create_preview_configuration(main={"size": (self._cameraSize[0], self._cameraSize[0] * 2)})
+        config = self._camera.create_preview_configuration(main={"size": (self._cameraSize[0], self._cameraSize[1])})
         self._cameraCenter = (self._cameraSize[0] / 2, self._cameraSize[1] / 2)
         self._camera.configure(config)
         self._camera.start()
