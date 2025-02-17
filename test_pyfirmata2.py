@@ -25,10 +25,11 @@ def main():
     serialPort = "/dev/ttyACM0"
     arduino = PyFirmataInterface(serialPort)
 
-    rrl = RefreshRateLimiter(24)
+    rrl = RefreshRateLimiter(10)
     
     USE_WEBCAM = False
-    
+    DRAW_PREVIEW = False 
+   
     start = time.time()
     
     # Open the default camera
@@ -75,18 +76,21 @@ def main():
             objCenterY = (int)(objCenter[1])
             displacementX = (int)(objCenterX - centerX) / frame_width_over_10
             displacementY = -((int)(objCenterY - centerY) / frame_height_over_10)
-            cv2.circle(frame, (objCenterX, objCenterY), 5, (255, 255, 255), 50)
-            cv2.putText(frame, f'{displacementX:0.2f}, {displacementY:0.2f}', (objCenterX, objCenterY-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (36,255,12), 2)
+            
+            if DRAW_PREVIEW:
+                cv2.circle(frame, (objCenterX, objCenterY), 5, (255, 255, 255), 50)
+                cv2.putText(frame, f'{displacementX:0.2f}, {displacementY:0.2f}', (objCenterX, objCenterY-10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (36,255,12), 2)
             
             if displacementX >= 1 or displacementX <= -1:
                 arduino.turn_servoX(displacementX)
             elif displacementY >= 1 or displacementY <= -1:
                 arduino.turn_servoY(-displacementY)
 
-        cv2.circle(frame, (centerX, centerY), 5, (255, 0, 0), 5)
-        
-        # Display the captured frame
-        cv2.imshow('Camera', frame)
+        if DRAW_PREVIEW:
+           # Display a point to show the center of the screen
+           cv2.circle(frame, (centerX, centerY), 5, (255, 0, 0), 5)
+           # Display the captured frame
+           cv2.imshow('Camera', frame)
 
         rrl.limit()
 
