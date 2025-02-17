@@ -65,13 +65,13 @@ class StateHandler:
         Main loop for the state machine
         """
         while True:
-            self._rrl.startFrame()
+            # self._rrl.startFrame()
             
             continueLoop = self._mainloop()
             if not continueLoop:
                 break
             
-            self._rrl.limit()
+            # self._rrl.limit()
         
     def _mainloop(self) -> bool:
         """
@@ -148,14 +148,15 @@ class StateHandler:
             # We have to invert the y axis because the coordinate system is from top to bottom rather than bottom to top
             yDisplacement = -yDisplacement
 
-            print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
+            # print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
             if xDisplacement != 0:
                 board.turnServoX(xDisplacement)
             
             # if yDisplacement != 0:
             #     board.turnServoY(yDisplacement)
             
-            print(f"{xDisplacement},{yDisplacement}")
+            print(f"{self._board.getServoXAngle()},{xDisplacement}")
+            # print(f"{self._board.getServoYAngle()},{yDisplacement}")
             # Update last seen time  
             self._lastBirdSeenTime = now
         else:
