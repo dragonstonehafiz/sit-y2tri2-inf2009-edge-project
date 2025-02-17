@@ -1,7 +1,7 @@
 import cv2
-from picamera2 import Picamera2
 import time
 from helper.FaceDetector import FaceDetector
+from helper.PiCameraInterface import PiCameraInterface
 
 def normalizeDisplacement(displacement: tuple[int, int], frameSize: tuple[int, int]) -> tuple[int, int]:
     """
@@ -21,10 +21,7 @@ def getObjectDisplacement(objectCenter, screenCenter, screenSize) -> tuple[int, 
     return normalizeDisplacement((xDisplacement, yDisplacement), screenSize)
 
 if __name__ == "__main__":
-    picam2 = Picamera2()
-    config = picam2.create_preview_configuration(main={"size": (480, 480)})
-    picam2. configure(config)
-    picam2.start()
+    picam = PiCameraInterface()
     faceDetector = FaceDetector()
 
     time.sleep(2)
@@ -33,7 +30,7 @@ if __name__ == "__main__":
     screenSize = (480,480)
     
     while True:
-        frame = picam2.capture_array()
+        frame = picam.capture()
         frame = cv2.flip(frame, 0)
         objectCenter = faceDetector.detectClosestFace(frame, screenCenter)
 
@@ -50,4 +47,4 @@ if __name__ == "__main__":
             break
     
     cv2.destroyAllWindows()
-    picam2.close()
+    picam.close()
