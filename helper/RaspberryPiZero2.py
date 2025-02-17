@@ -7,7 +7,7 @@ class RaspberryPiZero2:
     _laser: int
     _servoX: "_Servo"
     _servoY: "_Servo"
-    _cameraSize = (480, 480)
+    _cameraSize = (640, 640)
     _cameraCenter: tuple[int, int]
     
     class _Servo:

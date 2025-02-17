@@ -65,13 +65,13 @@ class StateHandler:
         Main loop for the state machine
         """
         while True:
-            # self._rrl.startFrame()
+            self._rrl.startFrame()
             
             continueLoop = self._mainloop()
             if not continueLoop:
                 break
             
-            # self._rrl.limit()
+            self._rrl.limit()
         
     def _mainloop(self) -> bool:
         """
@@ -149,11 +149,11 @@ class StateHandler:
             yDisplacement = -yDisplacement
 
             # print(f"xDisplacement:{xDisplacement}, yDisplacement:{yDisplacement}")
-            # if xDisplacement != 0:
-            #     board.turnServoX(xDisplacement)
+            if xDisplacement != 0:
+                board.turnServoX(xDisplacement)
             
-            # if yDisplacement != 0:
-                # board.turnServoY(yDisplacement)
+            if yDisplacement != 0:
+                board.turnServoY(yDisplacement)
             
             # print(f"{self._board.getServoXAngle()},{xDisplacement}")
             print(f"{self._board.getServoYAngle()},{yDisplacement}")
