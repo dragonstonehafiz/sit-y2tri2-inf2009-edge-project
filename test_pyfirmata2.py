@@ -24,6 +24,7 @@ def main():
     list_serial_ports()
     serialPort = "/dev/ttyACM0"
     arduino = PyFirmataInterface(serialPort)
+    arduino.write_LED(1)
 
     rrl = RefreshRateLimiter(10)
     
@@ -98,6 +99,7 @@ def main():
         if cv2.waitKey(1) == ord('q'):
             break
 
+    arduino.write_LED(0)
     arduino.close()
 
 if __name__ == "__main__":

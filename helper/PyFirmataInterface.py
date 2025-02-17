@@ -13,6 +13,7 @@ class PyFirmataInterface:
         self.board = pyfirmata2.Arduino(port)
         self.servoY = self.board.get_pin('d:6:s')
         self.servoX = self.board.get_pin('d:8:s')
+        self.led = self.board.get_pin('d:13:o')
         
         self.servoY.write(90)
         self.servoX.write(90)
@@ -33,6 +34,9 @@ class PyFirmataInterface:
     def turn_servoY(self, angle):
         angle = boundAngle(self.servoY.read() + angle)
         self.servoY.write(angle)
+        
+    def write_LED(self, value):
+        self.led.write(value)
         
     def close(self):
         self.board.exit()
