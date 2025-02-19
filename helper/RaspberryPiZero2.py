@@ -1,14 +1,13 @@
 import RPi.GPIO as GPIO
+from helper.PiCameraInterface import PiCameraInterface
 import cv2
-from picamera2 import Picamera2
 import time
 
 class RaspberryPiZero2:
     _laser: int
     _servoX: "_Servo"
     _servoY: "_Servo"
-    _cameraSize = (640, 640)
-    _cameraCenter: tuple[int, int]
+    _picam: PiCameraInterface
     
     class _Servo:
         _currentAngle = 0
@@ -79,11 +78,8 @@ class RaspberryPiZero2:
         self._servoY = self._Servo(12, minAngle=45, maxAngle=135)
         
         # Set up cam
-        self._camera = Picamera2()
-        config = self._camera.create_preview_configuration(main={"size": (self._cameraSize[0], self._cameraSize[1])})
-        self._cameraCenter = (self._cameraSize[0] / 2, self._cameraSize[1] / 2)
-        self._camera.configure(config)
-        self._camera.start()
+        self._picam = PiCameraInterface()
+        self._picam.start()
        
 
     def setServoX(self, angle):
@@ -137,16 +133,23 @@ class RaspberryPiZero2:
         """
         self._debug = debug
 
-    def getCamCenter(self):
-        return self._cameraCenter
+    def getCamCenter(self) -> tuple[int, int]:
+        """
+        get the coordinates of the center of the cam
+        """
+        return self._picam.getCenter()
 
-    def getCamSize(self):
-        return self._cameraSize
+    def getCamSize(self) -> tuple[int, int]:
+        """
+        get the width and hight of the camera
+        """
+        return self._picam.getSize()
 
     def getCamFrame(self):
-        frame = self._camera.capture_array()
-        # since the camera is actually upside down on the gimbal, we have to flip the frame on the y-axis
-        frame = cv2.flip(frame, 0)
+        """
+        get the current frame of the camera
+        """
+        frame = self._picam.capture()
         return frame
 
     def cleanup(self):
@@ -157,7 +160,7 @@ class RaspberryPiZero2:
         self._servoY.cleanup()
         self.setLaser(0)
         GPIO.cleanup()
-        self._camera.close()
+        self._picam.close()
 
 
 # Main program
