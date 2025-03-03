@@ -10,7 +10,6 @@ class MQTT_Publisher:
         self._client.connect(broker, 1883)
     
     def send(self, payload: any):
-        print("here")
         self._client.publish(self._topic, payload)
             
 class MQTT_Subscriber:
@@ -20,5 +19,13 @@ class MQTT_Subscriber:
         self._client.connect(broker, 1883)
         self._client.subscribe(topic)
         self._client.on_message = msg_callback
+
+    def loop_start(self):
+        """Call before main loop"""
+        self._client.loop_start()
+
+    def loop_stop(self):
+        """Call at end of program"""
+        self._client.loop_stop()
     
     
