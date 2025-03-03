@@ -1,4 +1,5 @@
 import paho.mqtt.client as mqtt
+from typing import Callable
 
 class MQTT_Publisher:
     _topic: str
@@ -13,7 +14,7 @@ class MQTT_Publisher:
             
 class MQTT_Subscriber:
     
-    def __init__(self, broker: str, topic: str, msg_callback: function):
+    def __init__(self, broker: str, topic: str, msg_callback: callable):
         self._client = mqtt.Client()
         self._client.connect(broker, 1883)
         self._client.subscribe(topic)
