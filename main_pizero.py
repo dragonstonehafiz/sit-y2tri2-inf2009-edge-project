@@ -29,5 +29,5 @@ if __name__ == "__main__":
             break
         
         rrl.limit()
-        
-        
+
+    mqtt_image_data.disconnect()
