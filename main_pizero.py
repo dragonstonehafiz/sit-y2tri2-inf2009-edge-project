@@ -6,10 +6,12 @@ from helper.utils import convert_frame_to_bytes
 if __name__ == "__main__":
     picam = PiCameraInterface()
     picam.start()
+
+    server_ipaddr = "192.168.1.20"
     
     # The server will be the desktop/rasberry pi
-    mqtt_turn_data = MQTT_Subscriber("localhost", "pizero/turn")
-    mqtt_image_data = MQTT_Publisher("localhost", "pizero/image")
+    mqtt_turn_data = MQTT_Subscriber(server_ipaddr, "pizero/turn")
+    mqtt_image_data = MQTT_Publisher(server_ipaddr, "pizero/image")
     
     rrl = RefreshRateLimiter(12)
     
