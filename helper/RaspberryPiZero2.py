@@ -1,5 +1,4 @@
 import RPi.GPIO as GPIO
-from helper.PiCameraInterface import PiCameraInterface
 import cv2
 import time
 
@@ -7,7 +6,6 @@ class RaspberryPiZero2:
     _laser: int
     _servoX: "_Servo"
     _servoY: "_Servo"
-    _picam: PiCameraInterface
     
     class _Servo:
         _currentAngle = 0
@@ -76,10 +74,6 @@ class RaspberryPiZero2:
         # Servo Set Up
         self._servoX = self._Servo(13)
         self._servoY = self._Servo(12, minAngle=45, maxAngle=135)
-        
-        # Set up cam
-        self._picam = PiCameraInterface()
-        self._picam.start()
        
 
     def setServoX(self, angle):
@@ -133,25 +127,6 @@ class RaspberryPiZero2:
         """
         self._debug = debug
 
-    def getCamCenter(self) -> tuple[int, int]:
-        """
-        get the coordinates of the center of the cam
-        """
-        return self._picam.getCenter()
-
-    def getCamSize(self) -> tuple[int, int]:
-        """
-        get the width and hight of the camera
-        """
-        return self._picam.getSize()
-
-    def getCamFrame(self):
-        """
-        get the current frame of the camera
-        """
-        frame = self._picam.capture()
-        return frame
-
     def cleanup(self):
         """
         Call this when the program is exiting to clean up the GPIO pins
@@ -160,7 +135,6 @@ class RaspberryPiZero2:
         self._servoY.cleanup()
         self.setLaser(0)
         GPIO.cleanup()
-        self._picam.close()
 
 
 # Main program
