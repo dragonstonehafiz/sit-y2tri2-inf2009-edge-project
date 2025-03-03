@@ -10,11 +10,12 @@ class MQTT_Publisher:
         self._client.connect(broker, 1883)
     
     def send(self, payload: any):
-            self._client.publish(self._topic, payload)
+        print("here")
+        self._client.publish(self._topic, payload)
             
 class MQTT_Subscriber:
     
-    def __init__(self, broker: str, topic: str, msg_callback: callable):
+    def __init__(self, broker: str, topic: str, msg_callback: Callable[[mqtt.Client, any, mqtt.MQTTMessage], None]):
         self._client = mqtt.Client()
         self._client.connect(broker, 1883)
         self._client.subscribe(topic)
