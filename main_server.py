@@ -12,6 +12,12 @@ if __name__ == "__main__":
     mqtt_turn_data = MQTT_Publisher("localhost", "pizero/turn")
     mqtt_image_data = MQTT_Subscriber("localhost", "pizero/image", camera_data_callback)
 
+    mqtt_image_data.loop_start()
     while True:
-        pass
+        try:
+            pass
+        except Exception as e:
+            break
+
+    mqtt_image_data.loop_stop()
      
