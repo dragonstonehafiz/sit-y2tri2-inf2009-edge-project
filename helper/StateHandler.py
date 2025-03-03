@@ -2,6 +2,7 @@ from enum import Enum
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.FaceDetector import FaceDetector
 from helper.RefreshRateLimiter import RefreshRateLimiter
+from helper.PiCameraInterface import PiCameraInterface
 import time
 
 def normalizeDisplacement(displacement: tuple[int, int], frameSize: tuple[int, int]) -> tuple[int, int]:
@@ -39,8 +40,10 @@ class StateHandler:
     # Board Specific Variables
     _scanDir: bool = True # True means turn right, False means turn left
     _board = RaspberryPiZero2(debug=False)
+    _cam = PiCameraInterface()
     
     def __init__(self):
+        self._cam.start()
         pass
     
     def setState(self, state: STATES):
@@ -112,6 +115,7 @@ class StateHandler:
         """
         board = self._board
         scanDir = self._scanDir
+        picam = self._cam
         
         # If the board reaches it's maximum/minimum angle, change direction
         if scanDir:
@@ -125,7 +129,7 @@ class StateHandler:
         
         self._scanDir = scanDir
         
-        frame = board.getCamFrame()
+        frame = picam.capture()
         faces = self._faceDetector.detect(frame)
         if len(faces) > 0:
             self.setState(STATES.TRACKING)
@@ -135,16 +139,18 @@ class StateHandler:
         Tracks the bird in the center of the screen.
         """
         board = self._board
-        frame = board.getCamFrame()
+        picam = self._cam
+        
+        frame = picam.capture()
         now = time.time()
-        face = self._faceDetector.detectClosestFace(frame, board.getCamCenter())
+        face = self._faceDetector.detectClosestFace(frame, picam.getCenter())
         birdSeen = face is not None
         if birdSeen:
             # To position the camera, we will be using the center of the image as the origin
             # We will then get the position of the detected bird relative to origin and turn the servos accordingly
             # Example, if the bird is at position (50, 0), we will turn the x-servo to the right (speed/turn rate is not important, we only care about direction). Conversely, if the bird is at position (-50, 0), we will turn x-servo to the left. 
             
-            xDisplacement, yDisplacement = getObjectDisplacement(face, board.getCamCenter(), board.getCamSize())
+            xDisplacement, yDisplacement = getObjectDisplacement(face, picam.getCenter(), picam.getSize())
             # We have to invert the y axis because the coordinate system is from top to bottom rather than bottom to top
             yDisplacement = -yDisplacement
 
