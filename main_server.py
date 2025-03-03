@@ -4,7 +4,6 @@ import cv2
 
 def camera_data_callback(client, userdata, msg):
     frame = convert_bytes_to_frame(msg.payload)
-    
     # Display image
     cv2.imshow("Received Image", frame)
 
