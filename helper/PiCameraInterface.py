@@ -6,10 +6,10 @@ class PiCameraInterface:
     _cameraSize: tuple[int, int]
     _cameraCenter: tuple[int, int]
     
-    def __init__(self):
+    def __init__(self, _cameraSize: tuple = (640, 640)):
         self._camera = Picamera2()
-        self._cameraSize = (640, 640)
-        self._cameraCenter = (320, 320)
+        self._cameraSize = _cameraSize
+        self._cameraCenter = ((int)(_cameraSize[0] / 2), (int)(_cameraSize[1] / 2))
     
     def start(self):
         config = self._camera.create_preview_configuration(main={"size": self._cameraSize})
