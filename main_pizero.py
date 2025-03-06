@@ -8,7 +8,7 @@ if __name__ == "__main__":
     picam = PiCameraInterface()
     picam.start()
 
-    server_ipaddr = "192.168.1.20"
+    server_ipaddr = "192.168.29.99"
     
     # The server will be the desktop/rasberry pi
     # mqtt_turn_data = MQTT_Subscriber(server_ipaddr, "pizero/turn")

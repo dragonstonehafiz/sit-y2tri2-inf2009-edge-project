@@ -3,24 +3,9 @@ from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.FaceDetector import FaceDetector
 from helper.RefreshRateLimiter import RefreshRateLimiter
 from helper.PiCameraInterface import PiCameraInterface
+from helper.utils import getObjectDisplacement, normalizeDisplacement
 import time
 
-def normalizeDisplacement(displacement: tuple[int, int], frameSize: tuple[int, int]) -> tuple[int, int]:
-    """
-    Normalizes the displacement of an object from the center of the screen.
-    """
-    xDisplacement, yDisplacement = displacement
-    xDisplacement = (int) (xDisplacement / (frameSize[0] / 10))
-    yDisplacement = (int) (yDisplacement / (frameSize[1] / 10))
-    return (xDisplacement, yDisplacement)
-
-def getObjectDisplacement(objectCenter, screenCenter, screenSize) -> tuple[int, int]:
-    """
-    Returns the displacement of an object from the center of the screen.
-    """
-    xDisplacement = objectCenter[0] - screenCenter[0]
-    yDisplacement = objectCenter[1] - screenCenter[1]
-    return normalizeDisplacement((xDisplacement, yDisplacement), screenSize)
 
 class STATES(Enum):
     IDLE = 0

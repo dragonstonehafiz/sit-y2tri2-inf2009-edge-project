@@ -26,7 +26,7 @@ sudo apt install -y python3-pip
 sudo apt install -y python3-venv
 sudo apt-get install -y python3-rpi.gpio
 sudo apt install -y python3-picamera2
-sudo apt install mosquitto
+sudo apt install -y mosquitto
 ```
 
 Then you can clone this repo with git. The second line renames the repo's directory to edge-project.
@@ -45,4 +45,3 @@ source venv/bin/activate
 pip install -r requirements.txt
 pip install "paho-mqtt<2.0"
 ```
-
