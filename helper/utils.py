@@ -1,5 +1,6 @@
 import numpy as np
 import cv2
+import serial.tools.list_ports
 
 def convert_frame_to_bytes(frame) -> bytes:
     """convert image data to bytes"""
@@ -27,3 +28,13 @@ def getObjectDisplacement(objectCenter, screenCenter, screenSize) -> tuple[int, 
     xDisplacement = objectCenter[0] - screenCenter[0]
     yDisplacement = objectCenter[1] - screenCenter[1]
     return normalizeDisplacement((xDisplacement, yDisplacement), screenSize)
+
+def list_serial_ports():
+    """Lists available serial ports."""
+    ports = serial.tools.list_ports.comports()
+    if not ports:
+        print("No serial ports found.")
+    else:
+        print("Available serial ports:")
+        for port in ports:
+            print(f"  {port.device} - {port.description}")
