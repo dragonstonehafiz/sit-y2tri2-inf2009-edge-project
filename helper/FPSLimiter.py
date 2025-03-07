@@ -15,7 +15,6 @@ class FPSLimiter:
     """
     
     def __init__(self, targetRefreshRate: int = 24):
-        print("Initializing RefreshRateLimiter")
         self._fps = targetRefreshRate
         self._framePeriod = 1.0 / targetRefreshRate
         

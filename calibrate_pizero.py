@@ -29,12 +29,15 @@ if __name__ == "__main__":
         print("Quitting")
         quit()
 
+    # Server
     mqtt_client_cam = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_CAM)
     mqtt_client_controls = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_CONTROLS, control_data_callback)
+    mqtt_client_controls.loop_start()
 
     # Send camera feed 12 times a second
     fps_controller = FPSLimiter()
     startTime = time.time()
+
     while True:
         fps_controller.startFrame()
 
