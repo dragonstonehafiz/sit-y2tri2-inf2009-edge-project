@@ -1,10 +1,12 @@
-# Bird Laser Targeter on the Edge
+# **Bird Laser Targeter on the Edge**
 
-## What is this project?
+## **Overview**
 
-This repository stores the code for a program that uses a laser pointer and a couple of servos to scare off birds that are being menaces and flying into our homes. Hopefully what's being done here doesn't break any laws.
+This repository contains the code for a bird deterrence system that utilizes a **laser pointer** and **servo motors** to **scare off birds** that may fly into homes and cause disturbances. The system runs on a **Raspberry Pi Zero 2W** and features **wake activation**, **camera-based bird detection**, and **laser targeting**.
 
-## Components
+## **Components**
+
+The following components are required to build this project:
 
 - [2 SG90 Servos and Pan Tilt Kit](https://sg.cytron.io/p-pan-tilt-servo-kit-for-camera-unassembled) x1
 - [Laser Diode Module](https://shopee.sg/kuriosity.sg/8657033875) x1
@@ -12,24 +14,34 @@ This repository stores the code for a program that uses a laser pointer and a co
 - [ReSpeaker 2-Microphone Raspberry Pi HAT](https://sg.cytron.io/p-respeaker-2-microphone-raspberry-pi-hat)
 - [CSI Camera](https://sg.cytron.io/p-5mp-camera-board-for-raspberry-pi)
 
-## Installation on Raspberry Pi Zero 2 W
+## **System Design**
 
-Before this project can work, you will need to install some packages used by this project.
+The software is designed to run on a **Raspberry Pi Zero 2W** with **Raspberry Pi Lite OS (32-bit)**. The Raspberry Pi Camera detects birds, while the **ReSpeaker HAT** enables wake activation. The camera is mounted on a **Pan Tilt Servo Kit**, which allows **180-degree rotation** on both axes for targeting. The **laser module** is attached to the servos for precise targeting.
+
+### **Block Diagram & Software Flow**
+
+Below is the **block diagram** of the system along with the **software workflow**:
+
+![Block Diagram](image/BlockDiagram.png)
+
+![Software Flow](image/SoftwareFlow.png)
+
+## **Installation Instructions**
+
+### **On Raspberry Pi Zero**
+
+#### **Step 1: Install Required Packages**
+
+Run the following commands to update your system and install the necessary dependencies:
 
 ```bash
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y git
-sudo apt install -y portaudio19-dev
-sudo apt install -y python3
-sudo apt install -y python3-pip
-sudo apt install -y python3-venv
-sudo apt-get install -y python3-rpi.gpio
-sudo apt install -y python3-picamera2
-sudo apt install -y mosquitto
+sudo apt install -y git portaudio19-dev python3 python3-pip python3-venv
+sudo apt install -y python3-rpi.gpio python3-picamera2 mosquitto
 ```
 
-Then you can clone this repo with git. The second line renames the repo's directory to edge-project.
+#### **Step 2: Clone the Repository**
 
 ```bash
 git clone https://github.com/dragonstonehafiz/sit-y2tri2-inf2009-edge-project.git
@@ -37,7 +49,7 @@ mv sit-y2tri2-inf2009-edge-project edge-project
 cd edge-project
 ```
 
-Now we will set up the virtual environment that will be used for this project.
+#### **Step 3: Set Up Virtual Environment**
 
 ```bash
 python3 -m venv --system-site-packages venv
@@ -45,3 +57,34 @@ source venv/bin/activate
 pip install -r requirements.txt
 pip install "paho-mqtt<2.0"
 ```
+
+### **(Optional) Running the Server on a Desktop**
+
+If you want to **view the camera feed remotely**, you can set up a server on a desktop.
+
+#### **Step 1: Install Required Packages**
+
+```bash
+sudo apt update
+sudo apt upgrade -y
+sudo apt install -y git python3 python3-pip mosquitto
+```
+
+#### **Step 2: Clone the Repository**
+
+```bash
+git clone https://github.com/dragonstonehafiz/sit-y2tri2-inf2009-edge-project.git
+mv sit-y2tri2-inf2009-edge-project edge-project
+cd edge-project
+```
+
+#### **Step 3: Set Up Virtual Environment**
+
+```bash
+python3 -m venv --system-site-packages venv
+source venv/bin/activate
+pip install -r requirements_server.txt
+pip install "paho-mqtt<2.0"
+```
+
+## Usage
