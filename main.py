@@ -1,6 +1,6 @@
 from helper.PiCameraInterface import PiCameraInterface
 from helper.RaspberryPiZero2 import RaspberryPiZero2
-from helper.RefreshRateLimiter import FPSLimiter
+from helper.FPSLimiter import FPSLimiter
 from helper.MQTT import MQTT_Publisher
 
 from enum import Enum
