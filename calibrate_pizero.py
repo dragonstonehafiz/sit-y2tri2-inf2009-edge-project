@@ -15,7 +15,6 @@ def control_data_callback(client, userdata, msg):
     # If ',' not in the message, then there is no valid command
     if ',' not in recieved:
         return
-    
     # action,value
     else:
          recieved = recieved.split(",")
@@ -52,5 +51,8 @@ if __name__ == "__main__":
 
         fps_controller.endFrame()
 
+    mqtt_client_cam.disconnect()
+    mqtt_client_controls.loop_stop()
+    mqtt_client_controls.disconnect()
     pizero.cleanup()
     picam.close()
