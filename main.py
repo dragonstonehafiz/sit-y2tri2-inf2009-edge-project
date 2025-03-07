@@ -1,6 +1,6 @@
 from helper.PiCameraInterface import PiCameraInterface
 from helper.RaspberryPiZero2 import RaspberryPiZero2
-from helper.RefreshRateLimiter import RefreshRateLimiter
+from helper.RefreshRateLimiter import FPSLimiter
 from helper.MQTT import MQTT_Publisher
 
 from enum import Enum
@@ -26,7 +26,7 @@ def tracking(picam: PiCameraInterface, pizero: RaspberryPiZero2, state: list):
 if __name__ == "__main__":
     picam = PiCameraInterface((256, 256))
     pizero = RaspberryPiZero2()
-    rrl = RefreshRateLimiter(12)
+    rrl = FPSLimiter(12)
 
     # Set up MQTT so image can be sent to desktop
     MQTT_BROKER = "192.168.29.99"
@@ -54,7 +54,7 @@ if __name__ == "__main__":
             running = False
             break
 
-        rrl.limit()
+        rrl.endFrame()()
 
     picam.close()
     pizero.cleanup()

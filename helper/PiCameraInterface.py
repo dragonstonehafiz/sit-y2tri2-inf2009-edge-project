@@ -16,7 +16,7 @@ class PiCameraInterface:
         self._camera.configure(config)
         self._camera.start()
     
-    def capture(self):
+    def getFrame(self):
         frame = self._camera.capture_array()
         # since the camera is actually upside down on the gimbal, we have to flip the frame on the y-axis
         frame = cv2.flip(frame, 0)

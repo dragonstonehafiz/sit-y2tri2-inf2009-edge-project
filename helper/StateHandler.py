@@ -1,7 +1,7 @@
 from enum import Enum
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.FaceDetector import FaceDetector
-from helper.RefreshRateLimiter import RefreshRateLimiter
+from helper.RefreshRateLimiter import FPSLimiter
 from helper.PiCameraInterface import PiCameraInterface
 from helper.utils import getObjectDisplacement, normalizeDisplacement
 import time
@@ -20,7 +20,7 @@ class StateHandler:
     _lastBirdSeenTime: float = time.time()
     
     # Variable to control frame rate of camera
-    _rrl: RefreshRateLimiter = RefreshRateLimiter(30)
+    _rrl: FPSLimiter = FPSLimiter(30)
     
     # Board Specific Variables
     _scanDir: bool = True # True means turn right, False means turn left
@@ -59,7 +59,7 @@ class StateHandler:
             if not continueLoop:
                 break
             
-            self._rrl.limit()
+            self._rrl.endFrame()()
         
     def _mainloop(self) -> bool:
         """
@@ -114,7 +114,7 @@ class StateHandler:
         
         self._scanDir = scanDir
         
-        frame = picam.capture()
+        frame = picam.getFrame()
         faces = self._faceDetector.detect(frame)
         if len(faces) > 0:
             self.setState(STATES.TRACKING)
@@ -126,7 +126,7 @@ class StateHandler:
         board = self._board
         picam = self._cam
         
-        frame = picam.capture()
+        frame = picam.getFrame()
         now = time.time()
         face = self._faceDetector.detectClosestFace(frame, picam.getCenter())
         birdSeen = face is not None

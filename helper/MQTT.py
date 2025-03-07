@@ -1,6 +1,10 @@
 import paho.mqtt.client as mqtt
 from typing import Callable
 
+MQTT_IPADDR = ""
+MQTT_TOPIC_CAM = ""
+MQTT_TOPIC_CONTROLS = ""
+
 def on_connect(client, userdata, flags, rc):
     print("Connected to MQTT broker.")
 
