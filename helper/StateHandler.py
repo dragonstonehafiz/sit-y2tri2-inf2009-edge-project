@@ -1,7 +1,7 @@
 from enum import Enum
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.FaceDetector import FaceDetector
-from helper.RefreshRateLimiter import FPSLimiter
+from helper.FPSLimiter import FPSLimiter
 from helper.PiCameraInterface import PiCameraInterface
 from helper.utils import getObjectDisplacement, normalizeDisplacement
 import time

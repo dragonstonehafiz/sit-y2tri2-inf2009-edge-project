@@ -1,6 +1,6 @@
 from helper.PiCameraInterface import PiCameraInterface
 from helper.MQTT import MQTT_Publisher, MQTT_Subscriber
-from helper.RefreshRateLimiter import FPSLimiter
+from helper.FPSLimiter import FPSLimiter
 from helper.utils import convert_frame_to_bytes
 import time
 
