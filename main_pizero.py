@@ -1,6 +1,6 @@
 from helper.PiCameraInterface import PiCameraInterface
 from helper.MQTT import MQTT_Publisher, MQTT_Subscriber
-from helper.RefreshRateLimiter import RefreshRateLimiter
+from helper.RefreshRateLimiter import FPSLimiter
 from helper.utils import convert_frame_to_bytes
 import time
 
@@ -14,13 +14,13 @@ if __name__ == "__main__":
     # mqtt_turn_data = MQTT_Subscriber(server_ipaddr, "pizero/turn")
     mqtt_image_data = MQTT_Publisher(server_ipaddr, "pizero/image")
     
-    rrl = RefreshRateLimiter(12)
+    rrl = FPSLimiter(12)
     start = time.time()
     
     while True:
         rrl.startFrame()
         
-        frame = picam.capture()
+        frame = picam.getFrame()
         image_data = convert_frame_to_bytes(frame)
         mqtt_image_data.send(image_data)
 
@@ -28,6 +28,6 @@ if __name__ == "__main__":
         if (now - start > 10):
             break
         
-        rrl.limit()
+        rrl.endFrame()()
 
     mqtt_image_data.disconnect()

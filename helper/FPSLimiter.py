@@ -1,6 +1,6 @@
 import time
 
-class RefreshRateLimiter:
+class FPSLimiter:
     _fps: int
     """The target refresh rate for the system (in Hz).
     """
@@ -24,7 +24,7 @@ class RefreshRateLimiter:
         """
         self._frameStartTime = time.time()
         
-    def limit(self):
+    def endFrame(self):
         """Limits the refresh rate of the system to the target refresh rate.
         """
         # Find the time taken to render the frame
@@ -42,14 +42,14 @@ class RefreshRateLimiter:
         return self._deltaTime
         
 if __name__ == "__main__":
-    rrl = RefreshRateLimiter(24)
+    rrl = FPSLimiter(24)
     frameCount = 0
     startTime = time.time()
     elapsedTime = 0
     while True:
         now = time.time()
         rrl.startFrame()
-        rrl.limit()
+        rrl.endFrame()()
         elapsedTime += rrl.getDeltaTime()
         print(f"{elapsedTime:.2f}")
         if (now - startTime) > 3:
