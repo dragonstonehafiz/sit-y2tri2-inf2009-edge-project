@@ -88,3 +88,18 @@ pip install "paho-mqtt<2.0"
 ```
 
 ## Usage
+
+### Raspberry Pi Zero 2W 
+
+*TODO*
+
+### Server
+
+Activate mosquitto server.
+
+```bash
+sudo mosquitto -c /etc/mosquitto/mosquitto.conf
+sudo systemctl start mosquitto
+sudo systemctl enable mosquitto
+sudo systemctl restart mosquitto
+```
