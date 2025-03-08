@@ -15,7 +15,6 @@ is_running = [True]
 def camera_data_callback(client, userdata, msg):
     frame = convert_bytes_to_frame(msg.payload)
     frame_queue.put(frame)
-    cv2.imshow("Received Image", frame)
     last_frame_time[0] = time.time()
 
 
@@ -68,15 +67,17 @@ if __name__ == "__main__":
     mqtt_controls.loop_start()
 
     # Start controls thread
-    thread = threading.Thread(target=lambda: {get_user_input(mqtt_controls)}, daemon=True)
+    thread = threading.Thread(target=lambda: {get_user_input(mqtt_controls)}, daemon=False)
     thread.start()
 
     while True:
         current_time = time.time()
-        if current_time - last_frame_time[0] > 0.5:
-            # Create a black image (all zeros = black)
-            black_screen = np.zeros((640, 640, 3), dtype=np.uint8)
-            cv2.imshow('Received Image', black_screen)
+        if not frame_queue.empty():
+            lastimage = frame_queue.get()
+        elif current_time - last_frame_time[0] > 1:
+            lastimage = np.zeros((640, 640, 3), dtype=np.uint8)
+
+        cv2.imshow("Received Image", lastimage)
 
         if (cv2.waitKey(1) & 0xFF == ord('q')) or is_running[0] == False:
             break
