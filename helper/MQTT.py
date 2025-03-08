@@ -20,6 +20,14 @@ class MQTT_Publisher:
         self._client.on_connect = on_connect
         self._client.on_connect_fail = on_connect_fail
         self._client.connect(broker, 1883)
+
+    def loop_start(self):
+        """Call before main loop"""
+        self._client.loop_start()
+
+    def loop_stop(self):
+        """Call at end of program"""
+        self._client.loop_stop()
     
     def send(self, payload: any):
         self._client.publish(self._topic, payload)

@@ -8,17 +8,32 @@ from helper.PiCameraInterface import PiCameraInterface
 import time
 
 pizero = RaspberryPiZero2()
+isRunning = [True]
 
 def control_data_callback(client, userdata, msg):
     recieved: str = msg.payload.decode()
     print(recieved)
-    # If ',' not in the message, then there is no valid command
-    if ',' not in recieved:
-        return
-    # action,value
+    # Only valid messages should be recieved, so no need to make checks
+    recieved = recieved.split(":")
+    if recieved[0] == "quit":
+        isRunning[0] = False
+    elif recieved[0] == "turnx":
+        pizero.turnServoX(int(recieved[1]))
+    elif recieved[0] == "turny":
+        pizero.turnServoY(int(recieved[1]))
+    elif recieved[0] == "setx":
+        pizero.setServoX(int(recieved[1]))
+    elif recieved[0] == "sety":
+        pizero.setServoY(int(recieved[1]))
+    elif recieved[0] == "laser":
+        if pizero[1] == "1":
+            pizero.setLaser(1)
+        else:
+            pizero.setLaser(0)
     else:
-         recieved = recieved.split(",")
+        print("Invalid Message")
 
+            
 if __name__ == "__main__":
     picam = PiCameraInterface()
     try:
@@ -40,17 +55,22 @@ if __name__ == "__main__":
     while True:
         fps_controller.startFrame()
 
+        # Send camera feed to server
         frame = picam.getFrame()
         frame_bytes = convert_frame_to_bytes(frame)
         mqtt_client_cam.send(frame_bytes)
 
         # Force quit after 15 seconds
         currentTime = time.time()
-        if currentTime - startTime > 15:
+        if currentTime - startTime > 60:
+            break
+
+        if not isRunning[0]:
             break
 
         fps_controller.endFrame()
 
+    mqtt_client_cam.loop_stop()
     mqtt_client_cam.disconnect()
     mqtt_client_controls.loop_stop()
     mqtt_client_controls.disconnect()
