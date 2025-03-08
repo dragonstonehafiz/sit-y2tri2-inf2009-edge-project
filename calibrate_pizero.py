@@ -26,7 +26,7 @@ def control_data_callback(client, userdata, msg):
     elif recieved[0] == "sety":
         pizero.setServoY(int(recieved[1]))
     elif recieved[0] == "laser":
-        if pizero[1] == "1":
+        if recieved[1] == "1":
             pizero.setLaser(1)
         else:
             pizero.setLaser(0)
@@ -46,6 +46,7 @@ if __name__ == "__main__":
     # Server
     mqtt_client_cam = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_CAM)
     mqtt_client_controls = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_CONTROLS, control_data_callback)
+    mqtt_client_cam.loop_start()
     mqtt_client_controls.loop_start()
 
     # Send camera feed 12 times a second
@@ -62,10 +63,7 @@ if __name__ == "__main__":
 
         # Force quit after 15 seconds
         currentTime = time.time()
-        if currentTime - startTime > 60:
-            break
-
-        if not isRunning[0]:
+        if currentTime - startTime > 60 or not isRunning[0]:
             break
 
         fps_controller.endFrame()
