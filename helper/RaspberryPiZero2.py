@@ -74,7 +74,7 @@ class RaspberryPiZero2:
         
         # Servo Set Up
         self._servoX = self._Servo(13)
-        self._servoY = self._Servo(12, maxAngle=135)
+        self._servoY = self._Servo(12, minAngle=45, maxAngle=135)
        
 
     def setServoX(self, angle):
