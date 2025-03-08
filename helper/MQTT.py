@@ -6,7 +6,7 @@ MQTT_TOPIC_CAM = "pizero/cam"
 MQTT_TOPIC_CONTROLS = "pizero/controls"
 
 def on_connect(client, userdata, flags, rc):
-    print("Connected to MQTT broker.")
+    print(f"{client._client_id.decode() if client._client_id else 'Unknown'} successfully connected to Broker.")
 
 def on_connect_fail(client, userdata, flags, rc):
     print("Could not connect to broker.")
@@ -16,7 +16,7 @@ class MQTT_Publisher:
     
     def __init__(self, broker: str, topic: str):
         self._topic = topic
-        self._client = mqtt.Client(client_id="Publisher")
+        self._client = mqtt.Client(client_id=f"{topic} sublisher")
         self._client.on_connect = on_connect
         self._client.on_connect_fail = on_connect_fail
         self._client.connect(broker, 1883)
@@ -38,7 +38,7 @@ class MQTT_Publisher:
 class MQTT_Subscriber:
     
     def __init__(self, broker: str, topic: str, msg_callback: Callable[[mqtt.Client, any, mqtt.MQTTMessage], None]):
-        self._client = mqtt.Client()
+        self._client = mqtt.Client(client_id=f"{topic} subscriber")
         self._client.connect(broker, 1883)
         self._client.on_connect = on_connect
         self._client.on_connect_fail = on_connect_fail

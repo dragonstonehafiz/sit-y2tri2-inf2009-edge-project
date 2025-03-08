@@ -34,9 +34,12 @@ def get_user_input(mqtt_controls: MQTT_Publisher):
             else:
                 # If action is turning/setting angle and second part is not number
                 # then it is an invalid command
-                if parts[0] in ["turnx", "turny", "setx", "sety"] and not parts[1].isnumeric():
-                    print("These commands should be accompanied by numbers")
-                    continue
+                if parts[0] in ["turnx", "turny", "setx", "sety"]:
+                    try:
+                        value = float(parts[1])
+                    except ValueError:
+                        print("These commands should be accompanied by numbers")
+                        continue
                 # If action is laser, and it is not '1' or '0'
                 # then it is an invalid command
                 elif parts[0] == "laser" and parts[1] not in ['1', '0']:
@@ -62,13 +65,13 @@ if __name__ == "__main__":
     mqtt_cam = MQTT_Subscriber('localhost', MQTT_TOPIC_CAM, camera_data_callback)
     time.sleep(1)
 
-    # Start network loops
-    mqtt_cam.loop_start()
-    mqtt_controls.loop_start()
-
     # Start controls thread
     thread = threading.Thread(target=lambda: {get_user_input(mqtt_controls)}, daemon=False)
     thread.start()
+
+    # Start network loops
+    mqtt_cam.loop_start()
+    mqtt_controls.loop_start()
 
     while True:
         current_time = time.time()
@@ -84,6 +87,6 @@ if __name__ == "__main__":
     
     cv2.destroyAllWindows()
     mqtt_cam.loop_stop()
-    mqtt_cam.disconnect()
     mqtt_controls.loop_stop()
+    mqtt_cam.disconnect()
     mqtt_controls.disconnect()
