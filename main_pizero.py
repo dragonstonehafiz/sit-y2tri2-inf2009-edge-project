@@ -30,7 +30,7 @@ def change_state(currState: list[int], nextState: int, pizero: RaspberryPiZero2)
 def idle(picam: PiCameraInterface, pizero: RaspberryPiZero2, currState: list[int]):
     """Listens for birds. If bird detected, switch to scan state"""
     time.sleep(5)
-    change_state(currState, STATES.SCAN)
+    change_state(currState, STATES.SCAN, pizero)
 
 def scan(picam: PiCameraInterface, pizero: RaspberryPiZero2, 
          state: list[int], scanDir: list[bool, bool], 
@@ -43,7 +43,12 @@ def scan(picam: PiCameraInterface, pizero: RaspberryPiZero2,
         mqtt_client_cam.send(frame_bytes)
 
     # Turn x servo
-    scan_handle_x()
+    scan_handle_x(pizero, scanDir)
+
+    # detect object
+    # object_detected = obj_det_func
+    # if object_detected:
+    #     change_state(currState, STATES.TRACKING, pizero)
 
 
 def tracking(picam: PiCameraInterface, pizero: RaspberryPiZero2, state: list[int]):
@@ -79,14 +84,14 @@ if __name__ == "__main__":
 
         if currState[0] == STATES.IDLE:
             idle(picam, pizero, currState)
-        
         elif currState[0] == STATES.SCAN:
-            scan(picam, pizero, currState)
-
+            scan(picam, pizero, currState, scanDir, mqtt_cam)
         elif currState[0] == STATES.TRACKING:
             tracking(picam, pizero, currState)
+        elif currState[0] == STATES.QUIT:
+            break
 
-        elif currState[0] == STATES.QUIT or currentTime - startTime >= 30:
+        if currentTime - startTime >= 30:
             break
 
         rrl.endFrame()

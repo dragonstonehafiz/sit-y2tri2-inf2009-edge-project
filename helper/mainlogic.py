@@ -1,18 +1,18 @@
-from RaspberryPiZero2 import RaspberryPiZero2
+from helper.RaspberryPiZero2 import RaspberryPiZero2
 
 def scan_handle_x(pizero: RaspberryPiZero2, scanDir: list[bool, bool]):
     # Turn servo x in either left or right
     # then check if the servo is at max/min
     # if it is, turn the y servo
     if scanDir[0] == True:
-        pizero.turnServoX(5)
+        pizero.turnServoX(3)
 
         if is_servo_out_of_bounds(pizero.getServoXAngle(), x=True):
             scanDir[0] = not scanDir[0]
             scan_handle_y(pizero, scanDir)
             
     elif scanDir[0] == False:
-        pizero.turnServoX(-5)
+        pizero.turnServoX(-3)
 
         if is_servo_out_of_bounds(pizero.getServoXAngle(), x=True):
             scanDir[0] = not scanDir[0]
@@ -20,11 +20,11 @@ def scan_handle_x(pizero: RaspberryPiZero2, scanDir: list[bool, bool]):
 
 def scan_handle_y(pizero: RaspberryPiZero2, scanDir: list[bool, bool]):
     if scanDir[1] == True:
-        pizero.turnServoY(5)
+        pizero.turnServoY(15)
         if is_servo_out_of_bounds(pizero.getServoYAngle(), x=False):
             scanDir[1] = not scanDir[1]
     elif scanDir[1] == False:
-        pizero.turnServoY(-1)
+        pizero.turnServoY(-15)
         if is_servo_out_of_bounds(pizero.getServoYAngle(), x=False):
             scanDir[1] = not scanDir[1]
 
