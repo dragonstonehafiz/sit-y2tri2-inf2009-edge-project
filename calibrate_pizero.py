@@ -2,34 +2,68 @@ from helper.MQTT import MQTT_Publisher, MQTT_Subscriber
 from helper.MQTT import MQTT_TOPIC_CAM, MQTT_TOPIC_CONTROLS, MQTT_IPADDR
 from helper.utils import convert_frame_to_bytes
 from helper.RaspberryPiZero2 import RaspberryPiZero2
+from helper.PyFirmataInterface import PyFirmataInterface
 from helper.FPSLimiter import FPSLimiter
 from helper.PiCameraInterface import PiCameraInterface
 
 import time
 
-pizero = RaspberryPiZero2()
-isRunning = [True]
+
+
+global_data = {
+    "is_running": True,
+    "is_arduino": True
+}
+
+if global_data["is_arduino"]:
+    arduino = PyFirmataInterface("")
+else:   
+    pizero = RaspberryPiZero2()
 
 def control_data_callback(client, userdata, msg):
     recieved: str = msg.payload.decode()
-    print(recieved)
     # Only valid messages should be recieved, so no need to make checks
     recieved = recieved.split(":")
     if recieved[0] == "quit":
-        isRunning[0] = False
+        global_data["global_data"] = False
+
     elif recieved[0] == "turnx":
-        pizero.turnServoX(int(recieved[1]))
-    elif recieved[0] == "turny":
-        pizero.turnServoY(int(recieved[1]))
-    elif recieved[0] == "setx":
-        pizero.setServoX(int(recieved[1]))
-    elif recieved[0] == "sety":
-        pizero.setServoY(int(recieved[1]))
-    elif recieved[0] == "laser":
-        if recieved[1] == "1":
-            pizero.setLaser(1)
+        angle = int(recieved[1])
+        if global_data["is_arduino"]:
+            arduino.turn_servo_x(angle)
         else:
-            pizero.setLaser(0)
+            pizero.turn_servo_x(angle)
+
+    elif recieved[0] == "turny":
+        angle = int(recieved[1])
+        if global_data["is_arduino"]:
+            arduino.turn_servo_y(angle)
+        else:
+            pizero.turn_servo_y(angle)
+
+    elif recieved[0] == "setx":
+        angle = int(recieved[1])
+        if global_data["is_arduino"]:
+            arduino.set_servo_x(angle)
+        else:
+            pizero.set_servo_x(angle)
+
+    elif recieved[0] == "sety":
+        angle = int(recieved[1])
+        if global_data["is_arduino"]:
+            arduino.set_servo_y(angle)
+        else:
+            pizero.set_servo_y(angle)
+
+    elif recieved[0] == "laser":
+        value = int(recieved[1])
+        if global_data["is_arduino"]:
+            arduino.set_laser(value)
+        else:
+            pizero.set_laser(value)
+
+    elif recieved[0] == "message":
+        print(recieved)
     else:
         print("Invalid Message")
 
@@ -63,7 +97,7 @@ if __name__ == "__main__":
 
         # Force quit after 15 seconds
         currentTime = time.time()
-        if currentTime - startTime > 60 or not isRunning[0]:
+        if currentTime - startTime > 60 or not global_data["global_data"]:
             break
 
         fps_controller.endFrame()
@@ -72,5 +106,9 @@ if __name__ == "__main__":
     mqtt_client_cam.disconnect()
     mqtt_client_controls.loop_stop()
     mqtt_client_controls.disconnect()
-    pizero.cleanup()
+
+    if global_data["is_arduino"]:
+        arduino.close()
+    else:
+        pizero.cleanup()
     picam.close()

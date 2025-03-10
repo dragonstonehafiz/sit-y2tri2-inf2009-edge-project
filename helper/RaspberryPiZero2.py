@@ -56,7 +56,7 @@ class RaspberryPiZero2:
             if debug:
                 print(f"Angle: {angle}")
             
-        def getAngle(self):
+        def get_angle(self):
             return self._currentAngle
             
         def cleanup(self):
@@ -77,43 +77,43 @@ class RaspberryPiZero2:
         self._servoY = self._Servo(12, minAngle=45, maxAngle=135)
        
 
-    def setServoX(self, angle):
+    def set_servo_x(self, angle):
         """
         Set the X servo's current turning angle (only +)
         """
         self._servoX.setAngle(angle, debug=self._debug)
         
-    def turnServoX(self, angle):
+    def turn_servo_x(self, angle):
         """
         Turns the X servo by a specified angle (+ or -)
         """
         self._servoX.turn(angle, debug=self._debug)
         
-    def setServoY(self, angle):
+    def set_servo_y(self, angle):
         """
         Set the Y servo's current turning angle (only +)
         """
         self._servoY.setAngle(angle, debug=self._debug)
         
-    def turnServoY(self, angle):
+    def turn_servo_y(self, angle):
         """
         Turns the Y servo by a specified angle (+ or -)
         """
         self._servoY.turn(angle, debug=self._debug)
 
-    def getServoXAngle(self):
+    def get_servo_x_angle(self):
         """
         Get the current angle of the X servo
         """
-        return self._servoX.getAngle()
+        return self._servoX.get_angle()
     
-    def getServoYAngle(self):
+    def get_servo_y_angle(self):
         """
         Get the current angle of the Y servo
         """
-        return self._servoY.getAngle()
+        return self._servoY.get_angle()
         
-    def setLaser(self, val: bool):
+    def set_laser(self, val: bool):
         """
         True = ON, False = OFF
         """
@@ -122,7 +122,7 @@ class RaspberryPiZero2:
         else:
             GPIO.output(self._laser, GPIO.LOW)
             
-    def setDebug(self, debug):
+    def set_debug(self, debug):
         """
         Sets if debug messages are printed.
         """
@@ -134,7 +134,7 @@ class RaspberryPiZero2:
         """
         self._servoX.cleanup()
         self._servoY.cleanup()
-        self.setLaser(0)
+        self.set_laser(0)
         GPIO.cleanup()
 
 
@@ -143,16 +143,16 @@ if __name__ == "__main__":
     try:
         piZero = RaspberryPiZero2()
         while True:
-            piZero.setServoX(0)
+            piZero.set_servo_x(0)
             time.sleep(1)
 
-            piZero.setServoX(180)
+            piZero.set_servo_x(180)
             time.sleep(1)
 
-            piZero.setServoY(180)
+            piZero.set_servo_y(180)
             time.sleep(1)
 
-            piZero.setServoY(0)
+            piZero.set_servo_y(0)
             time.sleep(1)
 
     except KeyboardInterrupt:

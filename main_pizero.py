@@ -19,8 +19,8 @@ def change_state(currState: list[int], nextState: int, pizero: RaspberryPiZero2)
     if nextState == STATES.IDLE:
         pass
     elif nextState == STATES.SCAN:
-        pizero.setServoX(90)
-        pizero.setServoY(90)
+        pizero.set_servo_x(90)
+        pizero.set_servo_y(90)
         pass
     elif nextState == STATES.TRACKING:
         pass

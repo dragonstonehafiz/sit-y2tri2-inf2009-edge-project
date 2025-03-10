@@ -19,23 +19,23 @@ class PyFirmataInterface:
         self.servoX.write(90)
         time.sleep(2)
         
-    def write_servoX(self, angle):
+    def set_servo_x(self, angle):
         angle = boundAngle(angle)
         self.servoX.write(angle)
         
-    def turn_servoX(self, angle):
+    def turn_servo_x(self, angle):
         angle = boundAngle(self.servoX.read() + angle)
         self.servoX.write(angle)
         
-    def write_servoY(self, angle):
+    def set_servo_y(self, angle):
         angle = boundAngle(angle)
         self.servoY.write(angle)
         
-    def turn_servoY(self, angle):
+    def turn_servo_y(self, angle):
         angle = boundAngle(self.servoY.read() + angle)
         self.servoY.write(angle)
         
-    def write_LED(self, value):
+    def set_laser(self, value):
         self.led.write(value)
         
     def close(self):
