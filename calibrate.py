@@ -1,5 +1,5 @@
 from helper.MQTT import MQTT_Publisher, MQTT_Subscriber
-from helper.MQTT import MQTT_TOPIC_CAM, MQTT_TOPIC_CONTROLS, MQTT_IPADDR
+from helper.MQTT import MQTT_TOPIC_CAM, MQTT_TOPIC_PI_ZERO_CONTROLS, MQTT_IPADDR
 from helper.utils import convert_frame_to_bytes
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.Arduino import Arduino
@@ -60,7 +60,7 @@ if __name__ == "__main__":
 
     # Server
     mqtt_client_cam = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_CAM)
-    mqtt_client_controls = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_CONTROLS, control_data_callback)
+    mqtt_client_controls = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, control_data_callback)
     mqtt_client_cam.loop_start()
     mqtt_client_controls.loop_start()
 
