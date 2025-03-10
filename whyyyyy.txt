@@ -3,7 +3,7 @@ ReSpeaker 2-Mic Hat
 
 used guide here "https://wiki.seeedstudio.com/ReSpeaker_2_Mics_Pi_HAT_Raspberry/"
 
-tried pyaudio but got error:
+tried soundevice but got error:
 Recording Audio
 Expression 'r' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 2097
 Expression 'PaAlsaStreamComponent_FinishConfigure( &self->capture, hwParamsCapture, inParams, self->primeBuffers, realSr, inputLatency )' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 2730
@@ -11,3 +11,105 @@ Expression 'PaAlsaStream_Configure( stream, inputParameters, outputParameters, s
 Error recording audio: Error opening InputStream: Unanticipated host error [PaErrorCode -9999]: 'Invalid argument' [ALSA error -22]
 
 
+tried piaudio got this error
+
+ALSA lib pcm_asym.c:105:(_snd_pcm_asym_open) capture slave is not defined
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.front
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.rear
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.center_lfe
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.side
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.surround21
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.surround21
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.surround40
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.surround41
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.surround50
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.surround51
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.surround71
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.iec958
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.iec958
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.iec958
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.modem
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.modem
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.phoneline
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.phoneline
+Cannot connect to server socket err = No such file or directory
+Cannot connect to server request channel
+jack server is not running or cannot be started
+JackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock
+JackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock
+Cannot connect to server socket err = No such file or directory
+Cannot connect to server request channel
+jack server is not running or cannot be started
+JackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock
+JackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock
+ALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp
+ALSA lib pcm_oss.c:397:(_snd_pcm_oss_open) Cannot open device /dev/dsp
+ALSA lib pulse.c:242:(pulse_connect) PulseAudio: Unable to connect: Connection refused
+
+ALSA lib pulse.c:242:(pulse_connect) PulseAudio: Unable to connect: Connection refused
+
+ALSA lib pcm_a52.c:1001:(_snd_pcm_a52_open) a52 is only for playback
+ALSA lib conf.c:5670:(snd_config_expand) Unknown parameters {AES0 0x6 AES1 0x82 AES2 0x0 AES3 0x2 CARD 0}
+ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM iec958:{AES0 0x6 AES1 0x82 AES2 0x0 AES3 0x2 CARD 0}
+ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+ALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'
+ALSA lib confmisc.c:160:(snd_config_get_card) Invalid field card
+ALSA lib pcm_usb_stream.c:482:(_snd_pcm_usb_stream_open) Invalid card 'card'
+ALSA lib pcm_dmix.c:972:(snd_pcm_dmix_open) The dmix plugin supports only playback stream
+ALSA lib pcm_direct.c:1336:(snd1_pcm_direct_initialize_slave) unable to install hw params
+ALSA lib pcm_dmix.c:1011:(snd_pcm_dmix_open) unable to initialize slave
+ALSA lib pcm_direct.c:1336:(snd1_pcm_direct_initialize_slave) unable to install hw params
+ALSA lib pcm_dsnoop.c:577:(snd_pcm_dsnoop_open) unable to initialize slave
+ALSA lib pcm_dsnoop.c:540:(snd_pcm_dsnoop_open) The dsnoop plugin supports only capture stream
+ALSA lib pcm_dmix.c:972:(snd_pcm_dmix_open) The dmix plugin supports only playback stream
+ALSA lib pcm_direct.c:1336:(snd1_pcm_direct_initialize_slave) unable to install hw params
+ALSA lib pcm_dmix.c:1011:(snd_pcm_dmix_open) unable to initialize slave
+ALSA lib pcm_direct.c:1336:(snd1_pcm_direct_initialize_slave) unable to install hw params
+ALSA lib pcm_dsnoop.c:577:(snd_pcm_dsnoop_open) unable to initialize slave
+ALSA lib pcm_dsnoop.c:540:(snd_pcm_dsnoop_open) The dsnoop plugin supports only capture stream
+ALSA lib pcm_dmix.c:999:(snd_pcm_dmix_open) unable to open slave
+ALSA lib pcm_direct.c:1336:(snd1_pcm_direct_initialize_slave) unable to install hw params
+ALSA lib pcm_dsnoop.c:577:(snd_pcm_dsnoop_open) unable to initialize slave
+ALSA lib pcm_direct.c:1336:(snd1_pcm_direct_initialize_slave) unable to install hw params
+ALSA lib pcm_dmix.c:1011:(snd_pcm_dmix_open) unable to initialize slave
+Cannot connect to server socket err = No such file or directory
+Cannot connect to server request channel
+jack server is not running or cannot be started
+JackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock
+JackShmReadWritePtr::~JackShmReadWritePtr - Init not done for -1, skipping unlock
+Segmentation fault
+
+
+
+
+(venv) hafizpizero@hafizpizero:~ $ aplay -l
+**** List of PLAYBACK Hardware Devices ****
+card 0: vc4hdmi [vc4-hdmi], device 0: MAI PCM i2s-hifi-0 [MAI PCM i2s-hifi-0]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+card 1: seeed2micvoicec [seeed-2mic-voicecard], device 0: 3f203000.i2s-wm8960-hifi wm8960-hifi-0 [3f203000.i2s-wm8960-hifi wm8960-hifi-0]
+  Subdevices: 1/1
+  Subdevice #0: subdevice #0
+
+
+(venv) hafizpizero@hafizpizero:~ $ arecord -D "plughw:1,0" -f S16_LE -r 16000 -d 5 -t wav test.wav
+Recording WAVE 'test.wav' : Signed 16 bit Little Endian, Rate 16000 Hz, Mono
+arecord: set_params:1416: Unable to install hw params:
+ACCESS:  RW_INTERLEAVED
+FORMAT:  S16_LE
+SUBFORMAT:  STD
+SAMPLE_BITS: 16
+FRAME_BITS: 16
+CHANNELS: 1
+RATE: 16000
+PERIOD_TIME: 125000
+PERIOD_SIZE: 2000
+PERIOD_BYTES: 4000
+PERIODS: 4
+BUFFER_TIME: 500000
+BUFFER_SIZE: 8000
+BUFFER_BYTES: 16000
+TICK_TIME: 0
+
+
+reflashed and reinstalled everything
