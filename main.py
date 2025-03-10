@@ -137,7 +137,16 @@ def scan():
         pass
 
 def tracking():
-    print("Currently in TRACKING state.")
+    picam: PiCameraInterface = global_data["picam"]
+    frame = picam.getFrame()
+
+    # Send image to server
+    mqtt_cam_feed: MQTT_Publisher = global_data["mqtt_cam_feed"]
+    if mqtt_cam_feed is not None:
+        frame_bytes = convert_frame_to_bytes(frame)
+        mqtt_cam_feed.send(frame_bytes)
+
+    # Go back to idle state if no bird is detected for a period of time
     last_bird_time = global_data["last_bird_time"]
     current_time = time.time()
     if current_time - last_bird_time > 15:
