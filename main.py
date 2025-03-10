@@ -173,7 +173,7 @@ if __name__ == "__main__":
         global_data["mqtt_cam_controls"].loop_start()
 
     rrl = FPSLimiter(12)
-    global_data["picam"] = PiCameraInterface((640, 640))
+    global_data["picam"] = PiCameraInterface((240, 240))
     global_data["picam"].start()
 
     startTime = time.time()
@@ -192,7 +192,7 @@ if __name__ == "__main__":
             tracking()
         elif currState == STATES.QUIT:
             break
-        if currentTime - startTime >= 30:
+        if currentTime - startTime >= 999:
             break
 
         rrl.endFrame()

@@ -16,8 +16,8 @@ global_data = {
     "last_frame_time": time.time(),
 
     # Camera
-    "cam_size": (640, 640),
-    "cam_center": (320, 320),
+    "cam_size": (240, 240),
+    "cam_center": (120, 120),
 
     # Servers
     "mqtt_server_controls": None,
@@ -127,12 +127,14 @@ def get_user_input():
                     # quit for both cam and server
                     if parts[1] == "both":
                         mqtt_cam_controls.send(f"{action}:x")
+                        mqtt_cam_controls.send(f"state:quit")
                         global_data["is_running"] = False
                         break
                     elif parts[1] == "server":
                         global_data["is_running"] = False
                         break
                     elif parts[1] == "cam":
+                        mqtt_cam_controls.send(f"state:quit")
                         mqtt_cam_controls.send(f"{action}:x")
                     else:
                         print(commands_help)
