@@ -90,7 +90,7 @@ def change_state(nextState: int):
         board.set_laser(0)
 
         global_data["scan_dir_x"] = True
-        global_data["scan_dir_y"] = True
+        global_data["scan_dir_y"] = False
 
         # Only do this part if relying on server for computation
         mqtt_server_controls: MQTT_Publisher = global_data["mqtt_server_controls"]
@@ -101,6 +101,7 @@ def change_state(nextState: int):
     elif nextState == STATES.TRACKING:
         print("Entering State Tracking")
         board.set_laser(1)
+        global_data["last_bird_time"] = time.time()
 
     elif nextState == STATES.QUIT:
         print("Entering State Quit")

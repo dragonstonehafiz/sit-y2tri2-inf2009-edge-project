@@ -72,6 +72,11 @@ def get_user_input():
     quit:cam
     quit:server
 
+    state:quit
+    state:idle
+    state:tracking
+    state:scan
+
     auto:1
     auto:0
 
@@ -81,7 +86,7 @@ def get_user_input():
 
     # delay so that the first input message doesn't appear before connecting to server
     time.sleep(1.5)
-    mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
+    mqtt_cam_controls: MQTT_Publisher = global_data["mqtt_cam_controls"]
     while True:
         action = input("Enter Command: ")
         action = action.lower()
@@ -131,6 +136,10 @@ def get_user_input():
                         mqtt_cam_controls.send(f"{action}:x")
                     else:
                         print(commands_help)
+
+                # changing main.py state
+                elif parts[0] == "state":
+                    mqtt_cam_controls.send(action)
                 
                 # error
                 else:
