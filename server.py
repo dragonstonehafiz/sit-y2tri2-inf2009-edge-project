@@ -138,7 +138,7 @@ if __name__ == "__main__":
                     # calculate displacement of obj from center
                     # then normalize it so it is not some crazy large number
                     dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
-                    if abs(dispX) > 2:
+                    if abs(dispX) > 1:
                         mqtt_controls.send(f"turnx:{dispX}")
                     if abs(dispY):
                         mqtt_controls.send(f"turny:{dispY}")

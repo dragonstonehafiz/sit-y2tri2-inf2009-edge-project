@@ -2,21 +2,19 @@ from helper.MQTT import MQTT_Publisher, MQTT_Subscriber
 from helper.MQTT import MQTT_TOPIC_CAM, MQTT_TOPIC_CONTROLS, MQTT_IPADDR
 from helper.utils import convert_frame_to_bytes
 from helper.RaspberryPiZero2 import RaspberryPiZero2
-from helper.PyFirmataInterface import PyFirmataInterface
+from helper.Arduino import Arduino
+from helper.BoardInterface import BoardInterface
 from helper.FPSLimiter import FPSLimiter
 from helper.PiCameraInterface import PiCameraInterface
 
 import time
 
 global_data = {
-    "is_running": True,
-    "is_arduino": True
+    "is_running": True
 }
 
-if global_data["is_arduino"]:
-    arduino = PyFirmataInterface("/dev/ttyACM0")
-else:   
-    pizero = RaspberryPiZero2()
+board = Arduino("/dev/ttyACM0")
+# board = RaspberryPiZero2()
 
 def control_data_callback(client, userdata, msg):
     recieved: str = msg.payload.decode()
@@ -27,38 +25,23 @@ def control_data_callback(client, userdata, msg):
 
     elif recieved[0] == "turnx":
         angle = int(recieved[1])
-        if global_data["is_arduino"]:
-            arduino.turn_servo_x(angle)
-        else:
-            pizero.turn_servo_x(angle)
+        board.turn_servo_x(angle)
 
     elif recieved[0] == "turny":
         angle = int(recieved[1])
-        if global_data["is_arduino"]:
-            arduino.turn_servo_y(angle)
-        else:
-            pizero.turn_servo_y(angle)
+        board.turn_servo_y(angle)
 
     elif recieved[0] == "setx":
         angle = int(recieved[1])
-        if global_data["is_arduino"]:
-            arduino.set_servo_x(angle)
-        else:
-            pizero.set_servo_x(angle)
+        board.set_servo_x(angle)
 
     elif recieved[0] == "sety":
         angle = int(recieved[1])
-        if global_data["is_arduino"]:
-            arduino.set_servo_y(angle)
-        else:
-            pizero.set_servo_y(angle)
+        board.set_servo_y(angle)
 
     elif recieved[0] == "laser":
         value = int(recieved[1])
-        if global_data["is_arduino"]:
-            arduino.set_laser(value)
-        else:
-            pizero.set_laser(value)
+        board.set_laser(value)
 
     elif recieved[0] == "message":
         print(recieved)
@@ -105,8 +88,5 @@ if __name__ == "__main__":
     mqtt_client_controls.loop_stop()
     mqtt_client_controls.disconnect()
 
-    if global_data["is_arduino"]:
-        arduino.close()
-    else:
-        pizero.cleanup()
+    board.close()
     picam.close()

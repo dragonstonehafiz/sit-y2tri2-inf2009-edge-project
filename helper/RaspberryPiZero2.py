@@ -1,25 +1,22 @@
+from helper.BoardInterface import BoardInterface
+
 import RPi.GPIO as GPIO
 import cv2
 import time
 
-class RaspberryPiZero2:
+class RaspberryPiZero2(BoardInterface):
     _laser: int
     _servoX: "_Servo"
     _servoY: "_Servo"
     
     class _Servo:
         _currentAngle = 0
-        _maxAngle = 180
-        _minAngle = 0
         
-        def __init__(self, pin, minAngle=0, maxAngle=180):
+        def __init__(self, pin):
             self._pin = pin
             GPIO.setup(self._pin, GPIO.OUT)
             self._servo = GPIO.PWM(self._pin, 50)
-            self._maxAngle = maxAngle
-            self._minAngle = minAngle
             self._servo.start(0)
-            self.setAngle(minAngle)
         
         def _convertAngleToDutyCycle(self, angle):
             if angle < 0:
@@ -29,16 +26,16 @@ class RaspberryPiZero2:
             return 2 + (angle / 18.0)
         
         def _boundAngle(self, angle):
-            if angle < self._minAngle:
-                return self._minAngle
-            elif angle > self._maxAngle:
-                return self._maxAngle
+            if angle < 0:
+                return 0
+            elif angle > 180:
+                return 180
             return angle
         
-        def turn(self, angle, debug=False):
-            self.setAngle(self._currentAngle + angle, debug)
+        def turn(self, angle):
+            self.setAngle(self._currentAngle + angle)
             
-        def setAngle(self, angle, debug=False):
+        def setAngle(self, angle):
             # Save previous angle to calculate how long the system should wait before stopping the servo
             prevAngle = self._currentAngle
             # Calculate duty cycle to turn to the required angle
@@ -53,8 +50,6 @@ class RaspberryPiZero2:
             sleepTime = max(sleepTime, 0.05)
             time.sleep(sleepTime)
             self._servo.ChangeDutyCycle(0)
-            if debug:
-                print(f"Angle: {angle}")
             
         def get_angle(self):
             return self._currentAngle
@@ -64,8 +59,7 @@ class RaspberryPiZero2:
             self._servo.stop()
     
     
-    def __init__(self, debug=False):
-        self._debug = debug
+    def __init__(self):
         GPIO.setmode(GPIO.BCM)
 
         # Laser Set Up
@@ -74,64 +68,34 @@ class RaspberryPiZero2:
         
         # Servo Set Up
         self._servoX = self._Servo(13)
-        self._servoY = self._Servo(12, minAngle=45, maxAngle=135)
+        self._servoY = self._Servo(12)
        
 
     def set_servo_x(self, angle):
-        """
-        Set the X servo's current turning angle (only +)
-        """
-        self._servoX.setAngle(angle, debug=self._debug)
+        self._servoX.setAngle(angle)
         
     def turn_servo_x(self, angle):
-        """
-        Turns the X servo by a specified angle (+ or -)
-        """
-        self._servoX.turn(angle, debug=self._debug)
+        self._servoX.turn(angle)
         
     def set_servo_y(self, angle):
-        """
-        Set the Y servo's current turning angle (only +)
-        """
-        self._servoY.setAngle(angle, debug=self._debug)
+        self._servoY.setAngle(angle)
         
     def turn_servo_y(self, angle):
-        """
-        Turns the Y servo by a specified angle (+ or -)
-        """
-        self._servoY.turn(angle, debug=self._debug)
+        self._servoY.turn(angle)
 
-    def get_servo_x_angle(self):
-        """
-        Get the current angle of the X servo
-        """
+    def get_servo_x(self):
         return self._servoX.get_angle()
     
-    def get_servo_y_angle(self):
-        """
-        Get the current angle of the Y servo
-        """
+    def get_servo_y(self):
         return self._servoY.get_angle()
         
     def set_laser(self, val: bool):
-        """
-        True = ON, False = OFF
-        """
         if val > 0:
             GPIO.output(self._laser, GPIO.HIGH)
         else:
             GPIO.output(self._laser, GPIO.LOW)
-            
-    def set_debug(self, debug):
-        """
-        Sets if debug messages are printed.
-        """
-        self._debug = debug
 
-    def cleanup(self):
-        """
-        Call this when the program is exiting to clean up the GPIO pins
-        """
+    def close(self):
         self._servoX.cleanup()
         self._servoY.cleanup()
         self.set_laser(0)
@@ -157,4 +121,4 @@ if __name__ == "__main__":
 
     except KeyboardInterrupt:
         print("Exiting...")
-        piZero.cleanup()
+        piZero.close()
