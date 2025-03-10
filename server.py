@@ -53,8 +53,9 @@ def camera_data_callback(client, userdata, msg):
 def server_commands_callback(client, userdata, msg):
     message = msg.payload.decode()
 
+    print(message)
     # Only valid messages should be recieved, so no need to make checks
-    recieved = recieved.split(":")
+    recieved = message.split(":")
     if recieved[0] == "auto":
         global_data["auto"] = int(recieved[1])
 

@@ -137,7 +137,10 @@ def scan():
 
 def tracking():
     print("Currently in TRACKING state.")
-    change_state(STATES.QUIT)
+    last_bird_time = global_data["last_bird_time"]
+    current_time = time.time()
+    if current_time - last_bird_time > 15:
+        change_state(STATES.IDLE)
 
 if __name__ == "__main__":
     # global_data["board"] = RaspberryPiZero2()
