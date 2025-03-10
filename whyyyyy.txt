@@ -1,0 +1,13 @@
+
+ReSpeaker 2-Mic Hat
+
+used guide here "https://wiki.seeedstudio.com/ReSpeaker_2_Mics_Pi_HAT_Raspberry/"
+
+tried pyaudio but got error:
+Recording Audio
+Expression 'r' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 2097
+Expression 'PaAlsaStreamComponent_FinishConfigure( &self->capture, hwParamsCapture, inParams, self->primeBuffers, realSr, inputLatency )' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 2730
+Expression 'PaAlsaStream_Configure( stream, inputParameters, outputParameters, sampleRate, framesPerBuffer, &inputLatency, &outputLatency, &hostBufferSizeMode )' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 2842
+Error recording audio: Error opening InputStream: Unanticipated host error [PaErrorCode -9999]: 'Invalid argument' [ALSA error -22]
+
+

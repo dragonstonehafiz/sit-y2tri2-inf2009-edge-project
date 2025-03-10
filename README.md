@@ -41,21 +41,43 @@ sudo apt install -y git portaudio19-dev python3 python3-pip python3-venv
 sudo apt install -y python3-rpi.gpio python3-picamera2 mosquitto
 ```
 
-#### **Step 2: Clone the Repository**
+#### **Step 2: Install Drivers for ReSpeaker Mic Hat**
 
 ```bash
-git clone https://github.com/dragonstonehafiz/sit-y2tri2-inf2009-edge-project.git
-mv sit-y2tri2-inf2009-edge-project edge-project
+git clone https://github.com/HinTak/seeed-voicecard.git
+cd seeed-voicecard
+sudo ./install.sh
+```
+
+Reboot your Raspberry Pi Zero with
+
+```bash
+sudo reboot now
+```
+
+#### **Step 3: Clone the Repository**
+
+```bash
+git clone https://github.com/dragonstonehafiz/inf2009-project.git
+mv inf2009-project edge-project
 cd edge-project
 ```
 
-#### **Step 3: Set Up Virtual Environment**
+#### **Step 4: Set Up Virtual Environment**
 
 ```bash
 python3 -m venv --system-site-packages venv
 source venv/bin/activate
 pip install -r requirements.txt
 pip install "paho-mqtt<2.0"
+```
+
+#### **Step 4: Install Drivers for ReSpeaker Mic Hat**
+
+```bash
+cd ../
+git clone https://github.com/respeaker/seeed-voicecard.git
+cd seeed-voicecard.git
 ```
 
 ### **(Optional) Running the Server on a Desktop**
@@ -73,8 +95,8 @@ sudo apt install -y git python3 python3-pip mosquitto
 #### **Step 2: Clone the Repository**
 
 ```bash
-git clone https://github.com/dragonstonehafiz/sit-y2tri2-inf2009-edge-project.git
-mv sit-y2tri2-inf2009-edge-project edge-project
+git clone https://github.com/dragonstonehafiz/inf2009-project.git
+mv inf2009-project edge-project
 cd edge-project
 ```
 
