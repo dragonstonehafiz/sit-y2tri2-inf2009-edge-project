@@ -9,3 +9,7 @@ def list_serial_ports():
         print("Available serial ports:")
         for port in ports:
             print(f"  {port.device} - {port.description}")
+
+
+if __name__ == "__main__":
+    list_serial_ports()

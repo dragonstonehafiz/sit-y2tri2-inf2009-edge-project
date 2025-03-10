@@ -8,15 +8,13 @@ from helper.PiCameraInterface import PiCameraInterface
 
 import time
 
-
-
 global_data = {
     "is_running": True,
     "is_arduino": True
 }
 
 if global_data["is_arduino"]:
-    arduino = PyFirmataInterface("")
+    arduino = PyFirmataInterface("/dev/ttyACM0")
 else:   
     pizero = RaspberryPiZero2()
 
@@ -25,7 +23,7 @@ def control_data_callback(client, userdata, msg):
     # Only valid messages should be recieved, so no need to make checks
     recieved = recieved.split(":")
     if recieved[0] == "quit":
-        global_data["global_data"] = False
+        global_data["is_running"] = False
 
     elif recieved[0] == "turnx":
         angle = int(recieved[1])
@@ -97,7 +95,7 @@ if __name__ == "__main__":
 
         # Force quit after 15 seconds
         currentTime = time.time()
-        if currentTime - startTime > 60 or not global_data["global_data"]:
+        if currentTime - startTime > 99 or not global_data["is_running"]:
             break
 
         fps_controller.endFrame()
