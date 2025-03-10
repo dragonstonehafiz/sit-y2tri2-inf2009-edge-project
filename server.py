@@ -178,7 +178,8 @@ if __name__ == "__main__":
             lastimage = frame_queue.get()
                     
         elif current_time - global_data["last_frame_time"] > 1:
-            lastimage = np.zeros((640, 640, 3), dtype=np.uint8)
+            cam_size_x, cam_size_y = global_data["cam_size"]
+            lastimage = np.zeros((cam_size_x, cam_size_y, 3), dtype=np.uint8)
 
         cv2.imshow("Received Image", lastimage)
 
