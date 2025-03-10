@@ -5,10 +5,12 @@ from helper.utils import convert_frame_to_bytes
 from helper.BoardInterface import BoardInterface
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.Arduino import Arduino
-from main_logic import scan_handle_x
+from helper.AudioInterface import AudioInterface
+from main_logic import scan_handle_x, record_audio_thread, STATES
 
-from enum import Enum
 import time
+import queue
+import threading
 
 global_data = {
     # App
@@ -21,6 +23,8 @@ global_data = {
     "scan_dir_x": False,
     "scan_dir_y": False,
     "last_bird_time": time.time(),
+    "most_recent_sound": None,
+    "most_recent_sound_peak_amp": None, 
 
     # Server
     "mqtt_cam_feed": None,
@@ -65,12 +69,6 @@ def cam_controls_callback(client, userdata, msg):
     except Exception as e:
         print(f"Exception {e}")
 
-class STATES(Enum):
-    IDLE = 0
-    SCAN = 1
-    TRACKING = 2
-    QUIT = 3
-
 def change_state(nextState: int):
     global_data['state'] = nextState
     board: BoardInterface = global_data["board"]
@@ -106,6 +104,7 @@ def change_state(nextState: int):
     elif nextState == STATES.QUIT:
         print("Entering State Quit")
         board.set_laser(0)
+        global_data["is_running"] = False
 
 def idle():
     """Listens for birds. If bird detected, switch to scan state"""
@@ -172,12 +171,18 @@ if __name__ == "__main__":
         global_data["mqtt_cam_controls"] = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, cam_controls_callback)
         global_data["mqtt_cam_controls"].loop_start()
 
+    # FPSLimiter controls the number of 
     rrl = FPSLimiter(12)
     global_data["picam"] = PiCameraInterface((240, 240))
     global_data["picam"].start()
 
+    # This is just to force quit the system after a certain time
     startTime = time.time()
     global_data["state"] = STATES.IDLE
+
+    # Start thread for recording audio
+    audio_thread = threading.Thread(target=lambda x: {record_audio_thread(global_data)}, daemon=True)
+    audio_thread.start()
 
     while True:
         rrl.startFrame()
@@ -193,6 +198,7 @@ if __name__ == "__main__":
         elif currState == STATES.QUIT:
             break
         if currentTime - startTime >= 999:
+            global_data["is_running"] = False
             break
 
         rrl.endFrame()

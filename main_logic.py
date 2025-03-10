@@ -1,4 +1,24 @@
 from helper.BoardInterface import BoardInterface
+from helper.AudioInterface import AudioInterface
+
+from enum import Enum
+
+class STATES(Enum):
+    IDLE = 0
+    SCAN = 1
+    TRACKING = 2
+    QUIT = 3
+
+# 
+def record_audio_thread(global_data: dict):
+    audio = AudioInterface()
+    while global_data["is_running"]:
+        if global_data["state"] != STATES.IDLE:
+            global_data["most_recent_sound"], global_data["most_recent_sound_peak_amp"] = None, None
+        else:
+            global_data["most_recent_sound"], global_data["most_recent_sound_peak_amp"] = audio.record_audio(3)  # Record for 3 seconds
+            
+
 
 def scan_handle_x(board: BoardInterface, global_data: dict):
     # Turn servo x in either left or right
