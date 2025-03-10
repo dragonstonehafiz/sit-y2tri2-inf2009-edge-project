@@ -10,7 +10,8 @@ def convert_frame_to_bytes(frame) -> bytes:
 def convert_bytes_to_frame(bytes):
     """convert bytes to image data"""
     np_arr = np.frombuffer(bytes, np.uint8)
-    return cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+    frame = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+    return cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
 def normalizeDisplacement(displacement: tuple[int, int], frameSize: tuple[int, int]) -> tuple[int, int]:
     """
