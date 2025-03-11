@@ -46,13 +46,21 @@ sudo apt install -y python3-rpi.gpio python3-picamera2 mosquitto
 ```bash
 git clone https://github.com/HinTak/seeed-voicecard.git
 cd seeed-voicecard
+git checkout v6.6
 sudo ./install.sh
 ```
 
-Reboot your Raspberry Pi Zero with
+Reboot your Raspberry Pi Zero.
 
 ```bash
 sudo reboot now
+```
+
+Test the microphone.
+
+```bash
+arecord -D plughw:CARD=seeed2micvoicec,DEV=0 -r 16000 -c 1 -f S16_LE -t wav -d 5 test.wav
+aplay -D plughw:CARD=seeed2micvoicec,DEV=0 test.wav
 ```
 
 #### **Step 3: Clone the Repository**
@@ -70,14 +78,6 @@ python3 -m venv --system-site-packages venv
 source venv/bin/activate
 pip install -r requirements.txt
 pip install "paho-mqtt<2.0"
-```
-
-#### **Step 4: Install Drivers for ReSpeaker Mic Hat**
-
-```bash
-cd ../
-git clone https://github.com/respeaker/seeed-voicecard.git
-cd seeed-voicecard.git
 ```
 
 ### **(Optional) Running the Server on a Desktop**

@@ -112,4 +112,30 @@ BUFFER_BYTES: 16000
 TICK_TIME: 0
 
 
-reflashed and reinstalled everything
+reflashed and reinstalled everything 
+
+(venv) hafizpizero@hafizpizero:~ $ arecord -D "plughw:1,0" -f S16_LE -r 16000 -d 5 -t wav test.wav
+Recording WAVE 'test.wav' : Signed 16 bit Little Endian, Rate 16000 Hz, Mono
+arecord: set_params:1416: Unable to install hw params:
+ACCESS:  RW_INTERLEAVED
+FORMAT:  S16_LE
+SUBFORMAT:  STD
+SAMPLE_BITS: 16
+FRAME_BITS: 16
+CHANNELS: 1
+RATE: 16000
+PERIOD_TIME: 125000
+PERIOD_SIZE: 2000
+PERIOD_BYTES: 4000
+PERIODS: 4
+BUFFER_TIME: 500000
+BUFFER_SIZE: 8000
+BUFFER_BYTES: 16000
+TICK_TIME: 0
+
+
+
+found this issue on github
+https://github.com/respeaker/seeed-voicecard/issues/346
+
+fixed
