@@ -68,8 +68,7 @@ aplay -D plughw:CARD=seeed2micvoicec,DEV=0 test.wav
 
 ```bash
 git clone https://github.com/dragonstonehafiz/inf2009-project.git
-mv inf2009-project edge-project
-cd edge-project
+cd inf2009-project
 ```
 
 #### **Step 4: Set Up Virtual Environment**
