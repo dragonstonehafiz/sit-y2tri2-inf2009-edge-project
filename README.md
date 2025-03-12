@@ -37,8 +37,14 @@ Run the following commands to update your system and install the necessary depen
 ```bash
 sudo apt update
 sudo apt upgrade -y
-sudo apt install -y git portaudio19-dev python3 python3-pip python3-venv
-sudo apt install -y python3-rpi.gpio python3-picamera2 mosquitto
+sudo apt install -y git 
+sudo apt install -y portaudio19-dev 
+sudo apt install -y python3 
+sudo apt install -y python3-pip 
+sudo apt install -y python3-venv
+sudo apt install -y python3-rpi.gpio 
+sudo apt install -y python3-picamera2 
+sudo apt install -y mosquitto
 sudo apt-get install -y python3-opencv
 ```
 
@@ -78,11 +84,12 @@ python3 -m venv --system-site-packages venv
 source venv/bin/activate
 pip install -r requirements.txt --verbose
 pip install "paho-mqtt<2.0"
+pip uninstall numpy
 pip install --no-cache-dir numpy
 sudo apt-get -y install libopenblas-dev
 ```
 
-### **(Optional) Running the Server on a Desktop**
+### **(Optional) Desktop Server**
 
 If you want to **view the camera feed remotely**, you can set up a server on a desktop.
 
