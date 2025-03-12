@@ -79,6 +79,8 @@ python3 -m venv --system-site-packages venv
 source venv/bin/activate
 pip install -r requirements.txt --verbose
 pip install "paho-mqtt<2.0"
+pip install --no-cache-dir numpy
+sudo apt-get -y install libopenblas-dev
 ```
 
 ### **(Optional) Running the Server on a Desktop**

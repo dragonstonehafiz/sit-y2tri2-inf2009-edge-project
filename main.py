@@ -1,6 +1,6 @@
 from helper.PiCameraInterface import PiCameraInterface
 from helper.FPSLimiter import FPSLimiter
-from helper.MQTT import MQTT_Subscriber, MQTT_Publisher, MQTT_IPADDR, MQTT_TOPIC_CAM, MQTT_TOPIC_PI_ZERO_CONTROLS, MQTT_TOPIC_SERVER_CONTROLS
+from helper.MQTT import MQTT_Subscriber, MQTT_Publisher, MQTT_TOPIC_CAM, MQTT_TOPIC_PI_ZERO_CONTROLS, MQTT_TOPIC_SERVER_CONTROLS
 from helper.utils import convert_frame_to_bytes
 from helper.BoardInterface import BoardInterface
 from helper.RaspberryPiZero2 import RaspberryPiZero2
@@ -156,6 +156,8 @@ if __name__ == "__main__":
     global_data["board"] = Arduino("/dev/ttyACM0")
 
     SEND_IMAGE_DATA = True
+    MQTT_IPADDR = input("Input Server IP Address: ")
+    
     if SEND_IMAGE_DATA:
         # To see image output
         global_data["mqtt_cam_feed"] = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_CAM)
