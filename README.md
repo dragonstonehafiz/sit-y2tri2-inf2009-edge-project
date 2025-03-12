@@ -39,6 +39,7 @@ sudo apt update
 sudo apt upgrade -y
 sudo apt install -y git portaudio19-dev python3 python3-pip python3-venv
 sudo apt install -y python3-rpi.gpio python3-picamera2 mosquitto
+sudo apt-get install -y python3-opencv
 ```
 
 #### **Step 2: Install Drivers for ReSpeaker Mic Hat**
