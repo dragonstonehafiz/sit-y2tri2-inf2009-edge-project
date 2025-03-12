@@ -76,7 +76,7 @@ cd edge-project
 ```bash
 python3 -m venv --system-site-packages venv
 source venv/bin/activate
-pip install -r requirements.txt
+pip install -r requirements.txt --verbose
 pip install "paho-mqtt<2.0"
 ```
 
