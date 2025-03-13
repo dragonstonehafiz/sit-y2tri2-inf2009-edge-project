@@ -45,10 +45,15 @@ def camera_data_callback(client, userdata, msg):
             # calculate displacement of obj from center
             # then normalize it so it is not some crazy large number
             dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
-            if abs(dispX) > 1:
-                mqtt_cam_controls.send(f"turnx:{dispX}")
-            if abs(dispY):
-                mqtt_cam_controls.send(f"turny:{dispY}")
+            if dispX > 2:
+                mqtt_cam_controls.send(f"turnx:{1}")
+            elif dispX < -2:
+                mqtt_cam_controls.send(f"turnx:{-1}")
+
+            if dispY > 2:
+                mqtt_cam_controls.send(f"turny:{1}")
+            elif dispY < -2:
+                mqtt_cam_controls.send(f"turny:{-1}")
 
 def server_commands_callback(client, userdata, msg):
     message = msg.payload.decode()
@@ -117,7 +122,7 @@ def get_user_input():
                 elif parts[0] == "auto" and parts[1] in ['1', '0']:
                     if parts[1] == "1":
                         global_data["auto"] = True
-                    elif parts[1] == "1":
+                    elif parts[1] == "0":
                         global_data["auto"] = False
                     else:
                         print(commands_help)
