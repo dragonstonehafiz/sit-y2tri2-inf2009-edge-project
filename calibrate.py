@@ -2,7 +2,7 @@ from helper.MQTT import MQTT_Publisher, MQTT_Subscriber
 from helper.MQTT import MQTT_TOPIC_CAM, MQTT_TOPIC_PI_ZERO_CONTROLS
 from helper.utils import convert_frame_to_bytes
 # from helper.RaspberryPiZero2 import RaspberryPiZero2
-from helper.RaspberryPiZero2_new import RaspberryPiZero2
+from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.Arduino import Arduino
 from helper.BoardInterface import BoardInterface
 from helper.FPSLimiter import FPSLimiter
@@ -44,7 +44,6 @@ def control_data_callback(client, userdata, msg):
     elif recieved[0] == "sety":
         angle = int(recieved[1])
         threading.Thread(target=board.set_servo_y, args=(angle,)).start()
-        # board.set_servo_y(angle)
 
     elif recieved[0] == "laser":
         value = int(recieved[1])
@@ -76,18 +75,13 @@ if __name__ == "__main__":
     fps_controller = FPSLimiter()
     startTime = time.time()
 
-    while True:
+    while global_data["is_running"]:
         fps_controller.startFrame()
 
         # Send camera feed to server
         frame = picam.getFrame()
         frame_bytes = convert_frame_to_bytes(frame)
         mqtt_client_cam.send(frame_bytes)
-
-        # Force quit after 15 seconds
-        currentTime = time.time()
-        if currentTime - startTime > 99 or not global_data["is_running"]:
-            break
 
         fps_controller.endFrame()
 

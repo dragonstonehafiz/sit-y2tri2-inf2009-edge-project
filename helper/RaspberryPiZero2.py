@@ -1,106 +1,64 @@
 from helper.BoardInterface import BoardInterface
 
-import RPi.GPIO as GPIO
+from gpiozero.pins.pigpio import PiGPIOFactory
+from gpiozero import AngularServo, LED
 import cv2
 import time
 
 class RaspberryPiZero2(BoardInterface):
-    _laser: int
-    _servoX: "_Servo"
-    _servoY: "_Servo"
-    
-    class _Servo:
-        _currentAngle = 0
-        
-        def __init__(self, pin):
-            self._pin = pin
-            GPIO.setup(self._pin, GPIO.OUT)
-            self._servo = GPIO.PWM(self._pin, 50)
-            self._servo.start(0)
-        
-        def _convertAngleToDutyCycle(self, angle):
-            if angle < 0:
-                angle = 0
-            elif angle > 180:
-                angle = 180
-            return 2 + (angle / 18.0)
-        
-        def _boundAngle(self, angle):
-            if angle < 0:
-                return 0
-            elif angle > 180:
-                return 180
-            return angle
-        
-        def turn(self, angle):
-            self.setAngle(self._currentAngle + angle)
-            
-        def setAngle(self, angle):
-            # Save previous angle to calculate how long the system should wait before stopping the servo
-            prevAngle = self._currentAngle
-            # Calculate duty cycle to turn to the required angle
-            self._currentAngle = self._boundAngle(angle)
-            dutyCycle = self._convertAngleToDutyCycle(angle)
-            self._servo.ChangeDutyCycle(dutyCycle)
-            # Make the servo sleep for a period proportional to the angle it needs to turn
-            # Use abs() so sleep time is always positive
-            # Turning from 0 to 180 degrees should take 0.25 seconds
-            # Turning from 0 to 45 degrees should take 0.05 seconds
-            sleepTime = abs(self._currentAngle - prevAngle) / 180.0 * 0.25
-            sleepTime = max(sleepTime, 0.05)
-            time.sleep(sleepTime)
-            self._servo.ChangeDutyCycle(0)
-            
-        def get_angle(self):
-            return self._currentAngle
-            
-        def cleanup(self):
-            self.setAngle(0)
-            self._servo.stop()
-    
+    _laser: LED
+    _servoX: AngularServo
+    _servoY: AngularServo
+    _factory: PiGPIOFactory
     
     def __init__(self):
-        GPIO.setmode(GPIO.BCM)
+        self._factory = PiGPIOFactory()
+        self._servoX = AngularServo(pin=13, min_angle=0, max_angle=180, pin_factory=self._factory)
+        self._servoY = AngularServo(pin=12, min_angle=0, max_angle=180, pin_factory=self._factory)
 
         # Laser Set Up
-        self._laser = 17
-        GPIO.setup(self._laser, GPIO.OUT)
-        
-        # Servo Set Up
-        self._servoX = self._Servo(13)
-        self._servoY = self._Servo(12)
-       
+        self._laser = LED(pin=17, pin_factory=self._factory)
 
+        # Default Variables
+        self._servoX.angle = 0
+        self._servoY.angle = 0
+        self._laser.off()
+
+    def _boundAngle(self, angle: float) -> float:
+        if angle < 0:
+            return 0
+        elif angle > 180:
+            return 180
+        return angle
+       
     def set_servo_x(self, angle):
-        self._servoX.setAngle(angle)
+        self._servoX.angle = angle
         
     def turn_servo_x(self, angle):
-        self._servoX.turn(angle)
+        self._servoX.angle = self._boundAngle(self.get_servo_x() + angle)
         
     def set_servo_y(self, angle):
-        self._servoY.setAngle(angle)
+        self._servoY.angle = angle
         
     def turn_servo_y(self, angle):
-        self._servoY.turn(angle)
+        self._servoY.angle = self._boundAngle(self.get_servo_y() + angle)
 
     def get_servo_x(self):
-        return self._servoX.get_angle()
+        return self._servoX.angle
     
     def get_servo_y(self):
-        return self._servoY.get_angle()
+        return self._servoY.angle
         
     def set_laser(self, val: bool):
-        if val > 0:
-            GPIO.output(self._laser, GPIO.HIGH)
+        if val:
+            self._laser.on()
         else:
-            GPIO.output(self._laser, GPIO.LOW)
+            self._laser.off()
 
     def close(self):
-        self._servoX.cleanup()
-        self._servoY.cleanup()
-        self.set_laser(0)
-        GPIO.cleanup()
-
+        self._laser.close()
+        self._servoX.close()
+        self._servoY.close()
 
 # Main program
 if __name__ == "__main__":
