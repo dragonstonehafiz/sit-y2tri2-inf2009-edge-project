@@ -1,7 +1,6 @@
 from helper.MQTT import MQTT_Publisher, MQTT_Subscriber
 from helper.MQTT import MQTT_TOPIC_CAM, MQTT_TOPIC_PI_ZERO_CONTROLS
 from helper.utils import convert_frame_to_bytes
-# from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.Arduino import Arduino
 from helper.BoardInterface import BoardInterface
@@ -10,7 +9,7 @@ from helper.PiCameraInterface import PiCameraInterface
 
 import time
 import threading
-import os
+import sys
 
 global_data = {
     "is_running": True
@@ -56,20 +55,26 @@ def control_data_callback(client, userdata, msg):
 
             
 if __name__ == "__main__":
-    picam = PiCameraInterface()
-    try:
-        picam.start()
-    except Exception as e:
-        print(f"Error {e}")
-        print("Quitting")
-        quit()
 
     # Server
-    MQTT_IPADDR = input("Input Server IP Address: ")
-    mqtt_client_cam = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_CAM)
-    mqtt_client_controls = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, control_data_callback)
-    mqtt_client_cam.loop_start()
-    mqtt_client_controls.loop_start()
+    try:
+        MQTT_IPADDR = input("Input Server IP Address: ")
+        mqtt_client_cam = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_CAM)
+        mqtt_client_controls = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, control_data_callback)
+        mqtt_client_cam.loop_start()
+        mqtt_client_controls.loop_start()
+    except Exception as e:
+        print(f"Failed to connect to MQTT Broker: {e}")
+        sys.exit(1)
+
+    # Picam
+    try:
+        picam = PiCameraInterface()
+        picam.start()
+    except Exception as e:
+        print(f"Error starting PiCamera: {e}")
+        print("Quitting...")
+        sys.exit()
 
     # Send camera feed 12 times a second
     fps_controller = FPSLimiter()
