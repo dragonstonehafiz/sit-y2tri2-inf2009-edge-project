@@ -1,20 +1,26 @@
 from helper.MQTT import MQTT_Publisher, MQTT_Subscriber
 from helper.MQTT import MQTT_TOPIC_CAM, MQTT_TOPIC_PI_ZERO_CONTROLS
 from helper.utils import convert_frame_to_bytes
-from helper.RaspberryPiZero2 import RaspberryPiZero2
+# from helper.RaspberryPiZero2 import RaspberryPiZero2
+from helper.RaspberryPiZero2_new import RaspberryPiZero2
 from helper.Arduino import Arduino
 from helper.BoardInterface import BoardInterface
 from helper.FPSLimiter import FPSLimiter
 from helper.PiCameraInterface import PiCameraInterface
 
 import time
+import threading
+import os
 
 global_data = {
     "is_running": True
 }
 
-board = Arduino("/dev/ttyACM0")
-# board = RaspberryPiZero2()
+# board = Arduino("/dev/ttyACM0")
+board = RaspberryPiZero2()
+
+# def servo_thread(function: callable, angle: float, core_id):
+
 
 def control_data_callback(client, userdata, msg):
     recieved: str = msg.payload.decode()
@@ -25,19 +31,20 @@ def control_data_callback(client, userdata, msg):
 
     elif recieved[0] == "turnx":
         angle = int(recieved[1])
-        board.turn_servo_x(angle)
+        threading.Thread(target=board.turn_servo_x, args=(angle,)).start()
 
     elif recieved[0] == "turny":
         angle = int(recieved[1])
-        board.turn_servo_y(angle)
+        threading.Thread(target=board.turn_servo_y, args=(angle,)).start()
 
     elif recieved[0] == "setx":
         angle = int(recieved[1])
-        board.set_servo_x(angle)
+        threading.Thread(target=board.set_servo_x, args=(angle,)).start()
 
     elif recieved[0] == "sety":
         angle = int(recieved[1])
-        board.set_servo_y(angle)
+        threading.Thread(target=board.set_servo_y, args=(angle,)).start()
+        # board.set_servo_y(angle)
 
     elif recieved[0] == "laser":
         value = int(recieved[1])
