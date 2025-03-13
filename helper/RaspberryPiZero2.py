@@ -26,10 +26,10 @@ class RaspberryPiZero2(BoardInterface):
 
     def _boundAngle(self, angle: float) -> float:
         if angle < 0:
-            return 0
+            return -90
         elif angle > 180:
-            return 180
-        return angle
+            return 90
+        return (angle - 90)  # Convert 0-180 to -90 to 90
        
     def set_servo_x(self, angle):
         self._servoX.angle = angle

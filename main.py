@@ -4,13 +4,10 @@ from helper.MQTT import MQTT_Subscriber, MQTT_Publisher, MQTT_TOPIC_CAM, MQTT_TO
 from helper.utils import convert_frame_to_bytes
 from helper.BoardInterface import BoardInterface
 from helper.RaspberryPiZero2 import RaspberryPiZero2
-from helper.Arduino import Arduino
 from helper.AudioInterface import AudioInterface
-from helper.YoloV5 import YOLOv5
 from main_logic import scan_handle_x, record_audio_thread, STATES
 
 import time
-import queue
 import threading
 import sys
 
@@ -132,10 +129,10 @@ def scan():
     # Check if we are relying on cloud for object detection
     mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
     if mqtt_cam_controls is None:
-        yolov5: YOLOv5 = global_data["yolov5"]
-        objects = yolov5.detect_objects(frame, conf_thres=0.5)
-        if len(objects) > 0:
-            print(objects[0])
+        # yolov5: YOLOv5 = global_data["yolov5"]
+        # objects = yolov5.detect_objects(frame, conf_thres=0.5)
+        # if len(objects) > 0:
+        #     print(objects[0])
         # detect object
         # object_detected = obj_det_func
         # if object_detected:
@@ -181,7 +178,7 @@ if __name__ == "__main__":
             global_data["mqtt_cam_controls"] = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, cam_controls_callback)
             global_data["mqtt_cam_controls"].loop_start()
         else:
-            global_data["yolov5"] = YOLOv5("yolov5n")
+            pass
     except Exception as e:
         print(f"Failed to connect to MQTT Broker: {e}")
         sys.exit()
