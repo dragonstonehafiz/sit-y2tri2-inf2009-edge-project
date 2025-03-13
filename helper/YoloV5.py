@@ -4,7 +4,7 @@ import numpy as np
 from ultralytics import YOLO
 
 class YOLOv5:
-    def __init__(self, model_name="yolov5s"):
+    def __init__(self, model_name="yolov5n"):
         """
         Initializes the YOLOv5 model.
         :param model_name: Model name (e.g., 'yolov5s', 'yolov5m', 'yolov5l', 'yolov5x').
