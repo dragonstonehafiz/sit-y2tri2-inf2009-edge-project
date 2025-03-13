@@ -6,6 +6,7 @@ from helper.BoardInterface import BoardInterface
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.Arduino import Arduino
 from helper.AudioInterface import AudioInterface
+from helper.YoloV5 import YOLOv5
 from main_logic import scan_handle_x, record_audio_thread, STATES
 
 import time
@@ -17,6 +18,7 @@ global_data = {
     "is_running": True,
     "board": None,
     "picam": None,
+    "yolov5": None,
 
     # Logic
     "state": int,
@@ -129,6 +131,10 @@ def scan():
     # Check if we are relying on cloud for object detection
     mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
     if mqtt_cam_controls is None:
+        yolov5: YOLOv5 = global_data["yolov5"]
+        objects = yolov5.detect_objects(frame, conf_thres=0.5)
+        if len(objects) > 0:
+            print(objects[0])
         # detect object
         # object_detected = obj_det_func
         # if object_detected:
@@ -152,8 +158,8 @@ def tracking():
         change_state(STATES.IDLE)
 
 if __name__ == "__main__":
-    # global_data["board"] = RaspberryPiZero2()
-    global_data["board"] = Arduino("/dev/ttyACM0")
+    global_data["board"] = RaspberryPiZero2()
+    # global_data["board"] = Arduino("/dev/ttyACM0")
 
     SEND_IMAGE_DATA = True
     MQTT_IPADDR = input("Input Server IP Address: ")
@@ -163,7 +169,7 @@ if __name__ == "__main__":
         global_data["mqtt_cam_feed"] = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_CAM)
         global_data["mqtt_cam_feed"].loop_start()
 
-    SERVER_PROCESSING = True
+    SERVER_PROCESSING = False
     if SERVER_PROCESSING:
         # To tell server to start looking at images
         global_data["mqtt_server_controls"] = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_SERVER_CONTROLS)
@@ -172,8 +178,11 @@ if __name__ == "__main__":
         # Rely on server for object detection
         global_data["mqtt_cam_controls"] = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, cam_controls_callback)
         global_data["mqtt_cam_controls"].loop_start()
+    else:
+        global_data["yolov5"] = YOLOv5("yolov5n")
+        
 
-    # FPSLimiter controls the number of 
+    # FPSLimiter controls the number of 5
     rrl = FPSLimiter(12)
     global_data["picam"] = PiCameraInterface((240, 240))
     global_data["picam"].start()
