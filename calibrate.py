@@ -24,7 +24,6 @@ def control_data_callback(client, userdata, msg):
     recieved: str = msg.payload.decode()
     # Only valid messages should be recieved, so no need to make checks
     recieved = recieved.split(":")
-    print(recieved)
     if recieved[0] == "quit" or recieved[0] == "state":
         global_data["is_running"] = False
 

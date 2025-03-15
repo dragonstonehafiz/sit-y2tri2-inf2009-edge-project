@@ -1,7 +1,7 @@
 from helper.MQTT import MQTT_Publisher, MQTT_Subscriber
 from helper.MQTT import MQTT_TOPIC_CAM, MQTT_TOPIC_PI_ZERO_CONTROLS, MQTT_TOPIC_SERVER_CONTROLS
-from helper.YoloV5 import YOLOv5
-# from helper.YoloV5_ONNX import YOLOv5_ONNX
+from helper.YoloV5_Ultralytics import YOLOv5_Ultralytics
+from helper.YoloV5_ONNX import YoloV5_ONNX
 from helper.utils import convert_bytes_to_frame, get_closest_coords, get_object_displacement
 
 import time
@@ -27,7 +27,8 @@ global_data = {
 
     # Object Detection
     "auto": True,
-    "yolov5": YOLOv5("yolov5nu")
+    # "yolov5": YOLOv5("yolov5nu")
+    "yolov5": YoloV5_ONNX("model/yolov5n_224.onnx", (224, 224))
     }
 
 def camera_data_callback(client, userdata, msg):
@@ -164,7 +165,7 @@ if __name__ == "__main__":
             lastimage = frame_queue.get()
 
             if global_data["auto"]:
-                yolov5: YOLOv5 = global_data["yolov5"]
+                yolov5: YoloV5_ONNX = global_data["yolov5"]
                 detections = yolov5.detect_objects(lastimage) 
 
                 # If objects were found, find the coords of the closest one
@@ -186,6 +187,7 @@ if __name__ == "__main__":
             cam_size_x, cam_size_y = global_data["cam_size"]
             lastimage = np.zeros((cam_size_x, cam_size_y, 3), dtype=np.uint8)
 
+        # lastimage = cv2.resize(lastimage, (500, 500))
         cv2.imshow("Received Image", lastimage)
 
         if (cv2.waitKey(1) & 0xFF == ord('q')) or global_data["is_running"] == False:
