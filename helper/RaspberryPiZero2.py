@@ -25,20 +25,23 @@ class RaspberryPiZero2(BoardInterface):
         self._laser.off()
 
     def _boundAngle(self, angle: float) -> float:
-        if angle < 0:
+        """Converts angle from 0 to 180 to -90 to 90"""
+        newAngle = angle - 90
+        if angle < -90:
             return -90
-        elif angle > 180:
+        elif angle > 90:
             return 90
-        return (angle - 90)  # Convert 0-180 to -90 to 90
+        else:
+            return newAngle
        
     def set_servo_x(self, angle):
-        self._servoX.angle = angle
+        self._servoX.angle = self._boundAngle(angle)
         
     def turn_servo_x(self, angle):
         self._servoX.angle = self._boundAngle(self.get_servo_x() + angle)
         
     def set_servo_y(self, angle):
-        self._servoY.angle = angle
+        self._servoY.angle = self._boundAngle(angle)
         
     def turn_servo_y(self, angle):
         self._servoY.angle = self._boundAngle(self.get_servo_y() + angle)
