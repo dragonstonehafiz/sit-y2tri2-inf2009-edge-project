@@ -1,0 +1,36 @@
+python export.py --weights yolov5n.pt --img 224 --batch 1 --simplify --include onnx --inplace --int8
+
+128
+
+60 runs
+avg inference time: 0.08s
+phone image detection: not great
+printed photo detection: 
+
+160
+
+60 runs
+avg inference time: 0.13s
+phone image detection: not great
+printed photo detection: 
+
+192
+
+60 runs
+avg inference time: 0.18s
+phone image detection: not consistent enough
+printed photo detection: 
+
+224
+
+60 runs
+avg inference time: 0.23s
+phone image detection: not consistent enough
+printed photo detection: 
+
+256
+
+60 runs
+avg inference time: 0.3s
+phone image detection: Can be quite consistent
+printed photo detection: 
