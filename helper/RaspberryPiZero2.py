@@ -37,13 +37,13 @@ class RaspberryPiZero2(BoardInterface):
         self._servoX.angle = self._boundAngle(angle)
         
     def turn_servo_x(self, angle):
-        self._servoX.angle = self._boundAngle(self.get_servo_x() + angle)
+        self.set_servo_x(self.get_servo_x() + angle)
         
     def set_servo_y(self, angle):
         self._servoY.angle = self._boundAngle(angle)
         
     def turn_servo_y(self, angle):
-        self._servoY.angle = self._boundAngle(self.get_servo_y() + angle)
+        self.set_servo_x(self.get_servo_y() + angle)
 
     def get_servo_x(self):
         return self._servoX.angle
