@@ -10,15 +10,18 @@ import queue
 import numpy as np
 import threading
 
+camsize = 192
+# camsize = 640
+
 global_data = {
     "is_running": True,
     # Rendering
     "frame_queue": queue.Queue(),
     "last_frame_time": time.time(),
 
-    # Camera
-    "cam_size": (256, 256),
-    "cam_center": (128, 128),
+    # Visuals
+    "cam_size": (camsize, camsize),
+    "cam_center": (camsize / 2, camsize / 2),
 
     # Servers
     "mqtt_server_controls": None,
@@ -27,8 +30,8 @@ global_data = {
 
     # Object Detection
     "auto": True,
-    # "yolov5": YOLOv5("yolov5nu")
-    "yolov5": YoloV5_ONNX("model/yolov5n_224.onnx", (224, 224))
+    # "yolov5": YOLOv5_Ultralytics("yolov5su")
+    "yolov5": YoloV5_ONNX(f"model/yolov5n_{camsize}.onnx", (camsize, camsize))
     }
 
 def camera_data_callback(client, userdata, msg):
@@ -163,6 +166,7 @@ if __name__ == "__main__":
         frame_queue: queue.Queue = global_data["frame_queue"]
         if not frame_queue.empty():
             lastimage = frame_queue.get()
+            lastimage = cv2.resize(lastimage, ((int)(camsize), (int)(camsize)))
 
             if global_data["auto"]:
                 yolov5: YoloV5_ONNX = global_data["yolov5"]
@@ -182,12 +186,13 @@ if __name__ == "__main__":
                         mqtt_cam_controls.send(f"turny:{dispY}")
 
                     cv2.circle(lastimage, obj_center, 5, color=(255, 0, 0), thickness=5)
+                    lastimage = cv2.putText(lastimage, f'{obj_center}', obj_center, cv2.FONT_HERSHEY_COMPLEX, 1, (255, 255, 255), 1, cv2.LINE_AA)
                     
         elif current_time - global_data["last_frame_time"] > 1:
             cam_size_x, cam_size_y = global_data["cam_size"]
             lastimage = np.zeros((cam_size_x, cam_size_y, 3), dtype=np.uint8)
 
-        # lastimage = cv2.resize(lastimage, (500, 500))
+        # lastimage = cv2.resize(lastimage, (640, 640))
         cv2.imshow("Received Image", lastimage)
 
         if (cv2.waitKey(1) & 0xFF == ord('q')) or global_data["is_running"] == False:
