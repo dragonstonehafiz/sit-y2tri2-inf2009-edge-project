@@ -1,7 +1,6 @@
 import cv2
 import numpy as np
 import onnxruntime as ort
-import onnx
 import time
 
 class YoloV5_ONNX:
