@@ -4,7 +4,7 @@ import onnxruntime
 import time
 
 # Load ONNX model
-onnx_model = "model/yolov5n.onnx"
+onnx_model = "model/yolov5n_256.onnx"
 session = onnxruntime.InferenceSession(onnx_model, providers=["CPUExecutionProvider"])
 
 # Get model input/output details
@@ -13,11 +13,11 @@ output_name = session.get_outputs()[0].name
 
 # Load and preprocess image
 img = cv2.imread("image/image.jpg")
-img_resized = cv2.resize(img, (640, 640))  # Resize to model input
+img_resized = cv2.resize(img, (256, 256))  # Resize to model input
 img_input = img_resized.transpose(2, 0, 1)  # Convert to (C, H, W)
 img_input = np.expand_dims(img_input, axis=0).astype(np.float32) / 255.0  # Normalize
 
-start_time = time.time()
+startTime = time.time()
 # Run inference
 outputs = session.run([output_name], {input_name: img_input})[0]
 
@@ -54,4 +54,4 @@ if len(indices) > 0:
 
 endTime = time.time()
 
-print(f"{(start_time - endTime)*1000:0.2f}ms")
+print(f"Inference Time {(endTime - startTime):0.2f}s")
