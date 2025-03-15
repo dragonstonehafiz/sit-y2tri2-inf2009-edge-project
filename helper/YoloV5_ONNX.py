@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
 import onnxruntime as ort
+import onnx
 import time
 
 class YoloV5_ONNX:
-    def __init__(self, model_path="model/yolov5n_256.onnx"):
+    def __init__(self, model_path="model/yolov5n_fp16.onnx"):
         so = ort.SessionOptions()
         so.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL  # Enable all optimizations
 
@@ -16,7 +17,7 @@ class YoloV5_ONNX:
     def preprocess(self, image):
         """Prepares the image for YOLOv5 model."""
         img_input = image.transpose(2, 0, 1)  # Convert to (C, H, W)
-        img_input = np.expand_dims(img_input, axis=0).astype(np.float32) / 255.0  # Normalize
+        img_input = np.expand_dims(img_input, axis=0).astype(np.float16) / 255.0  # Normalize
         return img_input
 
     def detect_objects(self, image):
@@ -65,12 +66,23 @@ class YoloV5_ONNX:
 
 # ✅ **Run Detection**
 if __name__ == "__main__":
+    # import onnx
+    # from onnxconverter_common import float16
+
+    # # Load FP32 ONNX model
+    # model_fp32 = onnx.load("model/yolov5n.onnx")
+
+    # # Convert model to FP16
+    # model_fp16 = float16.convert_float_to_float16(model_fp32)
+
+    # # Save FP16 ONNX model
+    # onnx.save(model_fp16, "model/yolov5n_fp16.onnx")
+
     image_path = "image/image.jpg"
     image = cv2.imread(image_path)
     img_resized = cv2.resize(image, (256, 256))
 
-
-    model = YoloV5_ONNX("model/yolov5n_int.onnx")
+    model = YoloV5_ONNX("model/yolov5n_fp16.onnx")
 
     startTime = time.time()
     objDetected = model.detect_objects(img_resized)
@@ -83,7 +95,7 @@ if __name__ == "__main__":
         print(f"Inference Time {elapsedTime:0.2f}s")
 
     # Render and show detections
-    # image = model.render_detections(img_resized, objDetected)
-    # cv2.imshow("Bird Detection", img_resized)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
+    image = model.render_detections(img_resized, objDetected)
+    cv2.imshow("Bird Detection", img_resized)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()

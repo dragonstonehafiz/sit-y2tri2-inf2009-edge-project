@@ -86,6 +86,7 @@ pip install -r requirements.txt --verbose
 pip install "paho-mqtt<2.0"
 pip uninstall numpy
 pip install --no-cache-dir numpy
+pip install onnxruntime==1.16.0 --no-cache-dir
 sudo apt-get -y install libopenblas-dev
 ```
 
