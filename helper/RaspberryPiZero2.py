@@ -13,8 +13,8 @@ class RaspberryPiZero2(BoardInterface):
     
     def __init__(self):
         self._factory = PiGPIOFactory()
-        self._servoX = AngularServo(pin=13, min_angle=0, max_angle=180, pin_factory=self._factory)
-        self._servoY = AngularServo(pin=12, min_angle=0, max_angle=180, pin_factory=self._factory)
+        self._servoX = AngularServo(pin=13, pin_factory=self._factory)
+        self._servoY = AngularServo(pin=12, pin_factory=self._factory)
 
         # Laser Set Up
         self._laser = LED(pin=17, pin_factory=self._factory)
