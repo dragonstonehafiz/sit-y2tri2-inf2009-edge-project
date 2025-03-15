@@ -40,7 +40,7 @@ def camera_data_callback(client, userdata, msg):
 def server_commands_callback(client, userdata, msg):
     message = msg.payload.decode()
 
-    print(message)
+    # print(message)
     # Only valid messages should be recieved, so no need to make checks
     recieved = message.split(":")
     if recieved[0] == "auto":
@@ -175,7 +175,7 @@ if __name__ == "__main__":
                     # calculate displacement of obj from center
                     # then normalize it so it is not some crazy large number
                     dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
-                    print(dispX, dispY)
+                    # print(dispX, dispY)
                     if (abs(dispX) > 1):
                         mqtt_cam_controls.send(f"turnx:{dispX}")
                     if (abs(dispY) > 1):

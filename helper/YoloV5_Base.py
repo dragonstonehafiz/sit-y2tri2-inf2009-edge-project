@@ -1,5 +1,3 @@
-import numpy as np
-from ultralytics import YOLO
 from abc import ABC, abstractmethod
 
 class YOLOv5(ABC):
