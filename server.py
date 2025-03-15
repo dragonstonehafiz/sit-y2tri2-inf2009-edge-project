@@ -1,6 +1,7 @@
 from helper.MQTT import MQTT_Publisher, MQTT_Subscriber
 from helper.MQTT import MQTT_TOPIC_CAM, MQTT_TOPIC_PI_ZERO_CONTROLS, MQTT_TOPIC_SERVER_CONTROLS
 from helper.YoloV5 import YOLOv5
+# from helper.YoloV5_ONNX import YOLOv5_ONNX
 from helper.utils import convert_bytes_to_frame, get_closest_coords, get_object_displacement
 
 import time
@@ -16,8 +17,8 @@ global_data = {
     "last_frame_time": time.time(),
 
     # Camera
-    "cam_size": (240, 240),
-    "cam_center": (120, 120),
+    "cam_size": (256, 256),
+    "cam_center": (128, 128),
 
     # Servers
     "mqtt_server_controls": None,
@@ -25,8 +26,8 @@ global_data = {
     "mqtt_cam_feed": None,
 
     # Object Detection
-    "auto": False,
-    "yolov5": YOLOv5("yolov5s")
+    "auto": True,
+    "yolov5": YOLOv5("yolov5nu")
     }
 
 def camera_data_callback(client, userdata, msg):
@@ -41,19 +42,20 @@ def camera_data_callback(client, userdata, msg):
         # If objects were found, find the coords of the closest one
         if len(detections) > 0:
             obj_center = get_closest_coords(global_data["cam_center"], detections)
+            print(obj_center)
 
             # calculate displacement of obj from center
             # then normalize it so it is not some crazy large number
-            dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
-            if dispX > 2:
-                mqtt_cam_controls.send(f"turnx:{1}")
-            elif dispX < -2:
-                mqtt_cam_controls.send(f"turnx:{-1}")
+            # dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
+            # if dispX > 2:
+            #     mqtt_cam_controls.send(f"turnx:{1}")
+            # elif dispX < -2:
+            #     mqtt_cam_controls.send(f"turnx:{-1}")
 
-            if dispY > 2:
-                mqtt_cam_controls.send(f"turny:{1}")
-            elif dispY < -2:
-                mqtt_cam_controls.send(f"turny:{-1}")
+            # if dispY > 2:
+            #     mqtt_cam_controls.send(f"turny:{1}")
+            # elif dispY < -2:
+            #     mqtt_cam_controls.send(f"turny:{-1}")
 
 def server_commands_callback(client, userdata, msg):
     message = msg.payload.decode()

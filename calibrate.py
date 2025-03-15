@@ -25,6 +25,7 @@ def control_data_callback(client, userdata, msg):
     recieved: str = msg.payload.decode()
     # Only valid messages should be recieved, so no need to make checks
     recieved = recieved.split(":")
+    print(recieved)
     if recieved[0] == "quit":
         global_data["is_running"] = False
 
@@ -50,6 +51,7 @@ def control_data_callback(client, userdata, msg):
 
     elif recieved[0] == "message":
         print(recieved)
+
     else:
         print("Invalid Message")
 
@@ -69,7 +71,7 @@ if __name__ == "__main__":
 
     # Picam
     try:
-        picam = PiCameraInterface()
+        picam = PiCameraInterface((256, 256))
         picam.start()
     except Exception as e:
         print(f"Error starting PiCamera: {e}")
@@ -77,7 +79,7 @@ if __name__ == "__main__":
         sys.exit()
 
     # Send camera feed 12 times a second
-    fps_controller = FPSLimiter()
+    fps_controller = FPSLimiter(12)
     startTime = time.time()
 
     while global_data["is_running"]:
