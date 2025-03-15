@@ -35,27 +35,6 @@ def camera_data_callback(client, userdata, msg):
     global_data["frame_queue"].put(frame)
     global_data["last_frame_time"] = time.time()
 
-    if global_data["auto"]:
-        yolov5: YOLOv5 = global_data["yolov5"]
-        detections = yolov5.detect_objects(lastimage) 
-
-        # If objects were found, find the coords of the closest one
-        if len(detections) > 0:
-            obj_center = get_closest_coords(global_data["cam_center"], detections)
-
-            # calculate displacement of obj from center
-            # then normalize it so it is not some crazy large number
-            dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
-            print(dispX, dispY)
-            if dispX > 2:
-                mqtt_cam_controls.send(f"turnx:{1}")
-            elif dispX < -2:
-                mqtt_cam_controls.send(f"turnx:{-1}")
-
-            if dispY > 2:
-                mqtt_cam_controls.send(f"turny:{1}")
-            elif dispY < -2:
-                mqtt_cam_controls.send(f"turny:{-1}")
 
 def server_commands_callback(client, userdata, msg):
     message = msg.payload.decode()
@@ -183,6 +162,25 @@ if __name__ == "__main__":
         frame_queue: queue.Queue = global_data["frame_queue"]
         if not frame_queue.empty():
             lastimage = frame_queue.get()
+
+            if global_data["auto"]:
+                yolov5: YOLOv5 = global_data["yolov5"]
+                detections = yolov5.detect_objects(lastimage) 
+
+                # If objects were found, find the coords of the closest one
+                if len(detections) > 0:
+                    obj_center = get_closest_coords(global_data["cam_center"], detections)
+
+                    # calculate displacement of obj from center
+                    # then normalize it so it is not some crazy large number
+                    dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
+                    print(dispX, dispY)
+                    if (abs(dispX) > 1):
+                        mqtt_cam_controls.send(f"turnx:{dispX}")
+                    if (abs(dispY) > 1):
+                        mqtt_cam_controls.send(f"turny:{dispY}")
+
+                    cv2.circle(lastimage, obj_center, 5, color=(255, 0, 0), thickness=5)
                     
         elif current_time - global_data["last_frame_time"] > 1:
             cam_size_x, cam_size_y = global_data["cam_size"]

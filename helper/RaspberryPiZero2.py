@@ -46,10 +46,10 @@ class RaspberryPiZero2(BoardInterface):
         self.set_servo_y(self.get_servo_y() + angle)
 
     def get_servo_x(self):
-        return self._servoX.angle
+        return self._servoX.angle + 90
     
     def get_servo_y(self):
-        return self._servoY.angle
+        return self._servoY.angle + 90
         
     def set_laser(self, val: bool):
         if val:
