@@ -80,6 +80,8 @@ def init():
     SEND_IMAGE_DATA = True
     MQTT_IPADDR = input("Input Server IP Address: ")
     
+    CAM_RESOLUTION = 160
+
     # Load MQTT Connection
     try:
         if SEND_IMAGE_DATA:
@@ -97,7 +99,7 @@ def init():
             global_data["mqtt_cam_controls"] = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, cam_controls_callback)
             global_data["mqtt_cam_controls"].loop_start()
         else:
-            global_data["yolov5"] = YoloV5_ONNX("model/yolov5n_160.onnx")
+            global_data["yolov5"] = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx")
             pass
     except Exception as e:
         print(f"Failed to connect to MQTT Broker: {e}")
@@ -105,7 +107,7 @@ def init():
 
     # Picam
     try:
-        global_data["picam"] = PiCameraInterface((160, 160))
+        global_data["picam"] = PiCameraInterface((CAM_RESOLUTION, CAM_RESOLUTION))
         global_data["picam"].start()
     except Exception as e:
         print(f"Error starting PiCamera: {e}")

@@ -1,2 +1,6 @@
 venv/
 __pycache__/
+
+model/yolov5mu.pt
+model/yolov5nu.pt
+model/yolov5su.pt

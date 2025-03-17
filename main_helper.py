@@ -19,7 +19,6 @@ def record_audio_thread(global_data: dict):
             global_data["most_recent_sound"], global_data["most_recent_sound_peak_amp"] = audio.record_audio(3)  # Record for 3 seconds
             
 
-
 def scan_handle_x(board: BoardInterface, global_data: dict):
     # Turn servo x in either left or right
     # then check if the servo is at max/min

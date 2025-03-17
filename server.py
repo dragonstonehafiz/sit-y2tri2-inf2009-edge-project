@@ -10,8 +10,8 @@ import queue
 import numpy as np
 import threading
 
-camsize = 160
-# camsize = 640
+# camsize = 256
+camsize = 640
 
 global_data = {
     "is_running": True,
@@ -30,7 +30,7 @@ global_data = {
 
     # Object Detection
     "auto": False,
-    "yolov5": YOLOv5_Ultralytics("yolov5su")
+    "yolov5": YOLOv5_Ultralytics("yolov5mu")
     # "yolov5": YoloV5_ONNX(f"model/yolov5n_{camsize}.onnx", (camsize, camsize))
     }
 
@@ -193,6 +193,7 @@ if __name__ == "__main__":
             cam_size_x, cam_size_y = global_data["cam_size"]
             lastimage = np.zeros((cam_size_x, cam_size_y, 3), dtype=np.uint8)
 
+        # Make webcam more visible
         # lastimage = cv2.resize(lastimage, (640, 640))
         cv2.imshow("Received Image", lastimage)
 
