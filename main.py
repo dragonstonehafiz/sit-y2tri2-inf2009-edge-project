@@ -1,9 +1,10 @@
 from helper.PiCameraInterface import PiCameraInterface
 from helper.FPSLimiter import FPSLimiter
 from helper.MQTT import MQTT_Subscriber, MQTT_Publisher, MQTT_TOPIC_CAM, MQTT_TOPIC_PI_ZERO_CONTROLS, MQTT_TOPIC_SERVER_CONTROLS
-from helper.utils import convert_frame_to_bytes
+from helper.utils import convert_frame_to_bytes, get_closest_coords, get_object_displacement
 from helper.BoardInterface import BoardInterface
 from helper.RaspberryPiZero2 import RaspberryPiZero2
+from helper.YoloV5_ONNX import YoloV5_ONNX, YOLOv5
 from helper.AudioInterface import AudioInterface
 from main_logic import scan_handle_x, record_audio_thread, STATES
 
@@ -25,6 +26,9 @@ global_data = {
     "last_bird_time": time.time(),
     "most_recent_sound": None,
     "most_recent_sound_peak_amp": None, 
+
+    # ONNX
+    "yolov5": None,
 
     # Server
     "mqtt_cam_feed": None,
@@ -75,6 +79,9 @@ def change_state(nextState: int):
 
     if nextState == STATES.IDLE:
         print("Entering State Idle")
+        board.set_servo_x(90)
+        board.set_servo_y(180)
+        board.set_laser(0)
 
         # If relying on cloud for computation, tell server to stop detecting objects
         mqtt_server_controls: MQTT_Publisher = global_data["mqtt_server_controls"]
@@ -90,7 +97,7 @@ def change_state(nextState: int):
         global_data["scan_dir_x"] = True
         global_data["scan_dir_y"] = False
 
-        # Only do this part if relying on server for computation
+        # If relying on cloud, tell server to start sending turn orders based on model detected
         mqtt_server_controls: MQTT_Publisher = global_data["mqtt_server_controls"]
         if mqtt_server_controls is not None:
             mqtt_server_controls.send("auto:1")
@@ -129,8 +136,20 @@ def scan():
     # Check if we are relying on cloud for object detection
     mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
     if mqtt_cam_controls is None:
-        # yolov5: YOLOv5 = global_data["yolov5"]
-        # objects = yolov5.detect_objects(frame, conf_thres=0.5)
+        yolov5: YOLOv5 = global_data["yolov5"]
+        detections = yolov5.detect_objects(frame, conf_thres=0.5)
+        # If objects were found, find the coords of the closest one
+        if len(detections) > 0:
+            obj_center = get_closest_coords(global_data["cam_center"], detections)
+
+            # calculate displacement of obj from center
+            # then normalize it so it is not some crazy large number
+            dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
+            # print(dispX, dispY)
+            if (abs(dispX) > 1):
+                mqtt_cam_controls.send(f"turnx:{dispX}")
+            if (abs(dispY) > 1):
+                mqtt_cam_controls.send(f"turny:{dispY}")
         # if len(objects) > 0:
         #     print(objects[0])
         # detect object
@@ -178,6 +197,7 @@ if __name__ == "__main__":
             global_data["mqtt_cam_controls"] = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, cam_controls_callback)
             global_data["mqtt_cam_controls"].loop_start()
         else:
+            global_data["yolov5"] = YoloV5_ONNX("model/yolov5n_160")
             pass
     except Exception as e:
         print(f"Failed to connect to MQTT Broker: {e}")
@@ -185,11 +205,11 @@ if __name__ == "__main__":
         
 
     # FPSLimiter controls the number of 5
-    rrl = FPSLimiter(12)
+    rrl = FPSLimiter(6)
 
     # Picam
     try:
-        global_data["picam"] = PiCameraInterface((240, 240))
+        global_data["picam"] = PiCameraInterface((160, 160))
         global_data["picam"].start()
     except Exception as e:
         print(f"Error starting PiCamera: {e}")
@@ -220,7 +240,8 @@ if __name__ == "__main__":
         if currentTime - startTime >= 999:
             global_data["is_running"] = False
             break
-
+        
+        print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
         rrl.endFrame()
 
     global_data["board"].close()

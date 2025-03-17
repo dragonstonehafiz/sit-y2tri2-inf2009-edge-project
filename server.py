@@ -10,7 +10,7 @@ import queue
 import numpy as np
 import threading
 
-camsize = 192
+camsize = 160
 # camsize = 640
 
 global_data = {
@@ -29,9 +29,9 @@ global_data = {
     "mqtt_cam_feed": None,
 
     # Object Detection
-    "auto": True,
-    # "yolov5": YOLOv5_Ultralytics("yolov5su")
-    "yolov5": YoloV5_ONNX(f"model/yolov5n_{camsize}.onnx", (camsize, camsize))
+    "auto": False,
+    "yolov5": YOLOv5_Ultralytics("yolov5su")
+    # "yolov5": YoloV5_ONNX(f"model/yolov5n_{camsize}.onnx", (camsize, camsize))
     }
 
 def camera_data_callback(client, userdata, msg):
