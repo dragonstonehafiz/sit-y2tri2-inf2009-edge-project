@@ -9,6 +9,7 @@ from helper.AudioInterface import AudioInterface
 from main_helper import scan_handle_x, record_audio_thread, STATES
 
 import time
+import traceback
 import threading
 import sys
 
@@ -101,6 +102,8 @@ def init():
             pass
     except Exception as e:
         print(f"Failed to connect to MQTT Broker: {e}")
+        traceback.print_exc()
+        print("\nQuitting\n")
         sys.exit()
 
     # Picam
@@ -109,7 +112,8 @@ def init():
         global_data["picam"].start()
     except Exception as e:
         print(f"Error starting PiCamera: {e}")
-        print("Quitting...")
+        traceback.print_exc()
+        print("\nQuitting\n")
         sys.exit()
 
 def change_state(nextState: int):
@@ -184,7 +188,8 @@ def scan():
                 change_state(STATES.TRACKING)
         except Exception as e:
             print(f"Error {e}")
-            global_data["is_running"] = False
+            traceback.print_exc()
+            change_state(STATES.QUIT)
 
 def tracking():
     picam: PiCameraInterface = global_data["picam"]
@@ -217,7 +222,8 @@ def tracking():
                     board.turn_servo_y(dispY)
         except Exception as e:
             print(f"Error: {e}")
-            global_data["is_running"] = False
+            traceback.print_exc()
+            change_state(STATES.QUIT)
 
 
     # Go back to idle state if no bird is detected for a period of time
