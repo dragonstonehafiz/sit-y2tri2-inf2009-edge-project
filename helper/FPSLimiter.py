@@ -10,7 +10,7 @@ class FPSLimiter:
     _frameStartTime: float
     """The time the current frame was rendered.
     """
-    _deltaTime: float = 0
+    _deltaTime: float = 1e-5
     """The time taken to render the current frame.
     """
     

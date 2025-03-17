@@ -226,8 +226,8 @@ if __name__ == "__main__":
     change_state(STATES.IDLE)
 
     # Start thread for recording audio
-    audio_thread = threading.Thread(target=lambda x: {record_audio_thread(global_data)}, daemon=True)
-    audio_thread.start()
+    # audio_thread = threading.Thread(target=lambda x: {record_audio_thread(global_data)}, daemon=True)
+    # audio_thread.start()
 
     while True:
         rrl.startFrame()
@@ -246,8 +246,8 @@ if __name__ == "__main__":
             global_data["is_running"] = False
             break
         
-        print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
         rrl.endFrame()
+        print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
 
     global_data["board"].close()
     
