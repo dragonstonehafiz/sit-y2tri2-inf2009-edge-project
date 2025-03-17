@@ -97,7 +97,7 @@ def init():
             global_data["mqtt_cam_controls"] = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, cam_controls_callback)
             global_data["mqtt_cam_controls"].loop_start()
         else:
-            global_data["yolov5"] = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx")
+            global_data["yolov5"] = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx", image_size=(CAM_RESOLUTION, CAM_RESOLUTION))
             pass
     except Exception as e:
         print(f"Failed to connect to MQTT Broker: {e}")
@@ -240,7 +240,7 @@ if __name__ == "__main__":
     # audio_thread = threading.Thread(target=lambda x: {record_audio_thread(global_data)}, daemon=True)
     # audio_thread.start()
 
-    while True:
+    while global_data["is_running"]:
         rrl.startFrame()
         currentTime = time.time()
         currState: int = global_data["state"]

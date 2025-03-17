@@ -8,7 +8,8 @@ except ModuleNotFoundError:
     from YoloV5_Base import YOLOv5
 
 class YoloV5_ONNX(YOLOv5):
-    def __init__(self, model_path="model/yolov5n.onnx", image_size=(256,256)):
+    def __init__(self, model_path, image_size):
+        print(f"Loading {model_path}")
         so = ort.SessionOptions()
         so.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL  # Enable all optimizations
 
