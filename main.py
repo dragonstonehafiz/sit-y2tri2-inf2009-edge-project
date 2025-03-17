@@ -18,6 +18,7 @@ global_data = {
     "board": None,
     "picam": None,
     "yolov5": None,
+    "camResolution": 160,
 
     # Logic
     "state": int,
@@ -26,9 +27,6 @@ global_data = {
     "last_bird_time": time.time(),
     "most_recent_sound": None,
     "most_recent_sound_peak_amp": None, 
-
-    # ONNX
-    "yolov5": None,
 
     # Server
     "mqtt_cam_feed": None,
@@ -80,7 +78,7 @@ def init():
     SEND_IMAGE_DATA = True
     MQTT_IPADDR = input("Input Server IP Address: ")
     
-    CAM_RESOLUTION = 160
+    CAM_RESOLUTION = global_data["camResolution"]
 
     # Load MQTT Connection
     try:
@@ -178,26 +176,15 @@ def scan():
     mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
     if mqtt_cam_controls is None:
         yolov5: YOLOv5 = global_data["yolov5"]
-        detections = yolov5.detect_objects(frame, conf_thres=0.5)
-        # If objects were found, find the coords of the closest one
-        if len(detections) > 0:
-            obj_center = get_closest_coords(global_data["cam_center"], detections)
 
-            # calculate displacement of obj from center
-            # then normalize it so it is not some crazy large number
-            dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
-            # print(dispX, dispY)
-            if (abs(dispX) > 1):
-                mqtt_cam_controls.send(f"turnx:{dispX}")
-            if (abs(dispY) > 1):
-                mqtt_cam_controls.send(f"turny:{dispY}")
-        # if len(objects) > 0:
-        #     print(objects[0])
-        # detect object
-        # object_detected = obj_det_func
-        # if object_detected:
-        #     change_state(currState, STATES.TRACKING, pizero)
-        pass
+        try:
+            detections = yolov5.detect_objects(frame, conf_thres=0.5)
+            # If object is found, change state to tracking
+            if len(detections) > 0:
+                change_state(STATES.TRACKING)
+        except Exception as e:
+            print(f"Error {e}")
+            global_data["is_running"] = False
 
 def tracking():
     picam: PiCameraInterface = global_data["picam"]
@@ -208,6 +195,30 @@ def tracking():
     if mqtt_cam_feed is not None:
         frame_bytes = convert_frame_to_bytes(frame)
         mqtt_cam_feed.send(frame_bytes)
+
+    # If we are not relying on server for processing, do it here
+    mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
+    if mqtt_cam_controls is None:
+        board: BoardInterface = global_data["board"]
+        yolov5: YOLOv5 = global_data["yolov5"]
+        try:
+            detections = yolov5.detect_objects(frame, conf_thres=0.5)
+
+            # If objects were found, find the coords of the closest one
+            if len(detections) > 0:
+                obj_center = get_closest_coords(global_data["cam_center"], detections)
+
+                # calculate displacement of obj from center
+                # then normalize it so it is not some crazy large number
+                dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
+                if abs(dispX) > 1:
+                    board.turn_servo_x(dispX)
+                if abs(dispY) > 1:
+                    board.turn_servo_y(dispY)
+        except Exception as e:
+            print(f"Error: {e}")
+            global_data["is_running"] = False
+
 
     # Go back to idle state if no bird is detected for a period of time
     last_bird_time = global_data["last_bird_time"]
