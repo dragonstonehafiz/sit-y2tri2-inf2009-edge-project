@@ -161,6 +161,7 @@ if __name__ == "__main__":
     mqtt_cam_controls.loop_start()
     mqtt_server_controls.loop_start()
 
+    # Main Loop
     while True:
         current_time = time.time()
         frame_queue: queue.Queue = global_data["frame_queue"]

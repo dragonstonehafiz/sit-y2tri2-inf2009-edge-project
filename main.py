@@ -6,7 +6,7 @@ from helper.BoardInterface import BoardInterface
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.YoloV5_ONNX import YoloV5_ONNX, YOLOv5
 from helper.AudioInterface import AudioInterface
-from main_logic import scan_handle_x, record_audio_thread, STATES
+from main_helper import scan_handle_x, record_audio_thread, STATES
 
 import time
 import threading
@@ -72,6 +72,45 @@ def cam_controls_callback(client, userdata, msg):
 
     except Exception as e:
         print(f"Exception {e}")
+
+def init():
+    global_data["board"] = RaspberryPiZero2()
+    # global_data["board"] = Arduino("/dev/ttyACM0")
+
+    SEND_IMAGE_DATA = True
+    MQTT_IPADDR = input("Input Server IP Address: ")
+    
+    # Load MQTT Connection
+    try:
+        if SEND_IMAGE_DATA:
+            # To see image output
+            global_data["mqtt_cam_feed"] = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_CAM)
+            global_data["mqtt_cam_feed"].loop_start()
+
+        SERVER_PROCESSING = False
+        if SERVER_PROCESSING:
+            # To tell server to start looking at images
+            global_data["mqtt_server_controls"] = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_SERVER_CONTROLS)
+            global_data["mqtt_server_controls"].loop_start()
+
+            # Rely on server for object detection
+            global_data["mqtt_cam_controls"] = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, cam_controls_callback)
+            global_data["mqtt_cam_controls"].loop_start()
+        else:
+            global_data["yolov5"] = YoloV5_ONNX("model/yolov5n_160.onnx")
+            pass
+    except Exception as e:
+        print(f"Failed to connect to MQTT Broker: {e}")
+        sys.exit()
+
+    # Picam
+    try:
+        global_data["picam"] = PiCameraInterface((160, 160))
+        global_data["picam"].start()
+    except Exception as e:
+        print(f"Error starting PiCamera: {e}")
+        print("Quitting...")
+        sys.exit()
 
 def change_state(nextState: int):
     global_data['state'] = nextState
@@ -175,50 +214,12 @@ def tracking():
         change_state(STATES.IDLE)
 
 if __name__ == "__main__":
-    global_data["board"] = RaspberryPiZero2()
-    # global_data["board"] = Arduino("/dev/ttyACM0")
-
-    SEND_IMAGE_DATA = True
-    MQTT_IPADDR = input("Input Server IP Address: ")
-    
-    try:
-        if SEND_IMAGE_DATA:
-            # To see image output
-            global_data["mqtt_cam_feed"] = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_CAM)
-            global_data["mqtt_cam_feed"].loop_start()
-
-        SERVER_PROCESSING = False
-        if SERVER_PROCESSING:
-            # To tell server to start looking at images
-            global_data["mqtt_server_controls"] = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_SERVER_CONTROLS)
-            global_data["mqtt_server_controls"].loop_start()
-
-            # Rely on server for object detection
-            global_data["mqtt_cam_controls"] = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, cam_controls_callback)
-            global_data["mqtt_cam_controls"].loop_start()
-        else:
-            global_data["yolov5"] = YoloV5_ONNX("model/yolov5n_160")
-            pass
-    except Exception as e:
-        print(f"Failed to connect to MQTT Broker: {e}")
-        sys.exit()
-        
-
     # FPSLimiter controls the number of 5
     rrl = FPSLimiter(6)
 
-    # Picam
-    try:
-        global_data["picam"] = PiCameraInterface((160, 160))
-        global_data["picam"].start()
-    except Exception as e:
-        print(f"Error starting PiCamera: {e}")
-        print("Quitting...")
-        sys.exit()
-
     # This is just to force quit the system after a certain time
     startTime = time.time()
-    global_data["state"] = STATES.IDLE
+    change_state(STATES.IDLE)
 
     # Start thread for recording audio
     audio_thread = threading.Thread(target=lambda x: {record_audio_thread(global_data)}, daemon=True)

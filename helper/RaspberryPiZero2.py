@@ -2,7 +2,6 @@ from helper.BoardInterface import BoardInterface
 
 from gpiozero.pins.pigpio import PiGPIOFactory
 from gpiozero import AngularServo, LED
-import cv2
 import time
 
 class RaspberryPiZero2(BoardInterface):
@@ -13,8 +12,8 @@ class RaspberryPiZero2(BoardInterface):
     
     def __init__(self):
         self._factory = PiGPIOFactory()
-        self._servoX = AngularServo(pin=13, pin_factory=self._factory)
-        self._servoY = AngularServo(pin=12, pin_factory=self._factory)
+        self._servoX = AngularServo(pin=13, pin_factory=self._factory, min_pulse_width=0.0006, max_pulse_width=0.0024)
+        self._servoY = AngularServo(pin=12, pin_factory=self._factory, min_pulse_width=0.0006, max_pulse_width=0.0024)
 
         # Laser Set Up
         self._laser = LED(pin=17, pin_factory=self._factory)
