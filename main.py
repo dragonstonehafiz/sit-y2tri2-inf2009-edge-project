@@ -216,6 +216,8 @@ def tracking():
         change_state(STATES.IDLE)
 
 if __name__ == "__main__":
+    init()
+
     # FPSLimiter controls the number of 5
     rrl = FPSLimiter(6)
 
