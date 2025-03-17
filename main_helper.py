@@ -19,24 +19,24 @@ def record_audio_thread(global_data: dict):
             global_data["most_recent_sound"], global_data["most_recent_sound_peak_amp"] = audio.record_audio(3)  # Record for 3 seconds
             
 
-def scan_handle_x(board: BoardInterface, global_data: dict, servo_turn_rate=10):
+def scan_handle_x(board: BoardInterface, global_data: dict, servo_turn_rate_x=10, servo_turn_rate_y=15):
     # Turn servo x in either left or right
     # then check if the servo is at max/min
     # if it is, turn the y servo
     scan_dir_x = global_data["scan_dir_x"]
     if scan_dir_x:
-        board.turn_servo_x(servo_turn_rate)
+        board.turn_servo_x(servo_turn_rate_x)
 
         if is_servo_out_of_bounds(board.get_servo_x(), x=True):
             scan_dir_x = not scan_dir_x
-            scan_handle_y(board, global_data, servo_turn_rate=30)
+            scan_handle_y(board, global_data, servo_turn_rate=servo_turn_rate_y)
             
     elif not scan_dir_x:
-        board.turn_servo_x(-servo_turn_rate)
+        board.turn_servo_x(-servo_turn_rate_x)
 
         if is_servo_out_of_bounds(board.get_servo_x(), x=True):
             scan_dir_x = not scan_dir_x
-            scan_handle_y(board, global_data, servo_turn_rate=30)
+            scan_handle_y(board, global_data, servo_turn_rate=servo_turn_rate_y)
     
     global_data["scan_dir_x"] = scan_dir_x
 

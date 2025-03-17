@@ -19,7 +19,7 @@ global_data = {
     "board": None,
     "picam": None,
     "yolov5": None,
-    "camResolution": 160,
+    "camResolution": 256,
 
     # Logic
     "state": int,
@@ -174,7 +174,7 @@ def scan():
 
     # Turn x servo, y will be handled in scan_handle_x function
     board = global_data["board"]
-    scan_handle_x(board, global_data)
+    scan_handle_x(board, global_data, servo_turn_rate=2)
 
     # Check if we are relying on cloud for object detection
     mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
