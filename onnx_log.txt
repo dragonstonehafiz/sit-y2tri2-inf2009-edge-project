@@ -34,3 +34,4 @@ printed photo detection: can consistently track targets, but max distance is not
 avg inference time: 0.3s
 phone image detection: Can be quite consistent
 printed photo detection: much much better than the rest
+avg fps: 3fps

@@ -21,9 +21,9 @@ global_data = {
 
     # Cam
     "picam": None,
-    "cam_resolution": 256,
-    "cam_size": (256, 256),
-    "cam_center": (128, 128),
+    "cam_resolution": 224,
+    "cam_size": (224, 224),
+    "cam_center": (112, 112),
 
     # Logic
     "state": int,
@@ -223,6 +223,8 @@ def tracking():
                     board.turn_servo_x(dispX)
                 if abs(dispY) > 1:
                     board.turn_servo_y(dispY)
+                
+                global_data["last_bird_time"] = time.time()
         except Exception as e:
             print(f"Error: {e}")
             traceback.print_exc()
