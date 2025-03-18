@@ -174,7 +174,7 @@ def scan():
 
     # Turn x servo, y will be handled in scan_handle_x function
     board = global_data["board"]
-    scan_handle_x(board, global_data, servo_turn_rate=2)
+    scan_handle_x(board, global_data, servo_turn_rate_x=2)
 
     # Check if we are relying on cloud for object detection
     mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
@@ -251,17 +251,22 @@ if __name__ == "__main__":
         currentTime = time.time()
         currState: int = global_data["state"]
 
-        if currState == STATES.IDLE:
-            idle()
-        elif currState == STATES.SCAN:
-            scan()
-        elif currState == STATES.TRACKING:
-            tracking()
-        elif currState == STATES.QUIT:
-            break
-        if currentTime - startTime >= 999:
-            global_data["is_running"] = False
-            break
+        try:
+            if currState == STATES.IDLE:
+                idle()
+            elif currState == STATES.SCAN:
+                scan()
+            elif currState == STATES.TRACKING:
+                tracking()
+            elif currState == STATES.QUIT:
+                break
+            if currentTime - startTime >= 999:
+                global_data["is_running"] = False
+                break
+        except Exception as e:
+            print(f"Error: {e}")
+            traceback.print_exc()
+            change_state(STATES.QUIT)
         
         rrl.endFrame()
         print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
