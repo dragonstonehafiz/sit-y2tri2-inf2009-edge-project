@@ -21,9 +21,9 @@ global_data = {
 
     # Cam
     "picam": None,
-    "cam_resolution": 224,
-    "cam_size": (224, 224),
-    "cam_center": (112, 112),
+    "cam_resolution": 192,
+    "cam_size": (192, 192),
+    "cam_center": (96, 96),
 
     # Logic
     "state": int,
@@ -271,6 +271,9 @@ if __name__ == "__main__":
         except Exception as e:
             print(f"Error: {e}")
             traceback.print_exc()
+            change_state(STATES.QUIT)
+        except KeyboardInterrupt as e:
+            print(f"Error: {e}")
             change_state(STATES.QUIT)
         
         rrl.endFrame()

@@ -27,6 +27,8 @@ printed photo detection: can go a little further than 160, but real shotty at ba
 avg inference time: 0.23s
 phone image detection: not consistent enough
 printed photo detection: can consistently track targets, but max distance is not great
+avg fps: 4ps
+tracking is pretty good
 
 256
 
