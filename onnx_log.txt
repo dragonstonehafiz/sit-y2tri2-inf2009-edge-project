@@ -20,6 +20,8 @@ printed photo detection: better than with phone, but further the object is the l
 avg inference time: 0.18s
 phone image detection: not consistent enough
 printed photo detection: can go a little further than 160, but real shotty at bad angles
+avg fps: 5-6fps (target fps is 6fp)
+tracking isn't bad if range is close enough. this model can be used as a proof of concept, but it definitely won't cut during real world scenarios
 
 224
 

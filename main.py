@@ -81,6 +81,7 @@ def init():
     # global_data["board"] = Arduino("/dev/ttyACM0")
 
     SEND_IMAGE_DATA = True
+    SERVER_PROCESSING = True
     MQTT_IPADDR = input("Input Server IP Address: ")
     CAM_RESOLUTION = global_data["cam_resolution"]
 
@@ -91,7 +92,6 @@ def init():
             global_data["mqtt_cam_feed"] = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_CAM)
             global_data["mqtt_cam_feed"].loop_start()
 
-        SERVER_PROCESSING = False
         if SERVER_PROCESSING:
             # To tell server to start looking at images
             global_data["mqtt_server_controls"] = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_SERVER_CONTROLS)
