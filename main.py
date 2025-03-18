@@ -17,9 +17,13 @@ global_data = {
     # App
     "is_running": True,
     "board": None,
-    "picam": None,
     "yolov5": None,
-    "camResolution": 256,
+
+    # Cam
+    "picam": None,
+    "cam_resolution": 256,
+    "cam_size": (256, 256),
+    "cam_center": (128, 128),
 
     # Logic
     "state": int,
@@ -78,8 +82,7 @@ def init():
 
     SEND_IMAGE_DATA = True
     MQTT_IPADDR = input("Input Server IP Address: ")
-    
-    CAM_RESOLUTION = global_data["camResolution"]
+    CAM_RESOLUTION = global_data["cam_resolution"]
 
     # Load MQTT Connection
     try:
