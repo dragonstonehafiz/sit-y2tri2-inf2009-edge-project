@@ -81,7 +81,7 @@ def init():
     # global_data["board"] = Arduino("/dev/ttyACM0")
 
     SEND_IMAGE_DATA = True
-    SERVER_PROCESSING = True
+    SERVER_PROCESSING = False
     MQTT_IPADDR = input("Input Server IP Address: ")
     CAM_RESOLUTION = global_data["cam_resolution"]
 
@@ -125,8 +125,6 @@ def change_state(nextState: int):
 
     if nextState == STATES.IDLE:
         print("Entering State Idle")
-        board.set_servo_x(90)
-        board.set_servo_y(180)
         board.set_laser(0)
 
         # If relying on cloud for computation, tell server to stop detecting objects
@@ -136,8 +134,6 @@ def change_state(nextState: int):
     
     elif nextState == STATES.SCAN:
         print("Entering State Scan")
-        board.set_servo_x(90)
-        board.set_servo_y(90)
         board.set_laser(0)
 
         global_data["scan_dir_x"] = True
