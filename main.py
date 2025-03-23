@@ -96,7 +96,7 @@ def thread_model():
                 # Check if we are relying on cloud for object detection
                 if mqtt_cam_controls is None:
                     try:
-                        detections = yolov5.detect_objects(frame, conf_thres=0.5)
+                        detections = yolov5.detect_objects(frame, conf_thres=0.4)
                         # If object is found, change state to tracking
                         if len(detections) > 0:
                             change_state(STATES.TRACKING)
