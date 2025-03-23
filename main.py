@@ -88,53 +88,57 @@ def thread_model():
     time.sleep(0.005)
 
     while global_data["is_running"]:
-        rrl.startFrame()
-        frame = global_data["curr_frame"].copy()
+        try:
+            rrl.startFrame()
+            frame = global_data["curr_frame"].copy()
 
-        if global_data["state"] == STATES.SCAN:
-            # Check if we are relying on cloud for object detection
-            if mqtt_cam_controls is None:
-                try:
-                    detections = yolov5.detect_objects(frame, conf_thres=0.5)
-                    # If object is found, change state to tracking
-                    if len(detections) > 0:
-                        change_state(STATES.TRACKING)
-                except Exception as e:
-                    print(f"Error {e}")
-                    traceback.print_exc()
-                    change_state(STATES.QUIT)
-        
-        elif global_data["state"] == STATES.TRACKING:
-            # If we are not relying on server for processing, do it here
-            if mqtt_cam_controls is None:
-                board: BoardInterface = global_data["board"]
-                try:
-                    detections = yolov5.detect_objects(frame, conf_thres=0.5)
+            if global_data["state"] == STATES.SCAN:
+                # Check if we are relying on cloud for object detection
+                if mqtt_cam_controls is None:
+                    try:
+                        detections = yolov5.detect_objects(frame, conf_thres=0.5)
+                        # If object is found, change state to tracking
+                        if len(detections) > 0:
+                            change_state(STATES.TRACKING)
+                    except Exception as e:
+                        print(f"Error {e}")
+                        traceback.print_exc()
+                        change_state(STATES.QUIT)
+            
+            elif global_data["state"] == STATES.TRACKING:
+                # If we are not relying on server for processing, do it here
+                if mqtt_cam_controls is None:
+                    board: BoardInterface = global_data["board"]
+                    try:
+                        detections = yolov5.detect_objects(frame, conf_thres=0.5)
 
-                    # If objects were found, find the coords of the closest one
-                    if len(detections) > 0:
-                        obj_center = get_closest_coords(global_data["cam_center"], detections)
+                        # If objects were found, find the coords of the closest one
+                        if len(detections) > 0:
+                            obj_center = get_closest_coords(global_data["cam_center"], detections)
 
-                        # calculate displacement of obj from center
-                        # then normalize it so it is not some crazy large number
-                        dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
-                        if abs(dispX) > 1:
-                            board.turn_servo_x(dispX)
-                        if abs(dispY) > 1:
-                            board.turn_servo_y(dispY)
-                        
-                        global_data["last_bird_time"] = time.time()
-                except Exception as e:
-                    print(f"Error: {e}")
-                    traceback.print_exc()
-                    change_state(STATES.QUIT)
-                    pass
-        
-        elif global_data["state"] == STATES.QUIT:
-            break
+                            # calculate displacement of obj from center
+                            # then normalize it so it is not some crazy large number
+                            dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
+                            if abs(dispX) > 1:
+                                board.turn_servo_x(dispX)
+                            if abs(dispY) > 1:
+                                board.turn_servo_y(dispY)
+                            
+                            global_data["last_bird_time"] = time.time()
+                    except Exception as e:
+                        print(f"Error: {e}")
+                        traceback.print_exc()
+                        change_state(STATES.QUIT)
+                        pass
+            
+            elif global_data["state"] == STATES.QUIT:
+                break
 
-        rrl.endFrame()
-        print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
+            rrl.endFrame()
+            print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
+        except Exception as e:
+            traceback.print_stack()
+            print(f"Error: {e}")
 
         
 
@@ -249,11 +253,11 @@ if __name__ == "__main__":
     # audio_thread.start()
 
     while global_data["is_running"]:
-        rrl.startFrame()
-        currentTime = time.time()
-        currState: int = global_data["state"]
-
         try:
+            rrl.startFrame()
+            currentTime = time.time()
+            currState: int = global_data["state"]
+
             # Get the picam view for this frame
             handle_picam(global_data)
 
@@ -269,6 +273,8 @@ if __name__ == "__main__":
             if currentTime - startTime >= 999:
                 global_data["is_running"] = False
                 break
+
+            rrl.endFrame()
         except Exception as e:
             print(f"Error: {e}")
             traceback.print_exc()
@@ -277,7 +283,6 @@ if __name__ == "__main__":
             print(f"Error: {e}")
             change_state(STATES.QUIT)
         
-        rrl.endFrame()
         # print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
 
     global_data["board"].close()
