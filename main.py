@@ -83,6 +83,7 @@ def thread_model(global_data):
     CAM_RESOLUTION = global_data["cam_resolution"]
     yolov5 = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx", image_size=(CAM_RESOLUTION, CAM_RESOLUTION))
     mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
+    audio = AudioInterface(device_index=14)
     rrl = FPSLimiter(3)
     time.sleep(1)
 
@@ -90,6 +91,12 @@ def thread_model(global_data):
         try:
             rrl.startFrame()
             frame = global_data["curr_frame"].copy()
+
+            if global_data["state"] == STATES.IDLE:
+                global_data["most_recent_sound"], global_data["most_recent_sound_peak_amp"] = None, None
+            else:
+                global_data["most_recent_sound"], global_data["most_recent_sound_peak_amp"] = audio.record_audio(2)  # Record for 2 seconds
+
 
             if global_data["state"] == STATES.SCAN:
                 # Check if we are relying on cloud for object detection

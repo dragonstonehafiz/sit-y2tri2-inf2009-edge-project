@@ -27,15 +27,6 @@ def run_on_core(core_id: int, target_func: callable, *args, **kwargs):
     thread.start()
     return thread
 
-# 
-def record_audio_thread(global_data: dict):
-    audio = AudioInterface()
-    while global_data["is_running"]:
-        if global_data["state"] != STATES.IDLE:
-            global_data["most_recent_sound"], global_data["most_recent_sound_peak_amp"] = None, None
-        else:
-            global_data["most_recent_sound"], global_data["most_recent_sound_peak_amp"] = audio.record_audio(3)  # Record for 3 seconds
-
 def handle_picam(global_data: dict):
     # Get the current frames cam image and send it (if needed)
     picam: PiCameraInterface = global_data["picam"]

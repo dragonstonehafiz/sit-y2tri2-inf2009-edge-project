@@ -1,8 +1,13 @@
 import pyaudio
 import numpy as np
+import os
+import sys
+
+# Suppress ALSA/JACK errors
+sys.stderr = open(os.devnull, 'w')
 
 class AudioInterface:
-    def __init__(self, samplerate=44100, channels=1, chunk=1024, device_index=0):
+    def __init__(self, samplerate=16000, channels=1, chunk=1024, device_index=0):
         """
         Initialize the PyAudio interface with sample rate, channels, chunk size, and device index.
         """
@@ -40,19 +45,28 @@ class AudioInterface:
         peak_amplitude = np.max(np.abs(recorded_audio)) / 32767.0  # Normalize peak [0,1]
 
         return recorded_audio, peak_amplitude
+    
+    def play_audio(self, audio_data: np.ndarray):
+        """
+        Plays back recorded audio data.
+        
+        :param audio_data: NumPy array of int16 audio samples to play.
+        """
+        stream = self.audio.open(format=self.format,
+                                channels=self.channels,
+                                rate=self.samplerate,
+                                output=True)
+
+        stream.write(audio_data.tobytes())
+
+        stream.stop_stream()
+        stream.close()
 
     def close(self):
         self.audio.terminate()
 
-
-
-# Example usage:
-if __name__ == "__main__":
-    # List Devices
-    
+def list_audio_devices():
     p = pyaudio.PyAudio()
-
-    print("Available audio input devices:")
 
     for i in range(p.get_device_count()):
         dev = p.get_device_info_by_index(i)
@@ -60,13 +74,20 @@ if __name__ == "__main__":
             print(f"Index {i}: {dev['name']} - {dev['maxInputChannels']} channels")
 
     p.terminate()
-    
-    audio = AudioInterface()  # Default: samplerate=44100, channels=1
+
+
+# Example usage:
+if __name__ == "__main__":
+    audio = AudioInterface(device_index=14)  # Default: samplerate=16000, channels=1
+
+    list_audio_devices()
 
     try:
         while True:
-            print("Recording Audio...")
-            recorded_audio, peak = audio.record_audio(1)  # Record for 3 seconds
+            print("\nRecording Audio...")
+            recorded_audio, peak = audio.record_audio(3)  # Record for 3 seconds
+            print("Playing Audio...\n")
+            audio.play_audio(recorded_audio)
 
             if recorded_audio is not None:
                 print(f"Recorded audio shape: {recorded_audio.shape}")

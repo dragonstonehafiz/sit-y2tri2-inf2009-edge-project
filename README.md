@@ -46,6 +46,7 @@ sudo apt install -y python3-rpi.gpio
 sudo apt install -y python3-picamera2 
 sudo apt install -y mosquitto
 sudo apt-get install -y python3-opencv
+sudo apt install -y v4l-utils
 ```
 
 #### **Step 2: Install Drivers for ReSpeaker Mic Hat**
