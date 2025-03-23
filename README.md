@@ -1,8 +1,8 @@
-# **Bird Laser Targeter on the Edge**
+# Bird Laser Targeter on the Edge
 
 ## **Overview**
 
-This repository contains the code for a bird deterrence system that utilizes a **laser pointer** and **servo motors** to **scare off birds** that may fly into homes and cause disturbances. The system runs on a **Raspberry Pi Zero 2W** and features **wake activation**, **camera-based bird detection**, and **laser targeting**.
+This repository contains the code for a bird deterrence system that utilizes a laser pointer and servo motors to **scare off birds** that may fly into homes and cause disturbances. The system runs on a **Raspberry Pi Zero 2W** and features wake activation, camera-based bird detection, and laser targeting.
 
 ## **Components**
 
@@ -14,17 +14,28 @@ The following components are required to build this project:
 - [ReSpeaker 2-Microphone Raspberry Pi HAT](https://sg.cytron.io/p-respeaker-2-microphone-raspberry-pi-hat)
 - [CSI Camera](https://sg.cytron.io/p-5mp-camera-board-for-raspberry-pi)
 
-## **System Design**
+## System Design
 
-The software is designed to run on a **Raspberry Pi Zero 2W** with **Raspberry Pi Lite OS (32-bit)**. The Raspberry Pi Camera detects birds, while the **ReSpeaker HAT** enables wake activation. The camera is mounted on a **Pan Tilt Servo Kit**, which allows **180-degree rotation** on both axes for targeting. The **laser module** is attached to the servos for precise targeting.
+This system is built to run on a Raspberry Pi Zero 2W using a lightweight Linux distribution. 
+It integrates multiple hardware components—camera, servos, laser module, and microphone—to detect and deter birds through targeted motion and light. 
+The PiCamera provides real-time video, which is processed locally or remotely using a YOLOv5 model to detect birds. 
+Upon detection, servo motors orient the laser toward the target. Audio input can also trigger the system to begin scanning.
 
-### **Block Diagram & Software Flow**
+A USB microphone enables audio-based activation, while MQTT facilitates communication between the Pi and an optional remote server for processing or control. 
+The system operates as a finite state machine with four main modes: IDLE, SCAN, TRACKING, and QUIT.
 
-Below is the **block diagram** of the system along with the **software workflow**:
+## Block Diagram and Control Flow
 
-![Block Diagram](image/BlockDiagram.png)
+The software runs as a state machine on the Raspberry Pi, cycling between different operational states:
 
-![Software Flow](image/SoftwareFlow.png)
+- **IDLE**: Waits for an audio trigger (e.g. bird chirp).
+- **SCAN**: Sweeps the environment using servos while searching for a target.
+- **TRACKING**: Tracks a detected bird and orients the laser accordingly.
+- **QUIT**: Safely shuts down the system and disconnects all hardware.
+
+The control flow supports two operating modes:
+1. **Local Mode**: All detection and control run on the Pi using ONNX-based YOLOv5 inference.
+2. **Remote Mode**: The Pi sends camera frames to a remote server over MQTT, which processes the frames and sends back control signals.
 
 ## **Installation Instructions**
 
