@@ -78,7 +78,7 @@ def cam_controls_callback(client, userdata, msg):
     except Exception as e:
         print(f"Exception {e}")
 
-def thread_model(global_data):
+def thread_model():
     os.sched_setaffinity(0, {1, 2, 3})
     CAM_RESOLUTION = global_data["cam_resolution"]
     yolov5 = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx", image_size=(CAM_RESOLUTION, CAM_RESOLUTION))
