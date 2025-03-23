@@ -6,7 +6,7 @@ from helper.BoardInterface import BoardInterface
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.YoloV5_ONNX import YoloV5_ONNX, YOLOv5
 from helper.AudioInterface import AudioInterface
-from main_helper import scan_handle_x, record_audio_thread, STATES, handle_picam
+from main_helper import scan_handle_x, record_audio_thread, STATES, handle_picam, thread_model
 
 import time
 import traceback
@@ -19,7 +19,6 @@ global_data = {
     "is_running": True,
     "board": None,
     "yolov5": None,
-    "rrl": None,
 
     # Cam
     "picam": None,
@@ -79,8 +78,8 @@ def cam_controls_callback(client, userdata, msg):
     except Exception as e:
         print(f"Exception {e}")
 
-def thread_model():
-    os.sched_setaffinity(0, {1, 2})
+def thread_model(global_data):
+    os.sched_setaffinity(0, {1, 2, 3})
     CAM_RESOLUTION = global_data["cam_resolution"]
     yolov5 = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx", image_size=(CAM_RESOLUTION, CAM_RESOLUTION))
     mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
@@ -135,7 +134,7 @@ def thread_model():
                 break
 
             rrl.endFrame()
-            print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
+            # print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
             # print(f"Delta Time: {rrl.getDeltaTime():0.2f}")
         except Exception as e:
             traceback.print_stack()
@@ -241,7 +240,6 @@ if __name__ == "__main__":
 
     # FPSLimiter controls the number of 5
     rrl = FPSLimiter(6)
-    global_data["rrl"] = rrl
 
     # This is just to force quit the system after a certain time
     startTime = time.time()
