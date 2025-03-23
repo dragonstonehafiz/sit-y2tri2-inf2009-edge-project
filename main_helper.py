@@ -1,5 +1,8 @@
 from helper.BoardInterface import BoardInterface
 from helper.AudioInterface import AudioInterface
+from helper.PiCameraInterface import PiCameraInterface
+from helper.MQTT import MQTT_Publisher
+from helper.utils import convert_frame_to_bytes
 
 import os
 import threading
@@ -32,7 +35,17 @@ def record_audio_thread(global_data: dict):
             global_data["most_recent_sound"], global_data["most_recent_sound_peak_amp"] = None, None
         else:
             global_data["most_recent_sound"], global_data["most_recent_sound_peak_amp"] = audio.record_audio(3)  # Record for 3 seconds
-            
+
+def handle_picam(global_data: dict):
+    # Get the current frames cam image and send it (if needed)
+    picam: PiCameraInterface = global_data["picam"]
+    frame = picam.getFrame()
+    global_data["curr_frame"] = frame
+    # Send image to server
+    mqtt_cam_feed: MQTT_Publisher = global_data["mqtt_cam_feed"]
+    if mqtt_cam_feed is not None:
+        frame_bytes = convert_frame_to_bytes(frame)
+        mqtt_cam_feed.send(frame_bytes)
 
 def scan_handle_x(board: BoardInterface, global_data: dict, servo_turn_rate_x=10, servo_turn_rate_y=15):
     # Turn servo x in either left or right

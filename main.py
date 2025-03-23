@@ -1,12 +1,12 @@
 from helper.PiCameraInterface import PiCameraInterface
 from helper.FPSLimiter import FPSLimiter
 from helper.MQTT import MQTT_Subscriber, MQTT_Publisher, MQTT_TOPIC_CAM, MQTT_TOPIC_PI_ZERO_CONTROLS, MQTT_TOPIC_SERVER_CONTROLS
-from helper.utils import convert_frame_to_bytes, get_closest_coords, get_object_displacement
+from helper.utils import get_closest_coords, get_object_displacement
 from helper.BoardInterface import BoardInterface
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.YoloV5_ONNX import YoloV5_ONNX, YOLOv5
 from helper.AudioInterface import AudioInterface
-from main_helper import scan_handle_x, record_audio_thread, STATES
+from main_helper import scan_handle_x, record_audio_thread, STATES, handle_picam
 
 import time
 import traceback
@@ -24,6 +24,7 @@ global_data = {
     "cam_resolution": 192,
     "cam_size": (192, 192),
     "cam_center": (96, 96),
+    "curr_frame": None,
 
     # Logic
     "state": int,
@@ -75,6 +76,56 @@ def cam_controls_callback(client, userdata, msg):
 
     except Exception as e:
         print(f"Exception {e}")
+
+def thread_model():
+    while global_data["is_running"]:
+        frame = global_data["curr_frame"]
+
+        if global_data["state"] == STATES.SCAN:
+            # Check if we are relying on cloud for object detection
+            mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
+            if mqtt_cam_controls is None:
+                yolov5: YOLOv5 = global_data["yolov5"]
+                try:
+                    detections = yolov5.detect_objects(frame, conf_thres=0.5)
+                    # If object is found, change state to tracking
+                    if len(detections) > 0:
+                        change_state(STATES.TRACKING)
+                except Exception as e:
+                    print(f"Error {e}")
+                    traceback.print_exc()
+                    change_state(STATES.QUIT)
+        
+        elif global_data["state"] == STATES.TRACKING:
+            # If we are not relying on server for processing, do it here
+            mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
+            if mqtt_cam_controls is None:
+                board: BoardInterface = global_data["board"]
+                yolov5: YOLOv5 = global_data["yolov5"]
+                try:
+                    detections = yolov5.detect_objects(frame, conf_thres=0.5)
+
+                    # If objects were found, find the coords of the closest one
+                    if len(detections) > 0:
+                        obj_center = get_closest_coords(global_data["cam_center"], detections)
+
+                        # calculate displacement of obj from center
+                        # then normalize it so it is not some crazy large number
+                        dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
+                        if abs(dispX) > 1:
+                            board.turn_servo_x(dispX)
+                        if abs(dispY) > 1:
+                            board.turn_servo_y(dispY)
+                        
+                        global_data["last_bird_time"] = time.time()
+                except Exception as e:
+                    print(f"Error: {e}")
+                    traceback.print_exc()
+                    change_state(STATES.QUIT)
+                    pass
+        
+        elif global_data["state"] == STATES.QUIT:
+            break
 
 def init():
     global_data["board"] = RaspberryPiZero2()
@@ -162,71 +213,10 @@ def idle():
 
 def scan():
     """Constantly rotates in the x axis"""
-    picam: PiCameraInterface = global_data["picam"]
-    frame = picam.getFrame()
-
-    # Send image to server
-    mqtt_cam_feed: MQTT_Publisher = global_data["mqtt_cam_feed"]
-    if mqtt_cam_feed is not None:
-        frame_bytes = convert_frame_to_bytes(frame)
-        mqtt_cam_feed.send(frame_bytes)
-
     # Turn x servo, y will be handled in scan_handle_x function
-    board = global_data["board"]
-    scan_handle_x(board, global_data, servo_turn_rate_x=2)
-
-    # Check if we are relying on cloud for object detection
-    mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
-    if mqtt_cam_controls is None:
-        yolov5: YOLOv5 = global_data["yolov5"]
-
-        try:
-            detections = yolov5.detect_objects(frame, conf_thres=0.5)
-            # If object is found, change state to tracking
-            if len(detections) > 0:
-                change_state(STATES.TRACKING)
-        except Exception as e:
-            print(f"Error {e}")
-            traceback.print_exc()
-            change_state(STATES.QUIT)
+    scan_handle_x(global_data["board"], global_data, servo_turn_rate_x=2)
 
 def tracking():
-    picam: PiCameraInterface = global_data["picam"]
-    frame = picam.getFrame()
-
-    # Send image to server
-    mqtt_cam_feed: MQTT_Publisher = global_data["mqtt_cam_feed"]
-    if mqtt_cam_feed is not None:
-        frame_bytes = convert_frame_to_bytes(frame)
-        mqtt_cam_feed.send(frame_bytes)
-
-    # If we are not relying on server for processing, do it here
-    mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
-    if mqtt_cam_controls is None:
-        board: BoardInterface = global_data["board"]
-        yolov5: YOLOv5 = global_data["yolov5"]
-        try:
-            detections = yolov5.detect_objects(frame, conf_thres=0.5)
-
-            # If objects were found, find the coords of the closest one
-            if len(detections) > 0:
-                obj_center = get_closest_coords(global_data["cam_center"], detections)
-
-                # calculate displacement of obj from center
-                # then normalize it so it is not some crazy large number
-                dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
-                if abs(dispX) > 1:
-                    board.turn_servo_x(dispX)
-                if abs(dispY) > 1:
-                    board.turn_servo_y(dispY)
-                
-                global_data["last_bird_time"] = time.time()
-        except Exception as e:
-            print(f"Error: {e}")
-            traceback.print_exc()
-            change_state(STATES.QUIT)
-
-
     # Go back to idle state if no bird is detected for a period of time
     last_bird_time = global_data["last_bird_time"]
     current_time = time.time()
@@ -253,6 +243,9 @@ if __name__ == "__main__":
         currState: int = global_data["state"]
 
         try:
+            # Get the picam view for this frame
+            handle_picam(global_data)
+
             if currState == STATES.IDLE:
                 idle()
             elif currState == STATES.SCAN:
@@ -260,6 +253,7 @@ if __name__ == "__main__":
             elif currState == STATES.TRACKING:
                 tracking()
             elif currState == STATES.QUIT:
+                global_data["is_running"] = False
                 break
             if currentTime - startTime >= 999:
                 global_data["is_running"] = False
