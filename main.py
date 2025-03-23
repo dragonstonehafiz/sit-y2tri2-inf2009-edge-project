@@ -153,7 +153,7 @@ def init():
             global_data["mqtt_cam_controls"].loop_start()
         else:
             global_data["yolov5"] = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx", image_size=(CAM_RESOLUTION, CAM_RESOLUTION))
-            pass
+            threading.Thread(target=thread_model, daemon=True).start()
     except Exception as e:
         print(f"Failed to connect to MQTT Broker: {e}")
         traceback.print_exc()
