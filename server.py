@@ -49,6 +49,7 @@ def server_commands_callback(client, userdata, msg):
     if recieved[0] == "auto":
         global_data["auto"] = int(recieved[1])
 
+
 def get_user_input():
     commands_help = """
     Commands

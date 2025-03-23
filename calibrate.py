@@ -3,9 +3,9 @@ from helper.MQTT import MQTT_TOPIC_CAM, MQTT_TOPIC_PI_ZERO_CONTROLS
 from helper.utils import convert_frame_to_bytes
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.Arduino import Arduino
-from helper.BoardInterface import BoardInterface
 from helper.FPSLimiter import FPSLimiter
 from helper.PiCameraInterface import PiCameraInterface
+import os
 
 import time
 import threading
@@ -17,8 +17,6 @@ global_data = {
 
 # board = Arduino("/dev/ttyACM0")
 board = RaspberryPiZero2()
-
-# def servo_thread(function: callable, angle: float, core_id):
 
 def control_data_callback(client, userdata, msg):
     recieved: str = msg.payload.decode()
@@ -55,6 +53,7 @@ def control_data_callback(client, userdata, msg):
 
             
 if __name__ == "__main__":
+    print("CPU Cores:", os.cpu_count())
 
     # Server
     try:

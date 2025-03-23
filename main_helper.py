@@ -1,13 +1,28 @@
 from helper.BoardInterface import BoardInterface
 from helper.AudioInterface import AudioInterface
 
+import os
+import threading
 from enum import Enum
+
+CORE_ID_SERVO = 1
+CORE_ID_MODEL = 2
 
 class STATES(Enum):
     IDLE = 0
     SCAN = 1
     TRACKING = 2
     QUIT = 3
+
+def run_on_core(core_id: int, target_func: callable, *args, **kwargs):
+    def wrapper():
+        # Pin the thread to a specific core
+        os.sched_setaffinity(0, {core_id})
+        target_func(*args, **kwargs)
+    
+    thread = threading.Thread(target=wrapper)
+    thread.start()
+    return thread
 
 # 
 def record_audio_thread(global_data: dict):
