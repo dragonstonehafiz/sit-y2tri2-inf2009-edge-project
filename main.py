@@ -80,12 +80,12 @@ def cam_controls_callback(client, userdata, msg):
         print(f"Exception {e}")
 
 def thread_model():
-    os.sched_setaffinity(0, {1, 2, 3})
+    os.sched_setaffinity(0, {1, 2})
     CAM_RESOLUTION = global_data["cam_resolution"]
     yolov5 = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx", image_size=(CAM_RESOLUTION, CAM_RESOLUTION))
     mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
-    rrl = FPSLimiter(6)
-    time.sleep(0.2)
+    rrl = FPSLimiter(3)
+    time.sleep(1)
 
     while global_data["is_running"]:
         try:
@@ -120,9 +120,9 @@ def thread_model():
                             # then normalize it so it is not some crazy large number
                             dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
                             if abs(dispX) > 1:
-                                board.turn_servo_x(dispX)
+                                threading.Thread(target=board.turn_servo_x, args=(dispX,)).start()
                             if abs(dispY) > 1:
-                                board.turn_servo_y(dispY)
+                                threading.Thread(target=board.turn_servo_x, args=(dispY,)).start()
                             
                             global_data["last_bird_time"] = time.time()
                     except Exception as e:
@@ -135,7 +135,7 @@ def thread_model():
                 break
 
             rrl.endFrame()
-            print(f"Frame Rate: {rrl.getDeltaTime():0.2f}")
+            # print(f"Delta Time: {rrl.getDeltaTime():0.2f}")
         except Exception as e:
             traceback.print_stack()
             print(f"Error: {e}")
