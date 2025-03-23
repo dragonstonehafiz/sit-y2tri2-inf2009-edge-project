@@ -31,7 +31,6 @@ def get_closest_coords(coords: tuple[int, int], object_coords: list[tuple[int, i
 
     return closest_coords
 
-
 def normalize_displacement(displacement: tuple[int, int], frameSize: tuple[int, int]) -> tuple[int, int]:
     """
     Normalizes the displacement of an object from the center of the screen.

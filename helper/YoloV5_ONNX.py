@@ -1,16 +1,27 @@
 import cv2
 import numpy as np
 import onnxruntime as ort
+import os
 import time
 try:
     from helper.YoloV5_Base import YOLOv5
 except ModuleNotFoundError:
     from YoloV5_Base import YOLOv5
 
+def run_yolo_inference(image):
+    # Limit to cores 1, 2, 3
+    os.sched_setaffinity(0, {1, 2, 3})
+    
+    # Run your ONNX model here
+    yolov5 = YoloV5_ONNX("model/yolov5n_160.onnx", (160, 160))
+    detections = yolov5.detect_objects(image)
+    print("Detections:", detections)
+
 class YoloV5_ONNX(YOLOv5):
     def __init__(self, model_path, image_size):
         print(f"Loading {model_path}")
         so = ort.SessionOptions()
+        so.intra_op_num_threads = 4
         so.graph_optimization_level = ort.GraphOptimizationLevel.ORT_ENABLE_ALL  # Enable all optimizations
 
         self.session = ort.InferenceSession(model_path, sess_options=so, providers=["CPUExecutionProvider"])
@@ -22,6 +33,8 @@ class YoloV5_ONNX(YOLOv5):
     def preprocess(self, image):
         """Prepares the image for YOLOv5 model."""
         img_input = cv2.resize(image, self.image_size)
+        # img_input = cv2.Canny(img_input, threshold1=100, threshold2=200)
+        # img_input = np.stack([img_input] * 3, axis=-1)  # Shape: (H, W, 3)
         img_input = img_input.transpose(2, 0, 1)  # Convert to (C, H, W)
         img_input = np.expand_dims(img_input, axis=0).astype(np.float32) / 255.0  # Normalize
         return img_input
@@ -97,6 +110,7 @@ if __name__ == "__main__":
             # Render and show detections
             image = cv2.resize(image, model.image_size)
             image = model.render_detections(image, objDetected)
+            # image = cv2.Canny(image=image, threshold1=100, threshold2=200)
             image = cv2.resize(image, (500, 500))
         
             cv2.imshow("Bird Detection", image)
