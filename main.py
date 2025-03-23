@@ -6,7 +6,7 @@ from helper.BoardInterface import BoardInterface
 from helper.RaspberryPiZero2 import RaspberryPiZero2
 from helper.YoloV5_ONNX import YoloV5_ONNX, YOLOv5
 from helper.AudioInterface import AudioInterface
-from main_helper import scan_handle_x, record_audio_thread, STATES, handle_picam, thread_model
+from main_helper import scan_handle_x, STATES, handle_picam
 
 import time
 import traceback
@@ -96,7 +96,6 @@ def thread_model(global_data):
                 global_data["most_recent_sound"], global_data["most_recent_sound_peak_amp"] = None, None
             else:
                 global_data["most_recent_sound"], global_data["most_recent_sound_peak_amp"] = audio.record_audio(2)  # Record for 2 seconds
-
 
             if global_data["state"] == STATES.SCAN:
                 # Check if we are relying on cloud for object detection
