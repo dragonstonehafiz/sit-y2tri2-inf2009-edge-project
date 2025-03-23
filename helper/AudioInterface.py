@@ -1,10 +1,5 @@
 import pyaudio
 import numpy as np
-import os
-import sys
-
-# Suppress ALSA/JACK errors
-sys.stderr = open(os.devnull, 'w')
 
 class AudioInterface:
     def __init__(self, samplerate=16000, channels=1, chunk=1024, device_index=0):
