@@ -12,17 +12,19 @@ import time
 import traceback
 import threading
 import sys
+import os
 
 global_data = {
     # App
     "is_running": True,
     "board": None,
     "yolov5": None,
+    "rrl": None,
 
     # Cam
     "picam": None,
-    "cam_resolution": 192,
-    "cam_size": (192, 192),
+    "cam_resolution": 256,
+    "cam_size": (256, 256),
     "cam_center": (96, 96),
     "curr_frame": None,
 
@@ -78,14 +80,20 @@ def cam_controls_callback(client, userdata, msg):
         print(f"Exception {e}")
 
 def thread_model():
+    os.sched_setaffinity(0, {1, 2, 3})
+    CAM_RESOLUTION = global_data["cam_resolution"]
+    yolov5 = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx", image_size=(CAM_RESOLUTION, CAM_RESOLUTION))
+    mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
+    rrl = FPSLimiter(6)
+    time.sleep(0.005)
+
     while global_data["is_running"]:
-        frame = global_data["curr_frame"]
+        rrl.startFrame()
+        frame = global_data["curr_frame"].copy()
 
         if global_data["state"] == STATES.SCAN:
             # Check if we are relying on cloud for object detection
-            mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
             if mqtt_cam_controls is None:
-                yolov5: YOLOv5 = global_data["yolov5"]
                 try:
                     detections = yolov5.detect_objects(frame, conf_thres=0.5)
                     # If object is found, change state to tracking
@@ -98,10 +106,8 @@ def thread_model():
         
         elif global_data["state"] == STATES.TRACKING:
             # If we are not relying on server for processing, do it here
-            mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
             if mqtt_cam_controls is None:
                 board: BoardInterface = global_data["board"]
-                yolov5: YOLOv5 = global_data["yolov5"]
                 try:
                     detections = yolov5.detect_objects(frame, conf_thres=0.5)
 
@@ -126,6 +132,11 @@ def thread_model():
         
         elif global_data["state"] == STATES.QUIT:
             break
+
+        rrl.endFrame()
+        print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
+
+        
 
 def init():
     global_data["board"] = RaspberryPiZero2()
@@ -152,7 +163,6 @@ def init():
             global_data["mqtt_cam_controls"] = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, cam_controls_callback)
             global_data["mqtt_cam_controls"].loop_start()
         else:
-            global_data["yolov5"] = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx", image_size=(CAM_RESOLUTION, CAM_RESOLUTION))
             threading.Thread(target=thread_model, daemon=True).start()
     except Exception as e:
         print(f"Failed to connect to MQTT Broker: {e}")
@@ -227,7 +237,8 @@ if __name__ == "__main__":
     init()
 
     # FPSLimiter controls the number of 5
-    rrl = FPSLimiter(6)
+    rrl = FPSLimiter(12)
+    global_data["rrl"] = rrl
 
     # This is just to force quit the system after a certain time
     startTime = time.time()
@@ -267,7 +278,7 @@ if __name__ == "__main__":
             change_state(STATES.QUIT)
         
         rrl.endFrame()
-        print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
+        # print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
 
     global_data["board"].close()
     
