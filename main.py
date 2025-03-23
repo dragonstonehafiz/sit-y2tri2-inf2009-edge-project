@@ -122,7 +122,7 @@ def thread_model():
                             if abs(dispX) > 1:
                                 threading.Thread(target=board.turn_servo_x, args=(dispX,)).start()
                             if abs(dispY) > 1:
-                                threading.Thread(target=board.turn_servo_x, args=(dispY,)).start()
+                                threading.Thread(target=board.turn_servo_y, args=(dispY,)).start()
                             
                             global_data["last_bird_time"] = time.time()
                     except Exception as e:
