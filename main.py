@@ -23,9 +23,9 @@ global_data = {
 
     # Cam
     "picam": None,
-    "cam_resolution": 256,
-    "cam_size": (256, 256),
-    "cam_center": (96, 96),
+    "cam_resolution": 224,
+    "cam_size": (224, 224),
+    "cam_center": (224/2, 224/2),
     "curr_frame": None,
 
     # Logic
@@ -85,7 +85,7 @@ def thread_model():
     yolov5 = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx", image_size=(CAM_RESOLUTION, CAM_RESOLUTION))
     mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
     rrl = FPSLimiter(6)
-    time.sleep(0.005)
+    time.sleep(0.2)
 
     while global_data["is_running"]:
         try:
@@ -135,7 +135,7 @@ def thread_model():
                 break
 
             rrl.endFrame()
-            print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
+            print(f"Frame Rate: {rrl.getDeltaTime():0.2f}")
         except Exception as e:
             traceback.print_stack()
             print(f"Error: {e}")
@@ -241,7 +241,7 @@ if __name__ == "__main__":
     init()
 
     # FPSLimiter controls the number of 5
-    rrl = FPSLimiter(12)
+    rrl = FPSLimiter(6)
     global_data["rrl"] = rrl
 
     # This is just to force quit the system after a certain time
