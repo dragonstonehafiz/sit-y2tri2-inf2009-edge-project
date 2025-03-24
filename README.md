@@ -26,7 +26,7 @@ The system operates as a finite state machine with four main modes: IDLE, SCAN, 
 
 ## Block Diagram and Control Flow
 
-![Block Diagram](image\BlockDiagram.png)
+![Block Diagram](image/BlockDiagram.png)
 
 The software runs as a state machine on the Raspberry Pi, cycling between different operational states:
 
