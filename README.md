@@ -26,6 +26,8 @@ The system operates as a finite state machine with four main modes: IDLE, SCAN, 
 
 ## Block Diagram and Control Flow
 
+![Block Diagram](image\BlockDiagram.png)
+
 The software runs as a state machine on the Raspberry Pi, cycling between different operational states:
 
 - **IDLE**: Waits for an audio trigger (e.g. bird chirp).
@@ -36,6 +38,8 @@ The software runs as a state machine on the Raspberry Pi, cycling between differ
 The control flow supports two operating modes:
 1. **Local Mode**: All detection and control run on the Pi using ONNX-based YOLOv5 inference.
 2. **Remote Mode**: The Pi sends camera frames to a remote server over MQTT, which processes the frames and sends back control signals.
+
+![Control Flow](image/ControlFlow.png)
 
 ## **Installation Instructions**
 
