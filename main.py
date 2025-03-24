@@ -13,6 +13,7 @@ import traceback
 import threading
 import sys
 import os
+import argparse
 
 global_data = {
     # App
@@ -144,14 +145,13 @@ def thread_model():
             traceback.print_stack()
             print(f"Error: {e}")
 
-def init():
+def init(server_processing=False, cam_resolution=256):
     global_data["board"] = RaspberryPiZero2()
     # global_data["board"] = Arduino("/dev/ttyACM0")
 
     SEND_IMAGE_DATA = True
-    SERVER_PROCESSING = False
+    SERVER_PROCESSING = server_processing
     MQTT_IPADDR = input("Input Server IP Address: ")
-    CAM_RESOLUTION = global_data["cam_resolution"]
 
     # Load MQTT Connection
     try:
@@ -177,6 +177,10 @@ def init():
         sys.exit()
 
     # Picam
+    CAM_RESOLUTION = cam_resolution
+    global_data["cam_resolution"] = CAM_RESOLUTION
+    global_data["cam_size"] = (CAM_RESOLUTION, CAM_RESOLUTION)
+    global_data["cam_center"] = (CAM_RESOLUTION / 2, CAM_RESOLUTION / 2)
     try:
         global_data["picam"] = PiCameraInterface((CAM_RESOLUTION, CAM_RESOLUTION))
         global_data["picam"].start()
@@ -240,7 +244,14 @@ def tracking():
         change_state(STATES.IDLE)
 
 if __name__ == "__main__":
-    init()
+    parser = argparse.ArgumentParser(description="Run object detection with local or server processing.")
+    parser.add_argument("--server", choices=["true", "false"], required=True,
+                        help="Whether to use server-side object detection (true/false)")
+    parser.add_argument("--cam-size", type=int, required=True,
+                        help="Camera resolution (128, 160, 192, 224, 256)")
+    args = parser.parse_args()
+    
+    init(server_processing=args.server, cam_resolution=args.cam_size)
 
     # FPSLimiter controls the number of 5
     rrl = FPSLimiter(6)
