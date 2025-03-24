@@ -41,98 +41,105 @@ The control flow supports two operating modes:
 
 ![Control Flow](image/ControlFlow.png)
 
-## **Installation Instructions**
+## Installation Instructions (Raspberry Pi Zero 2W)
 
-### **On Raspberry Pi Zero**
+### Requirements
 
-#### **Step 1: Install Required Packages**
+- Raspberry Pi Zero 2W (running Raspberry Pi OS Lite 64-bit)
+- CSI camera module (with `picamera2` support)
+- 2x SG90 servo motors + Pan-Tilt kit
+- Laser module (digital pin controlled)
+- MQTT broker (e.g. Mosquitto, can be on local server)
+- Python 3.9+
 
-Run the following commands to update your system and install the necessary dependencies:
-
-```bash
-sudo apt update
-sudo apt upgrade -y
-sudo apt install -y git 
-sudo apt install -y portaudio19-dev 
-sudo apt install -y python3 
-sudo apt install -y python3-pip 
-sudo apt install -y python3-venv
-sudo apt install -y python3-rpi.gpio 
-sudo apt install -y python3-picamera2 
-sudo apt install -y mosquitto
-sudo apt-get install -y python3-opencv
-sudo apt install -y v4l-utils
-```
-
-#### **Step 2: Install Drivers for ReSpeaker Mic Hat**
+### Step 1: Update and Install System Packages
 
 ```bash
-git clone https://github.com/HinTak/seeed-voicecard.git
-cd seeed-voicecard
-git checkout v6.6
-sudo ./install.sh
+sudo apt update && sudo apt upgrade -y
+
+# Core Python and system packages
+sudo apt install -y python3 python3-pip python3-venv git
+sudo apt install -y libopenblas-dev libjpeg-dev libtiff-dev
+sudo apt install -y python3-opencv v4l-utils
+sudo apt install -y portaudio19-dev
+
+# Camera support
+sudo apt install -y python3-picamera2
+
+# MQTT client
+sudo apt install -y mosquitto mosquitto-clients
 ```
 
-Reboot your Raspberry Pi Zero.
-
-```bash
-sudo reboot now
-```
-
-Test the microphone.
-
-```bash
-arecord -D plughw:CARD=seeed2micvoicec,DEV=0 -r 16000 -c 1 -f S16_LE -t wav -d 5 test.wav
-aplay -D plughw:CARD=seeed2micvoicec,DEV=0 test.wav
-```
-
-#### **Step 3: Clone the Repository**
+### Step 2: Clone the Repository
 
 ```bash
 git clone https://github.com/dragonstonehafiz/inf2009-project.git
 cd inf2009-project
 ```
 
-#### **Step 4: Set Up Virtual Environment**
+### Step 3: Set Up Virtual Environment
 
 ```bash
-python3 -m venv --system-site-packages venv
+python3 -m venv venv
 source venv/bin/activate
+```
+
+### Step 4: Install Python Dependencies
+
+```bash
 pip install -r requirements.txt --verbose
+
+# Ensure compatible versions of MQTT and ONNXRuntime
 pip install "paho-mqtt<2.0"
+pip install onnxruntime==1.16.0 --no-cache-dir
+
+# Reinstall numpy cleanly
 pip uninstall numpy
 pip install --no-cache-dir numpy
-pip install onnxruntime==1.16.0 --no-cache-dir
+
+# Reinstall this package after new numpy install
 sudo apt-get -y install libopenblas-dev
 ```
 
-### **(Optional) Desktop Server**
+## Installation Instructions (Desktop Server)
 
-If you want to **view the camera feed remotely**, you can set up a server on a desktop.
+This setup is optional and allows you to view the PiCamera feed remotely, run bird detection on a more powerful machine, and send servo commands back to the Raspberry Pi over MQTT.
 
-#### **Step 1: Install Required Packages**
+### Requirements
+
+- Linux Desktop (Ubuntu recommended)
+- Python 3.9+
+- Mosquitto
+
+### Step 1: Install System Packages
 
 ```bash
-sudo apt update
-sudo apt upgrade -y
-sudo apt install -y git python3 python3-pip mosquitto
+sudo apt update && sudo apt upgrade -y
+sudo apt install -y python3 python3-pip python3-venv git
+sudo apt install -y mosquitto mosquitto-clients
+sudo apt install -y libopencv-dev python3-opencv
 ```
 
-#### **Step 2: Clone the Repository**
+### Step 2: Clone the Repository
 
 ```bash
 git clone https://github.com/dragonstonehafiz/inf2009-project.git
-mv inf2009-project edge-project
-cd edge-project
+cd inf2009-project
 ```
 
-#### **Step 3: Set Up Virtual Environment**
+### Step 3: Set Up Virtual Environment
 
 ```bash
-python3 -m venv --system-site-packages venv
+python3 -m venv venv
 source venv/bin/activate
+```
+
+### Step 4: Install Python Dependencies
+
+```bash
 pip install -r requirements_server.txt
 pip install "paho-mqtt<2.0"
+pip install onnxruntime==1.16.0 --no-cache-dir
 ```
 
 ## Usage
