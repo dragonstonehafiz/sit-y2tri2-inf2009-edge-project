@@ -145,17 +145,27 @@ def thread_model():
             traceback.print_stack()
             print(f"Error: {e}")
 
-def init(server_processing=False, cam_resolution=256):
-    global_data["board"] = RaspberryPiZero2()
-    # global_data["board"] = Arduino("/dev/ttyACM0")
-
-    SEND_IMAGE_DATA = True
+def init(server_processing=False, cam_resolution=256, send_image_data=True):
+    SEND_IMAGE_DATA = send_image_data
     SERVER_PROCESSING = server_processing
-    MQTT_IPADDR = input("Input Server IP Address: ")
+
+    if SEND_IMAGE_DATA or SERVER_PROCESSING:
+        MQTT_IPADDR = input("Input Server IP Address: ")
+    else:
+        print("Server not being used.")
+
+    # Set camera size
+    if cam_resolution not in [128, 160, 192, 224, 256]:
+        print("Camera resolution not supported. Defaulting to 192.")
+        cam_resolution = 224
+    CAM_RESOLUTION = cam_resolution
+    global_data["cam_resolution"] = CAM_RESOLUTION
+    global_data["cam_size"] = (CAM_RESOLUTION, CAM_RESOLUTION)
+    global_data["cam_center"] = (CAM_RESOLUTION / 2, CAM_RESOLUTION / 2)
 
     # Load MQTT Connection
     try:
-        if SEND_IMAGE_DATA:
+        if SEND_IMAGE_DATA or SERVER_PROCESSING:
             # To see image output
             global_data["mqtt_cam_feed"] = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_CAM)
             global_data["mqtt_cam_feed"].loop_start()
@@ -176,11 +186,17 @@ def init(server_processing=False, cam_resolution=256):
         print("\nQuitting\n")
         sys.exit()
 
+    # Load Board
+    try:
+        global_data["board"] = RaspberryPiZero2()
+        # global_data["board"] = Arduino("/dev/ttyACM0")
+    except Exception as e:
+        traceback.print_exc()
+        print(f"Error when loading board: {e}")
+        print("\nQuitting\n")
+        sys.exit()
+
     # Picam
-    CAM_RESOLUTION = cam_resolution
-    global_data["cam_resolution"] = CAM_RESOLUTION
-    global_data["cam_size"] = (CAM_RESOLUTION, CAM_RESOLUTION)
-    global_data["cam_center"] = (CAM_RESOLUTION / 2, CAM_RESOLUTION / 2)
     try:
         global_data["picam"] = PiCameraInterface((CAM_RESOLUTION, CAM_RESOLUTION))
         global_data["picam"].start()
@@ -244,30 +260,31 @@ def tracking():
         change_state(STATES.IDLE)
 
 if __name__ == "__main__":
+    # Check for CLI arguments
     parser = argparse.ArgumentParser(description="Run object detection with local or server processing.")
     parser.add_argument("--server", choices=["true", "false"], required=True,
                         help="Whether to use server-side object detection (true/false)")
     parser.add_argument("--cam-size", type=int, required=True,
                         help="Camera resolution (128, 160, 192, 224, 256)")
+    parser.add_argument("--send-image", choices=["true", "false"], required=True,
+                        help="Whether to send image data to the server via MQTT (true/false)")
     args = parser.parse_args()
-    
-    init(server_processing=args.server, cam_resolution=args.cam_size)
+
+    # Convert string inputs to booleans
+    use_server = args.server.lower() == "true"
+    send_image = args.send_image.lower() == "true"
+    init(server_processing=args.server, cam_resolution=use_server, send_image_data=send_image)
 
     # FPSLimiter controls the number of 5
     rrl = FPSLimiter(6)
 
-    # This is just to force quit the system after a certain time
-    startTime = time.time()
+    # Initialize State Machine
     change_state(STATES.IDLE)
 
-    # Start thread for recording audio
-    # audio_thread = threading.Thread(target=lambda x: {record_audio_thread(global_data)}, daemon=True)
-    # audio_thread.start()
-
+    # Main Loop
     while global_data["is_running"]:
         try:
             rrl.startFrame()
-            currentTime = time.time()
             currState: int = global_data["state"]
 
             # Get the picam view for this frame
@@ -280,9 +297,6 @@ if __name__ == "__main__":
             elif currState == STATES.TRACKING:
                 tracking()
             elif currState == STATES.QUIT:
-                global_data["is_running"] = False
-                break
-            if currentTime - startTime >= 999:
                 global_data["is_running"] = False
                 break
 
@@ -305,6 +319,4 @@ if __name__ == "__main__":
         global_data["mqtt_cam_controls"].loop_stop()
     if global_data["mqtt_server_controls"] is not None:
         global_data["mqtt_server_controls"].loop_stop()
-    
-    
     
