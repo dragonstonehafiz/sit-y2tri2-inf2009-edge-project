@@ -142,15 +142,11 @@ pip install "paho-mqtt<2.0"
 pip install onnxruntime==1.16.0 --no-cache-dir
 ```
 
-## Usage
+## Usage (Server)
 
-### Raspberry Pi Zero 2W 
+Once installed, the server can be used to receive live camera feeds, process detections using YOLOv5, and send control commands back to the Raspberry Pi.
 
-*TODO*
-
-### Server
-
-Activate mosquitto server.
+### Step 1: Activate the Mosquitto Server
 
 ```bash
 sudo mosquitto -c /etc/mosquitto/mosquitto.conf
@@ -158,3 +154,97 @@ sudo systemctl start mosquitto
 sudo systemctl enable mosquitto
 sudo systemctl restart mosquitto
 ```
+
+### Step 2: Start the Server Application
+
+```bash
+source venv/bin/activate
+python server.py
+```
+
+### Step 3: Enter Control Commands
+
+After launching, the server will prompt for control input. Here are some valid commands:
+
+| Command         | Description                                    | Notes                   |
+|-----------------|------------------------------------------------| ----------------------- |
+| `state:scan`    | Start scanning (sweeping) for birds            | Only works with main.py |
+| `state:idle`    | Return to idle mode                            | Only works with main.py |
+| `state:tracking`| Force tracking mode                            | Only works with main.py |
+| `state:quit`    | Shutdown the system                            | Only works with main.py |
+| `turnx:<angle>` | Manually rotate X-axis servo (e.g., `turnx:10`)|                         |
+| `turny:<angle>` | Manually rotate Y-axis servo                   |                         |
+| `setx:<angle>`  | Set the X-axis servo angle (e.g., `setx:10`)   |                         |
+| `sety:<angle>`  | Set the Y-axis servo angle (e.g., `sety:10`)   |                         |
+| `laser:1`       | Turn on the laser                              |                         |
+| `laser:0`       | Turn off the laser                             |                         |
+| `auto:1`        | Enable automatic detection and targeting       |                         |
+| `auto:0`        | Disable automatic targeting                    |                         |
+| `quit:both`     | Shut down both server and Pi                   |                         |
+| `quit:server`   | Exit the server only                           |                         |
+| `quit:cam`      | Remotely stop the Pi application               |                         |
+
+
+### Notes
+
+- The server will display a window showing the camera feed in real time.
+- You can get the ip address of the server with `ip address` in the terminal.
+
+## Usage (Raspberry Pi Zero 2W)
+
+This section explains how to operate the Pi-side components of the system, including calibration and the main detection loop.
+
+---
+
+### 1. Calibrate the Servos (Optional but Recommended)
+
+Before running the main program, use `calibrate.py` to manually test and adjust servo/laser positions via the server.
+
+```bash
+source venv/bin/activate
+python calibrate.py
+```
+
+This script:
+- Sends camera feed from the Pi to the server.
+- Accepts real-time control commands from the server (e.g., `turnx:10`, `turny:-5`, `laser:1`).
+- Helps verify hardware alignment and response.
+
+You will be prompted to enter the MQTT server IP.
+
+### 2. Run the Main Detection Program
+
+The main application is in `main.py`. It supports both **local detection** and **remote (server-side) detection**.
+
+#### Example: Local Detection Only
+
+```bash
+python main.py --server false --cam-size 256 --send-image false
+```
+
+#### Example: Use Server for Detection
+
+```bash
+python main.py --server true --cam-size 256 --send-image true
+```
+
+You will be prompted for the MQTT broker IP if using server communication.
+
+
+### States and Behavior
+
+| State      | Description                                                            |
+|------------|------------------------------------------------------------------------|
+| `IDLE`     | System is listening for bird sounds.                                   |
+| `SCAN`     | Sweeps camera using servos to search for birds.                        |
+| `TRACKING` | Tracks detected birds and directs the laser.                           |
+| `QUIT`     | Stops the program and safely disconnects hardware.                     |
+
+State transitions happen automatically or can be triggered remotely from the server.
+
+
+### Notes
+
+- You can stop the program at any time with `Ctrl+C`.
+- You can quit the program remotely from the server using the command `quit:cam`.
+- The Pi will safely shut down all components and MQTT connections when exiting.
