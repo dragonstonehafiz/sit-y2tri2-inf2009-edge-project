@@ -11,8 +11,7 @@ The following components are required to build this project:
 - [2 SG90 Servos and Pan Tilt Kit](https://sg.cytron.io/p-pan-tilt-servo-kit-for-camera-unassembled) x1
 - [Laser Diode Module](https://shopee.sg/kuriosity.sg/8657033875) x1
 - [Raspberry Pi Zero 2 WH](https://sg.cytron.io/p-raspberry-pi-zero-2-w)
-- [ReSpeaker 2-Microphone Raspberry Pi HAT](https://sg.cytron.io/p-respeaker-2-microphone-raspberry-pi-hat)
-- [CSI Camera](https://sg.cytron.io/p-5mp-camera-board-for-raspberry-pi)
+- [Raspberry Pi Camera Module 2](https://sg.cytron.io/p-raspberry-pi-8mp-camera-module-v2)
 
 ## System Design
 
@@ -193,8 +192,6 @@ After launching, the server will prompt for control input. Here are some valid c
 ## Usage (Raspberry Pi Zero 2W)
 
 This section explains how to operate the Pi-side components of the system, including calibration and the main detection loop.
-
----
 
 ### 1. Calibrate the Servos (Optional but Recommended)
 
