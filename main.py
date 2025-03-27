@@ -4,8 +4,8 @@ from helper.MQTT import MQTT_Subscriber, MQTT_Publisher, MQTT_TOPIC_CAM, MQTT_TO
 from helper.utils import get_closest_coords, get_object_displacement
 from helper.BoardInterface import BoardInterface
 from helper.RaspberryPiZero2 import RaspberryPiZero2
-from helper.YoloV5_ONNX import YoloV5_ONNX, YOLOv5
-from helper.sound import load_model, capture_and_predict
+from helper.YoloV5_ONNX import YoloV5_ONNX
+from helper.sound import load_model, predict_from_audio, record_audio
 from main_helper import scan_handle_x, STATES, handle_picam
 
 import time
@@ -81,20 +81,31 @@ def cam_controls_callback(client, userdata, msg):
 
 def thread_model():
     os.sched_setaffinity(0, {1, 2, 3})
+    # Images
     CAM_RESOLUTION = global_data["cam_resolution"]
     yolov5 = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx", image_size=(CAM_RESOLUTION, CAM_RESOLUTION))
-    mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
-    rrl = FPSLimiter(3)
-    session = load_model()
-    time.sleep(1)
 
+    # Server
+    mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
+
+    # Audio Model
+    sound_model = load_model("model/bird_sound_model.onnx")
+
+    rrl = FPSLimiter(3)
+    time.sleep(1)
     while global_data["is_running"]:
         try:
             rrl.startFrame()
             frame = global_data["curr_frame"].copy()
 
             if global_data["state"] == STATES.IDLE:
-                capture_and_predict(session)
+                audio_data = record_audio()
+                is_bird = predict_from_audio(audio_data, sound_model)
+                if is_bird:
+                    print("bird")
+                    change_state(STATES.SCAN)
+                else:
+                    print("no bird")
 
             elif global_data["state"] == STATES.SCAN:
                 # Check if we are relying on cloud for object detection
