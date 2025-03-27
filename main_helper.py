@@ -1,5 +1,4 @@
 from helper.BoardInterface import BoardInterface
-from helper.AudioInterface import AudioInterface
 from helper.PiCameraInterface import PiCameraInterface
 from helper.MQTT import MQTT_Publisher
 from helper.utils import convert_frame_to_bytes
