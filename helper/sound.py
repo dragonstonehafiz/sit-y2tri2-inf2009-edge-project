@@ -1,52 +1,58 @@
+import speech_recognition as sr
+import time
+import os
+import onnxruntime as ort
 import librosa
 import numpy as np
-import onnxruntime as ort
-import sounddevice as sd
-import queue
 
 # Parameters
 SAMPLE_RATE = 22050
 DURATION = 5  # 5 seconds
 
-# Audio Capture
-q = queue.Queue()
-def callback(indata, frames, time, status):
-    if status:
-        print(status)
-    q.put(indata.copy())
-
 # Load ONNX Model
-def load_model(model_path='model/bird_sound_model.onnx'):
-    session = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
+def load_model(model_path='bird_sound_model.onnx'):
+    session = ort.InferenceSession(model_path)
+    for input_info in session.get_inputs():
+        print(f"Input Name: {input_info.name}")
+        print(f"Input Shape: {input_info.shape}")
+        print(f"Input Type: {input_info.type}")
     return session
 
 # Extract Features from Audio
-def extract_features(audio):
+def extract_features(file_path):
+    audio, sr = librosa.load(file_path, sr=SAMPLE_RATE)
+    audio = audio / np.max(np.abs(audio)) if np.max(np.abs(audio)) > 0 else audio
     mfccs = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE, n_mfcc=40)
     mfccs = np.mean(mfccs.T, axis=0).astype(np.float32)
     return mfccs.reshape(1, -1)
 
 # Predict from Audio using ONNX
-def predict_from_audio(audio, session):
-    features = extract_features(audio)
+def predict_from_audio(file_path, session):
+    features = extract_features(file_path)
     inputs = {session.get_inputs()[0].name: features}
     outputs = session.run(None, inputs)
-    print("Outputs:", outputs)
     predicted = np.argmax(outputs[0], axis=1)
     label = 'bird' if predicted[0] == 0 else 'no_bird'
     print(f"Prediction: {label}")
 
-# Capture and Predict Audio
-def capture_and_predict(session):
-    print("Recording... Speak now!")
-    with sd.InputStream(callback=callback, channels=1, samplerate=SAMPLE_RATE):
-        audio_data = []
-        while len(audio_data) < SAMPLE_RATE * DURATION:
-            audio_data.extend(q.get().flatten())
-        print("Recording complete.")
-        audio_data = np.array(audio_data)
-        predict_from_audio(audio_data, session)
+# Recording 5-second Chunks using SpeechRecognition
+def record_audio(output_file='input.wav'):
+    recognizer = sr.Recognizer()
+    with sr.Microphone() as source:
+        recognizer.adjust_for_ambient_noise(source)
+        os.system('clear')
+        print("Recording 5-second chunks. Press Ctrl+C to stop.")
+        while True:
+            try:
+                audio = recognizer.listen(source, phrase_time_limit=DURATION)
+                with open(output_file, "wb") as f:
+                    f.write(audio.get_wav_data())
+                print("Audio chunk saved to input.wav")
+                predict_from_audio(output_file, session)
+            except KeyboardInterrupt:
+                print("Recording stopped.")
+                break
 
 if __name__ == '__main__':
     session = load_model()
-    capture_and_predict(session)
+    record_audio()

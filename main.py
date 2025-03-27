@@ -130,8 +130,8 @@ def thread_model():
                             
                             global_data["last_bird_time"] = time.time()
                     except Exception as e:
-                        print(f"Error: {e}")
                         traceback.print_exc()
+                        print(f"Error: {e}")
                         change_state(STATES.QUIT)
                         pass
             
