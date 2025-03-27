@@ -210,7 +210,7 @@ def init(server_processing=False, cam_resolution=256, send_image_data=True):
 
     # Picam
     try:
-        global_data["picam"] = PiCameraInterface((CAM_RESOLUTION, CAM_RESOLUTION))
+        global_data["picam"] = PiCameraInterface((cam_resolution, cam_resolution))
         global_data["picam"].start()
     except Exception as e:
         print(f"Error starting PiCamera: {e}")
