@@ -16,8 +16,8 @@ def callback(indata, frames, time, status):
     q.put(indata.copy())
 
 # Load ONNX Model
-def load_model(model_path='bird_sound_model.onnx'):
-    session = ort.InferenceSession(model_path)
+def load_model(model_path='model/bird_sound_model.onnx'):
+    session = ort.InferenceSession(model_path, providers=["CPUExecutionProvider"])
     return session
 
 # Extract Features from Audio
