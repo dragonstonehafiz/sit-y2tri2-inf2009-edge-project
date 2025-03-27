@@ -12,6 +12,7 @@ import time
 import traceback
 import threading
 import sys
+import speech_recognition as sr
 import os
 import argparse
 
@@ -90,71 +91,72 @@ def thread_model():
 
     # Audio Model
     sound_model = load_model("model/bird_sound_model.onnx")
+    recognizer = sr.Recognizer()
+    with sr.Microphone(sample_rate=16000) as source:
+        rrl = FPSLimiter(3)
+        time.sleep(1)
+        while global_data["is_running"]:
+            try:
+                rrl.startFrame()
+                frame = global_data["curr_frame"].copy()
 
-    rrl = FPSLimiter(3)
-    time.sleep(1)
-    while global_data["is_running"]:
-        try:
-            rrl.startFrame()
-            frame = global_data["curr_frame"].copy()
+                if global_data["state"] == STATES.IDLE:
+                    audio_data = record_audio(2)
+                    is_bird = predict_from_audio(audio_data, sound_model)
+                    if is_bird:
+                        print("bird")
+                        change_state(STATES.SCAN)
+                    else:
+                        print("no bird")
 
-            if global_data["state"] == STATES.IDLE:
-                audio_data = record_audio()
-                is_bird = predict_from_audio(audio_data, sound_model)
-                if is_bird:
-                    print("bird")
-                    change_state(STATES.SCAN)
-                else:
-                    print("no bird")
+                elif global_data["state"] == STATES.SCAN:
+                    # Check if we are relying on cloud for object detection
+                    if mqtt_cam_controls is None:
+                        try:
+                            detections = yolov5.detect_objects(frame, conf_thres=0.4)
+                            # If object is found, change state to tracking
+                            if len(detections) > 0:
+                                change_state(STATES.TRACKING)
+                        except Exception as e:
+                            print(f"Error {e}")
+                            traceback.print_exc()
+                            change_state(STATES.QUIT)
+                
+                elif global_data["state"] == STATES.TRACKING:
+                    # If we are not relying on server for processing, do it here
+                    if mqtt_cam_controls is None:
+                        board: BoardInterface = global_data["board"]
+                        try:
+                            detections = yolov5.detect_objects(frame, conf_thres=0.5)
 
-            elif global_data["state"] == STATES.SCAN:
-                # Check if we are relying on cloud for object detection
-                if mqtt_cam_controls is None:
-                    try:
-                        detections = yolov5.detect_objects(frame, conf_thres=0.4)
-                        # If object is found, change state to tracking
-                        if len(detections) > 0:
-                            change_state(STATES.TRACKING)
-                    except Exception as e:
-                        print(f"Error {e}")
-                        traceback.print_exc()
-                        change_state(STATES.QUIT)
-            
-            elif global_data["state"] == STATES.TRACKING:
-                # If we are not relying on server for processing, do it here
-                if mqtt_cam_controls is None:
-                    board: BoardInterface = global_data["board"]
-                    try:
-                        detections = yolov5.detect_objects(frame, conf_thres=0.5)
+                            # If objects were found, find the coords of the closest one
+                            if len(detections) > 0:
+                                obj_center = get_closest_coords(global_data["cam_center"], detections)
 
-                        # If objects were found, find the coords of the closest one
-                        if len(detections) > 0:
-                            obj_center = get_closest_coords(global_data["cam_center"], detections)
+                                # calculate displacement of obj from center
+                                # then normalize it so it is not some crazy large number
+                                dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
+                                if abs(dispX) > 1:
+                                    threading.Thread(target=board.turn_servo_x, args=(dispX,)).start()
+                                if abs(dispY) > 1:
+                                    threading.Thread(target=board.turn_servo_y, args=(dispY,)).start()
+                                
+                                global_data["last_bird_time"] = time.time()
+                        except Exception as e:
+                            traceback.print_exc()
+                            print(f"Error: {e}")
+                            change_state(STATES.QUIT)
+                            pass
+                
+                elif global_data["state"] == STATES.QUIT:
+                    break
 
-                            # calculate displacement of obj from center
-                            # then normalize it so it is not some crazy large number
-                            dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
-                            if abs(dispX) > 1:
-                                threading.Thread(target=board.turn_servo_x, args=(dispX,)).start()
-                            if abs(dispY) > 1:
-                                threading.Thread(target=board.turn_servo_y, args=(dispY,)).start()
-                            
-                            global_data["last_bird_time"] = time.time()
-                    except Exception as e:
-                        traceback.print_exc()
-                        print(f"Error: {e}")
-                        change_state(STATES.QUIT)
-                        pass
-            
-            elif global_data["state"] == STATES.QUIT:
-                break
-
-            rrl.endFrame()
-            # print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
-            # print(f"Delta Time: {rrl.getDeltaTime():0.2f}")
-        except Exception as e:
-            traceback.print_stack()
-            print(f"Error: {e}")
+                rrl.endFrame()
+                # print(f"Frame Rate: {1 / rrl.getDeltaTime():0.2f}")
+                # print(f"Delta Time: {rrl.getDeltaTime():0.2f}")
+            except Exception as e:
+                traceback.print_stack()
+                print(f"Error: {e}")
 
 def init(server_processing=False, cam_resolution=256, send_image_data=True):
     SEND_IMAGE_DATA = send_image_data

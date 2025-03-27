@@ -46,7 +46,7 @@ def predict_from_audio(audio_data, session):
     return predicted[0] == 0
 
 # Recording 5-second Chunks using SpeechRecognition
-def record_audio(source, recognizer, duration=DURATION):
+def record_audio(source, recognizer, duration=5):
     recognizer.adjust_for_ambient_noise(source)
     audio = recognizer.listen(source, phrase_time_limit=duration)
     audio_data = audio.get_wav_data()
