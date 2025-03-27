@@ -257,8 +257,7 @@ def change_state(nextState: int):
 
 def idle():
     """Listens for birds. If bird detected, switch to scan state"""
-    time.sleep(1)
-    change_state(STATES.SCAN)
+    pass
 
 def scan():
     """Constantly rotates in the x axis"""
