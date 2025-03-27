@@ -77,5 +77,5 @@ def is_servo_out_of_bounds(angle: int, x: bool):
     if x:
         return angle >= 180 or angle <= 0
     else:
-        return angle >= 180 or angle <= 0
+        return angle >= 135 or angle <= 45
 
