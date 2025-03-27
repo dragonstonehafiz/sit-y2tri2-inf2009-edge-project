@@ -104,10 +104,11 @@ def thread_model():
                     audio_data = record_audio(source, recognizer, 2)
                     is_bird = predict_from_audio(audio_data, sound_model)
                     if is_bird:
-                        print("bird")
+                        # print("bird")
                         change_state(STATES.SCAN)
                     else:
-                        print("no bird")
+                        # print("no bird")
+                        pass
 
                 elif global_data["state"] == STATES.SCAN:
                     # Check if we are relying on cloud for object detection
@@ -237,6 +238,7 @@ def change_state(nextState: int):
 
         global_data["scan_dir_x"] = True
         global_data["scan_dir_y"] = False
+        global_data["last_bird_time"] = time.time()
 
         # If relying on cloud, tell server to start sending turn orders based on model detected
         mqtt_server_controls: MQTT_Publisher = global_data["mqtt_server_controls"]
@@ -260,6 +262,11 @@ def idle():
 
 def scan():
     """Constantly rotates in the x axis"""
+    # Go back to idle state if no bird is detected for a period of time
+    last_bird_time = global_data["last_bird_time"]
+    current_time = time.time()
+    if current_time - last_bird_time > 60:
+        change_state(STATES.IDLE)
     # Turn x servo, y will be handled in scan_handle_x function
     scan_handle_x(global_data["board"], global_data, servo_turn_rate_x=2)
 

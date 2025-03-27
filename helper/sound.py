@@ -42,7 +42,7 @@ def predict_from_audio(audio_data, session):
     predicted = np.argmax(outputs[0], axis=1)
     # print(f"Predicted Class: {predicted}")
     label = 'bird' if predicted[0] == 0 else 'no_bird'
-    print(f"Predicted: {label}")
+    # print(f"Predicted: {label}")
     return predicted[0] == 0
 
 # Recording 5-second Chunks using SpeechRecognition
