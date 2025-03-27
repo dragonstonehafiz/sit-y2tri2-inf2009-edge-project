@@ -55,5 +55,5 @@ def record_audio():
                 break
 
 if __name__ == '__main__':
-    session = load_model("model/bird_sound_model.onnx")
+    session = load_model()
     record_audio()
