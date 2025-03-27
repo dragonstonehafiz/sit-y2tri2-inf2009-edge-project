@@ -177,6 +177,7 @@ def init(server_processing=False, cam_resolution=256, send_image_data=True):
     global_data["cam_center"] = (CAM_RESOLUTION / 2, CAM_RESOLUTION / 2)
 
     # Load MQTT Connection
+    threading.Thread(target=thread_model, daemon=True).start()
     try:
         if SEND_IMAGE_DATA or SERVER_PROCESSING:
             # To see image output
@@ -191,8 +192,6 @@ def init(server_processing=False, cam_resolution=256, send_image_data=True):
             # Rely on server for object detection
             global_data["mqtt_cam_controls"] = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, cam_controls_callback)
             global_data["mqtt_cam_controls"].loop_start()
-        else:
-            threading.Thread(target=thread_model, daemon=True).start()
     except Exception as e:
         print(f"Failed to connect to MQTT Broker: {e}")
         traceback.print_exc()
