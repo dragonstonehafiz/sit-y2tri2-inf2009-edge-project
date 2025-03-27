@@ -291,7 +291,7 @@ if __name__ == "__main__":
     # Convert string inputs to booleans
     use_server = args.server.lower() == "true"
     send_image = args.send_image.lower() == "true"
-    init(server_processing=args.server, cam_resolution=use_server, send_image_data=send_image)
+    init(server_processing=use_server, cam_resolution=args.cam_size, send_image_data=send_image)
 
     # FPSLimiter controls the number of 5
     rrl = FPSLimiter(6)
