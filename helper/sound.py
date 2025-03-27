@@ -60,6 +60,7 @@ def record_audio(duration=DURATION):
 
 
 if __name__ == '__main__':
+    print("Loading Model...")
     session = load_model("model/bird_sound_model.onnx")
     while True:
         try:
