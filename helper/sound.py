@@ -69,17 +69,18 @@ if __name__ == '__main__':
     session = load_model("model/bird_sound_model.onnx")
     time.sleep(2)
     print("Creating Audio Device...")
-    source, recognizer = create_audio_device()
-    os.system('clear')
-    while True:
-        try:
-            print(f"Recording sound...")
-            audio_data = record_audio(source, recognizer)
-            is_bird = predict_from_audio(audio_data, session)
-            if is_bird:
-                print("Bird Detected")
-            else:
-                print("No Bird Detected")
-        except KeyboardInterrupt:
-            print("Recording stopped.")
-            break
+    recognizer = sr.Recognizer()
+    with sr.Microphone(sample_rate=SAMPLE_RATE) as source:
+        os.system('clear')
+        while True:
+            try:
+                print(f"Recording sound...")
+                audio_data = record_audio(source, recognizer)
+                is_bird = predict_from_audio(audio_data, session)
+                if is_bird:
+                    print("Bird Detected")
+                else:
+                    print("No Bird Detected")
+            except KeyboardInterrupt:
+                print("Recording stopped.")
+                break
