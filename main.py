@@ -40,7 +40,8 @@ global_data = {
     # Server
     "mqtt_cam_feed": None,
     "mqtt_cam_controls": None,
-    "mqtt_server_controls": None
+    "mqtt_server_controls": None,
+    "server_processing": False
 }
 
 def cam_controls_callback(client, userdata, msg):
@@ -160,10 +161,7 @@ def thread_model():
                 print(f"Error: {e}")
 
 def init(server_processing=False, cam_resolution=256, send_image_data=True):
-    SEND_IMAGE_DATA = send_image_data
-    SERVER_PROCESSING = server_processing
-
-    if SEND_IMAGE_DATA or SERVER_PROCESSING:
+    if send_image_data or server_processing:
         MQTT_IPADDR = input("Input Server IP Address: ")
     else:
         print("Server not being used.")
@@ -172,20 +170,20 @@ def init(server_processing=False, cam_resolution=256, send_image_data=True):
     if cam_resolution not in [128, 160, 192, 224, 256]:
         print("Camera resolution not supported. Defaulting to 192.")
         cam_resolution = 224
-    CAM_RESOLUTION = cam_resolution
-    global_data["cam_resolution"] = CAM_RESOLUTION
-    global_data["cam_size"] = (CAM_RESOLUTION, CAM_RESOLUTION)
-    global_data["cam_center"] = (CAM_RESOLUTION / 2, CAM_RESOLUTION / 2)
+    global_data["cam_resolution"] = cam_resolution
+    global_data["cam_size"] = (cam_resolution, cam_resolution)
+    global_data["cam_center"] = (cam_resolution / 2, cam_resolution / 2)
+    global_data["server_processing"] = server_processing
 
     # Load MQTT Connection
     threading.Thread(target=thread_model, daemon=True).start()
     try:
-        if SEND_IMAGE_DATA or SERVER_PROCESSING:
+        if send_image_data or server_processing:
             # To see image output
             global_data["mqtt_cam_feed"] = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_CAM)
             global_data["mqtt_cam_feed"].loop_start()
 
-        if SERVER_PROCESSING:
+        if server_processing:
             # To tell server to start looking at images
             global_data["mqtt_server_controls"] = MQTT_Publisher(MQTT_IPADDR, MQTT_TOPIC_SERVER_CONTROLS)
             global_data["mqtt_server_controls"].loop_start()
@@ -193,6 +191,7 @@ def init(server_processing=False, cam_resolution=256, send_image_data=True):
             # Rely on server for object detection
             global_data["mqtt_cam_controls"] = MQTT_Subscriber(MQTT_IPADDR, MQTT_TOPIC_PI_ZERO_CONTROLS, cam_controls_callback)
             global_data["mqtt_cam_controls"].loop_start()
+
     except Exception as e:
         print(f"Failed to connect to MQTT Broker: {e}")
         traceback.print_exc()
@@ -222,6 +221,7 @@ def init(server_processing=False, cam_resolution=256, send_image_data=True):
 def change_state(nextState: int):
     global_data['state'] = nextState
     board: BoardInterface = global_data["board"]
+    server_processing = global_data["server_processing"]
 
     if nextState == STATES.IDLE:
         print("Entering State Idle")
@@ -229,7 +229,7 @@ def change_state(nextState: int):
 
         # If relying on cloud for computation, tell server to stop detecting objects
         mqtt_server_controls: MQTT_Publisher = global_data["mqtt_server_controls"]
-        if mqtt_server_controls is not None:
+        if server_processing:
             mqtt_server_controls.send("auto:0")
     
     elif nextState == STATES.SCAN:
@@ -242,7 +242,7 @@ def change_state(nextState: int):
 
         # If relying on cloud, tell server to start sending turn orders based on model detected
         mqtt_server_controls: MQTT_Publisher = global_data["mqtt_server_controls"]
-        if mqtt_server_controls is not None:
+        if server_processing:
             mqtt_server_controls.send("auto:1")
 
 
