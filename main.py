@@ -101,7 +101,7 @@ def thread_model():
                 frame = global_data["curr_frame"].copy()
 
                 if global_data["state"] == STATES.IDLE:
-                    audio_data = record_audio(2)
+                    audio_data = record_audio(source, recognizer, 2)
                     is_bird = predict_from_audio(audio_data, sound_model)
                     if is_bird:
                         print("bird")
