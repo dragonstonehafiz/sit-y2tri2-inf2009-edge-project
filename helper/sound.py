@@ -5,6 +5,7 @@ import onnxruntime as ort
 import librosa
 import numpy as np
 import io
+import time
 
 # Parameters
 SAMPLE_RATE = 16000
@@ -18,6 +19,12 @@ def load_model(model_path='bird_sound_model.onnx'):
         print(f"Input Shape: {input_info.shape}")
         print(f"Input Type: {input_info.type}")
     return session
+
+# Create interfaces to handle audio
+def create_audio_device():
+    recognizer = sr.Recognizer()
+    source = sr.Microphone(sample_rate=SAMPLE_RATE)
+    return source, recognizer
 
 # Extract Features from Audio (Ensure Mono and Resample to 8000 Hz)
 def extract_features(audio_data):
@@ -39,35 +46,35 @@ def predict_from_audio(audio_data, session):
     return predicted[0] == 0
 
 # Recording 5-second Chunks using SpeechRecognition
-def record_audio(duration=DURATION):
-    recognizer = sr.Recognizer()
-    with sr.Microphone(sample_rate=SAMPLE_RATE) as source:
-        recognizer.adjust_for_ambient_noise(source)
-        audio = recognizer.listen(source, phrase_time_limit=duration)
-        audio_data = audio.get_wav_data()
-        return audio_data
-        # os.system('clear')
-        # print("Recording 5-second chunks. Press Ctrl+C to stop.")
-        # while True:
-        #     try:
-        #         audio = recognizer.listen(source, phrase_time_limit=duration)
-        #         audio_data = audio.get_wav_data()
-        #         print("Audio chunk captured in memory")
-        #         predict_from_audio(audio_data, session)
-        #     except KeyboardInterrupt:
-        #         print("Recording stopped.")
-        #         break
+def record_audio(source, recognizer, duration=DURATION):
+    recognizer.adjust_for_ambient_noise(source)
+    audio = recognizer.listen(source, phrase_time_limit=duration)
+    audio_data = audio.get_wav_data()
+    return audio_data
+    # os.system('clear')
+    # print("Recording 5-second chunks. Press Ctrl+C to stop.")
+    # while True:
+    #     try:
+    #         audio = recognizer.listen(source, phrase_time_limit=duration)
+    #         audio_data = audio.get_wav_data()
+    #         print("Audio chunk captured in memory")
+    #         predict_from_audio(audio_data, session)
+    #     except KeyboardInterrupt:
+    #         print("Recording stopped.")
+    #         break
 
 
 if __name__ == '__main__':
     print("Loading Model...")
     session = load_model("model/bird_sound_model.onnx")
+    time.sleep(2)
+    print("Creating Audio Device...")
+    source, recognizer = create_audio_device()
     os.system('clear')
-    print("Model Loaded!")
     while True:
         try:
             print(f"Recording sound...")
-            audio_data = record_audio()
+            audio_data = record_audio(source, recognizer)
             is_bird = predict_from_audio(audio_data, session)
             if is_bird:
                 print("Bird Detected")
