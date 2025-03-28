@@ -74,7 +74,9 @@ def scan_handle_y(board: BoardInterface, global_data: dict, servo_turn_rate = 10
 
 def is_servo_out_of_bounds(angle: int, x: bool):
     if x:
+        return angle >= 180 or angle <= 0
         return angle >= 125 or angle <= 65
     else:
+        return angle >= 135 or angle <= 45
         return angle >= 75 or angle <= 30
 
