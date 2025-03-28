@@ -48,6 +48,7 @@ def scan_handle_x(board: BoardInterface, global_data: dict, servo_turn_rate_x=10
         if is_servo_out_of_bounds(board.get_servo_x(), x=True):
             scan_dir_x = not scan_dir_x
             scan_handle_y(board, global_data, servo_turn_rate=servo_turn_rate_y)
+            board.turn_servo_x(servo_turn_rate_x)
             
     elif not scan_dir_x:
         board.turn_servo_x(-servo_turn_rate_x)
@@ -55,6 +56,7 @@ def scan_handle_x(board: BoardInterface, global_data: dict, servo_turn_rate_x=10
         if is_servo_out_of_bounds(board.get_servo_x(), x=True):
             scan_dir_x = not scan_dir_x
             scan_handle_y(board, global_data, servo_turn_rate=servo_turn_rate_y)
+            board.turn_servo_x(servo_turn_rate_x)
     
     global_data["scan_dir_x"] = scan_dir_x
 
@@ -65,18 +67,19 @@ def scan_handle_y(board: BoardInterface, global_data: dict, servo_turn_rate = 10
         board.turn_servo_y(servo_turn_rate)
         if is_servo_out_of_bounds(board.get_servo_y(), x=False):
             scan_dir_y = not scan_dir_y
+            board.turn_servo_y(-servo_turn_rate)
     elif not scan_dir_y:
         board.turn_servo_y(-servo_turn_rate)
         if is_servo_out_of_bounds(board.get_servo_y(), x=False):
             scan_dir_y = not scan_dir_y
+            board.turn_servo_y(servo_turn_rate)
+            
 
     global_data["scan_dir_y"] = scan_dir_y
 
 def is_servo_out_of_bounds(angle: int, x: bool):
     if x:
         return angle >= 180 or angle <= 0
-        return angle >= 125 or angle <= 65
     else:
         return angle >= 135 or angle <= 45
-        return angle >= 75 or angle <= 30
 
