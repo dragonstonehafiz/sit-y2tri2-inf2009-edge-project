@@ -85,7 +85,8 @@ def thread_model():
     os.sched_setaffinity(0, {1, 2, 3})
     # Images
     CAM_RESOLUTION = global_data["cam_resolution"]
-    yolov5 = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx", image_size=(CAM_RESOLUTION, CAM_RESOLUTION))
+    if global_data["server_processing"]:
+        yolov5 = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx", image_size=(CAM_RESOLUTION, CAM_RESOLUTION))
 
     # Server
     mqtt_cam_controls: MQTT_Subscriber = global_data["mqtt_cam_controls"]
@@ -139,7 +140,7 @@ def thread_model():
                                 # then normalize it so it is not some crazy large number
                                 dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
                                 if abs(dispX) > 1:
-                                    threading.Thread(target=board.turn_servo_x, args=(dispX,)).start()
+                                    threading.Thread(target=board.turn_servo_x, args=(-dispX,)).start()
                                 if abs(dispY) > 1:
                                     threading.Thread(target=board.turn_servo_y, args=(dispY,)).start()
                                 

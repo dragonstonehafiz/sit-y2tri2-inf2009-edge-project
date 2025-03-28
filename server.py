@@ -183,7 +183,7 @@ if __name__ == "__main__":
                     dispX, dispY = get_object_displacement(obj_center, global_data["cam_center"], global_data["cam_size"])
                     # print(dispX, dispY)
                     if (abs(dispX) > 1):
-                        mqtt_cam_controls.send(f"turnx:{dispX}")
+                        mqtt_cam_controls.send(f"turnx:{-dispX}")
                     if (abs(dispY) > 1):
                         mqtt_cam_controls.send(f"turny:{dispY}")
 
