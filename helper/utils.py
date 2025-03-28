@@ -36,8 +36,8 @@ def normalize_displacement(displacement: tuple[int, int], frameSize: tuple[int, 
     Normalizes the displacement of an object from the center of the screen.
     """
     xDisplacement, yDisplacement = displacement
-    xDisplacement = (int) (xDisplacement / (frameSize[0] / 16))
-    yDisplacement = (int) (yDisplacement / (frameSize[1] / 16))
+    xDisplacement = (int) (xDisplacement / (frameSize[0] / 10))
+    yDisplacement = (int) (yDisplacement / (frameSize[1] / 10))
     return (xDisplacement, yDisplacement)
 
 def get_object_displacement(objectCenter, screenCenter, screenSize) -> tuple[int, int]:
