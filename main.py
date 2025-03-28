@@ -244,8 +244,8 @@ def change_state(nextState: int):
         print("Entering State Scan")
         board.set_laser(0)
 
-        global_data["scan_dir_x"] = True
-        global_data["scan_dir_y"] = False
+        # global_data["scan_dir_x"] = True
+        # global_data["scan_dir_y"] = False
         global_data["last_bird_time"] = time.time()
 
         # If relying on cloud, tell server to start sending turn orders based on model detected
