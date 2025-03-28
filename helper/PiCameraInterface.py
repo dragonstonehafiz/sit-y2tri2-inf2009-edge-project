@@ -19,7 +19,9 @@ class PiCameraInterface:
     def getFrame(self):
         frame = self._camera.capture_array()
         # since the camera is actually upside down on the gimbal, we have to flip the frame on the y-axis
-        frame = cv2.flip(frame, 0)
+        # frame = cv2.flip(frame, 0)
+        # flip on both axes
+        frame = cv2.flip(frame, -1)
         # if frame.shape[-1] == 4:  # If it has an alpha channel, remove it
         frame = cv2.cvtColor(frame, cv2.COLOR_RGBA2RGB)
         return frame
