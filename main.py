@@ -151,7 +151,6 @@ def thread_model():
                             traceback.print_exc()
                             print(f"Error: {e}")
                             change_state(STATES.QUIT)
-                            pass
                 
                 elif global_data["state"] == STATES.QUIT:
                     break
@@ -271,7 +270,7 @@ def scan():
     if current_time - last_bird_time > 60:
         change_state(STATES.IDLE)
     # Turn x servo, y will be handled in scan_handle_x function
-    scan_handle_x(global_data["board"], global_data, servo_turn_rate_x=2)
+    scan_handle_x(global_data["board"], global_data, servo_turn_rate_x=2, servo_turn_rate_y=5)
 
 def tracking():
     # Go back to idle state if no bird is detected for a period of time

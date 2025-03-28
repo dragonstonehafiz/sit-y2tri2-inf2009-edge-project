@@ -37,7 +37,7 @@ def handle_picam(global_data: dict):
         frame_bytes = convert_frame_to_bytes(frame)
         mqtt_cam_feed.send(frame_bytes)
 
-def scan_handle_x(board: BoardInterface, global_data: dict, servo_turn_rate_x=10, servo_turn_rate_y=15):
+def scan_handle_x(board: BoardInterface, global_data: dict, servo_turn_rate_x=10, servo_turn_rate_y=10):
     # Turn servo x in either left or right
     # then check if the servo is at max/min
     # if it is, turn the y servo
@@ -58,7 +58,7 @@ def scan_handle_x(board: BoardInterface, global_data: dict, servo_turn_rate_x=10
     
     global_data["scan_dir_x"] = scan_dir_x
 
-def scan_handle_y(board: BoardInterface, global_data: dict, servo_turn_rate = 15):
+def scan_handle_y(board: BoardInterface, global_data: dict, servo_turn_rate = 10):
     scan_dir_y = global_data["scan_dir_y"]
 
     if scan_dir_y:
