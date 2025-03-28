@@ -85,7 +85,7 @@ def thread_model():
     os.sched_setaffinity(0, {1, 2, 3})
     # Images
     CAM_RESOLUTION = global_data["cam_resolution"]
-    if global_data["server_processing"]:
+    if not global_data["server_processing"]:
         yolov5 = YoloV5_ONNX(f"model/yolov5n_{CAM_RESOLUTION}.onnx", image_size=(CAM_RESOLUTION, CAM_RESOLUTION))
 
     # Server
@@ -113,7 +113,7 @@ def thread_model():
                         # print("bird")
                         change_state(STATES.SCAN)
                     else:
-                        # print("no bird")
+                        print("no bird")
                         pass
 
                 elif global_data["state"] == STATES.SCAN:
