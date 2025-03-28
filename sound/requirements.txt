@@ -1,0 +1,17 @@
+torch
+torchaudio
+torchvision
+
+transformers
+datasets
+
+sounddevice
+librosa
+scikit-learn
+matplotlib
+
+SpeechRecognition
+pyaudio
+
+onnx
+onnxruntime
