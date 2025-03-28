@@ -80,14 +80,19 @@ if __name__ == "__main__":
     startTime = time.time()
 
     while global_data["is_running"]:
-        fps_controller.startFrame()
+        try:
+            fps_controller.startFrame()
 
-        # Send camera feed to server
-        frame = picam.getFrame()
-        frame_bytes = convert_frame_to_bytes(frame)
-        mqtt_client_cam.send(frame_bytes)
+            # Send camera feed to server
+            frame = picam.getFrame()
+            frame_bytes = convert_frame_to_bytes(frame)
+            mqtt_client_cam.send(frame_bytes)
 
-        fps_controller.endFrame()
+            fps_controller.endFrame()
+        except KeyboardInterrupt:
+            print("Interrupt! Quitting.")
+            break
+
 
     mqtt_client_cam.loop_stop()
     mqtt_client_cam.disconnect()

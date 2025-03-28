@@ -216,13 +216,13 @@ The main application is in `main.py`. It supports both **local detection** and *
 #### Example: Local Detection Only
 
 ```bash
-python main.py --server false --cam-size 256 --send-image false
+python3 main.py --server false --cam-size 256 --send-image false
 ```
 
 #### Example: Use Server for Detection
 
 ```bash
-python main.py --server true --cam-size 256 --send-image true
+python3 main.py --server true --cam-size 256 --send-image true
 ```
 
 You will be prompted for the MQTT broker IP if using server communication.
