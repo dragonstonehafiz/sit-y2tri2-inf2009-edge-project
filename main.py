@@ -105,14 +105,12 @@ def thread_model():
                 # If there is no frame, skip the current frame processing
                 if global_data["curr_frame"] is not None:
                     frame = global_data["curr_frame"].copy()
-                else:
-                    continue
 
                 if global_data["state"] == STATES.IDLE:
                     audio_data = record_audio(source, recognizer, 2)
                     is_bird = predict_from_audio(audio_data, sound_model)
                     if is_bird:
-                        # print("bird")
+                        print("bird")
                         change_state(STATES.SCAN)
                     else:
                         print("no bird")
