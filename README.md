@@ -1,5 +1,7 @@
 # Bird Laser Targeter on the Edge
 
+![Cutout](image/cutout.webp)
+
 ## **Overview**
 
 This repository contains the code for a bird deterrence system that utilizes a laser pointer and servo motors to **scare off birds** that may fly into homes and cause disturbances. The system runs on a **Raspberry Pi Zero 2W** and features wake activation, camera-based bird detection, and laser targeting.
