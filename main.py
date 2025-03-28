@@ -97,7 +97,7 @@ def thread_model():
     with sr.Microphone(sample_rate=16000) as source:
         rrl = FPSLimiter(3)
         time.sleep(1)
-        os.system('clear')
+        # os.system('clear')
         change_state(STATES.IDLE)
         while global_data["is_running"]:
             try:
@@ -105,8 +105,10 @@ def thread_model():
                 # If there is no frame, skip the current frame processing
                 if global_data["curr_frame"] is not None:
                     frame = global_data["curr_frame"].copy()
+                else:
+                    continue
 
-                elif global_data["state"] == STATES.IDLE:
+                if global_data["state"] == STATES.IDLE:
                     audio_data = record_audio(source, recognizer, 2)
                     is_bird = predict_from_audio(audio_data, sound_model)
                     if is_bird:
