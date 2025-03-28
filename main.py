@@ -97,6 +97,8 @@ def thread_model():
     with sr.Microphone(sample_rate=16000) as source:
         rrl = FPSLimiter(3)
         time.sleep(1)
+        os.system('clear')
+        change_state(STATES.IDLE)
         while global_data["is_running"]:
             try:
                 rrl.startFrame()
