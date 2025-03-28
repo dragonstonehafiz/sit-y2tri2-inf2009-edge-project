@@ -95,6 +95,7 @@ def thread_model():
     sound_model = load_model("model/bird_sound_model.onnx")
     recognizer = sr.Recognizer()
     with sr.Microphone(sample_rate=16000) as source:
+        recognizer.adjust_for_ambient_noise(source)
         rrl = FPSLimiter(3)
         time.sleep(1)
         # os.system('clear')
@@ -108,6 +109,10 @@ def thread_model():
 
                 if global_data["state"] == STATES.IDLE:
                     audio_data = record_audio(source, recognizer, 2)
+                    if audio_data is None:
+                        continue
+
+
                     is_bird = predict_from_audio(audio_data, sound_model)
                     if is_bird:
                         print("bird")

@@ -47,10 +47,15 @@ def predict_from_audio(audio_data, session):
 
 # Recording 5-second Chunks using SpeechRecognition
 def record_audio(source, recognizer, duration=5):
-    recognizer.adjust_for_ambient_noise(source)
-    audio = recognizer.listen(source, phrase_time_limit=duration)
-    audio_data = audio.get_wav_data()
-    return audio_data
+    try:
+        audio = recognizer.listen(source, timeout=2, phrase_time_limit=duration)
+        audio_data = audio.get_wav_data()
+        return audio_data
+    except sr.WaitTimeoutError:
+        print("⛔ No speech detected within timeout.")
+    except Exception as e:
+        print(f"⛔ Error during recording: {e}")
+    return None
     # os.system('clear')
     # print("Recording 5-second chunks. Press Ctrl+C to stop.")
     # while True:
@@ -72,10 +77,13 @@ if __name__ == '__main__':
     recognizer = sr.Recognizer()
     with sr.Microphone(sample_rate=SAMPLE_RATE) as source:
         os.system('clear')
+        recognizer.adjust_for_ambient_noise(source)
         while True:
             try:
                 print(f"Recording sound...")
                 audio_data = record_audio(source, recognizer)
+                if audio_data is None:
+                    continue
                 is_bird = predict_from_audio(audio_data, session)
                 if is_bird:
                     print("Bird Detected")
