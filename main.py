@@ -120,7 +120,7 @@ def thread_model():
 
                 elif global_data["state"] == STATES.SCAN:
                     # Check if we are relying on cloud for object detection
-                    if mqtt_cam_controls is None:
+                    if not global_data["server_processing"]:
                         try:
                             detections = yolov5.detect_objects(frame, conf_thres=0.4)
                             # If object is found, change state to tracking
@@ -133,7 +133,7 @@ def thread_model():
                 
                 elif global_data["state"] == STATES.TRACKING:
                     # If we are not relying on server for processing, do it here
-                    if mqtt_cam_controls is None:
+                    if not global_data["server_processing"]:
                         board: BoardInterface = global_data["board"]
                         try:
                             detections = yolov5.detect_objects(frame, conf_thres=0.5)
