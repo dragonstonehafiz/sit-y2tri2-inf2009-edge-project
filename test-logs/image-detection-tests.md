@@ -17,7 +17,7 @@ A log of tests done with different YoloV5n models.
 | 128        | 0.08s                             | Not Done                        | Not Done     | Not consistent.                                  |
 | 160        | 0.12s                             | Not Done                        | Not Done     | Better, but only if objects are close.           |
 | 192        | 0.17s                             | 0.18s                           | 5-6fps       | Can detect from further, but avg. fps is 5-6fps. |
-| 224        | 0.23s                             | 0.23                            | 4fps         | Consistent, but distance is still a problem.     |
+| 224        | 0.23s                             | 0.23s                           | 4fps         | Consistent, but distance is still a problem.     |
 | 256        | 0.28s                             | 0.30s                           | 3fps         | Best, but distance is still not very good.       |
 
 
