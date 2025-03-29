@@ -8,5 +8,5 @@ model/yolov5su.pt
 sound/data/bird/
 sound/data/combined/
 sound/data/no_bird/
-# sound/bird_sound_model.onnx
-# sound/bird_sound_model.pth
+sound/bird_sound_model.onnx
+sound/bird_sound_model.pth
