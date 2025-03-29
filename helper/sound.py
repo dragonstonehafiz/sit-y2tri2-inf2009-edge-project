@@ -9,7 +9,6 @@ import time
 
 # Parameters
 SAMPLE_RATE = 16000
-DURATION = 5  # 5 seconds
 
 # Load ONNX Model
 def load_model(model_path='bird_sound_model.onnx'):

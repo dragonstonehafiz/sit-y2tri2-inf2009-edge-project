@@ -52,7 +52,10 @@ def record_audio():
     mic = sr.Microphone()
     with mic as source:
         recognizer.adjust_for_ambient_noise(source)
-        os.system("clear")
+        try:
+            os.system("clear")
+        except:
+            os.system("cls")
         print("Recording 5-second chunks. Press Ctrl+C to stop.")
         while True:
             try:
