@@ -10,7 +10,7 @@ Expression 'PaAlsaStreamComponent_FinishConfigure( &self->capture, hwParamsCaptu
 Expression 'PaAlsaStream_Configure( stream, inputParameters, outputParameters, sampleRate, framesPerBuffer, &inputLatency, &outputLatency, &hostBufferSizeMode )' failed in 'src/hostapi/alsa/pa_linux_alsa.c', line: 2842
 Error recording audio: Error opening InputStream: Unanticipated host error [PaErrorCode -9999]: 'Invalid argument' [ALSA error -22]
 
-tried piaudio got this error
+tried pyaudio got this error
 
 ALSA lib pcm_asym.c:105:(_snd_pcm_asym_open) capture slave is not defined
 ALSA lib pcm.c:2666:(snd_pcm_open_noupdate) Unknown PCM cards.pcm.front

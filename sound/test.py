@@ -8,7 +8,7 @@ import io
 
 # Parameters
 SAMPLE_RATE = 16000
-DURATION = 5  # 5 seconds
+DURATION = 2  # 5 seconds
 
 
 # Load ONNX Model
@@ -24,11 +24,11 @@ def load_model(model_path="bird_sound_model.onnx"):
 # Extract Features from Audio (Ensure Mono and Resample to 8000 Hz)
 def extract_features(audio_data):
     audio, sr = librosa.load(io.BytesIO(audio_data), sr=SAMPLE_RATE, mono=True)
-    print(f"Audio Sample Rate: {sr}")
+    # print(f"Audio Sample Rate: {sr}")
     audio_bits = (
         np.iinfo(audio_data[0].dtype).bits if isinstance(audio_data, np.ndarray) else 16
     )
-    print(f"Audio Bit Depth: {audio_bits} bits")
+    # print(f"Audio Bit Depth: {audio_bits} bits")
     audio = audio / np.max(np.abs(audio)) if np.max(np.abs(audio)) > 0 else audio
     mfccs = librosa.feature.mfcc(y=audio, sr=SAMPLE_RATE, n_mfcc=40)
     mfccs = np.mean(mfccs.T, axis=0).astype(np.float32)
@@ -40,8 +40,9 @@ def predict_from_audio(audio_data, session):
     features = extract_features(audio_data)
     inputs = {session.get_inputs()[0].name: features}
     outputs = session.run(None, inputs)
+    print(f"Outputs:{outputs}")
     predicted = np.argmax(outputs[0], axis=1)
-    print(f"Predicted Class: {predicted}")
+    # print(f"Predicted Class: {predicted}")
     label = "bird" if predicted[0] == 0 else "no_bird"
     print(f"Prediction: {label}")
 
@@ -54,7 +55,7 @@ def record_audio():
         recognizer.adjust_for_ambient_noise(source)
         try:
             os.system("clear")
-        except:
+        except Exception as e:
             os.system("cls")
         print("Recording 5-second chunks. Press Ctrl+C to stop.")
         while True:
