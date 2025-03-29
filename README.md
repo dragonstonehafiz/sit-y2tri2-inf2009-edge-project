@@ -248,3 +248,8 @@ State transitions happen automatically or can be triggered remotely from the ser
 - You can stop the program at any time with `Ctrl+C`.
 - You can quit the program remotely from the server using the command `quit:cam`.
 - The Pi will safely shut down all components and MQTT connections when exiting.
+
+## **Additional Information**
+
+- The code we used to create the bird sound detection model can be found in the `sound` directory.
+- The onnx models used were generated from a finetuned YoloV5 model. We converted the model to onnx using [YoloV5 export code](https://github.com/ultralytics/yolov5).
