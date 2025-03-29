@@ -47,7 +47,7 @@ def predict_from_audio(audio_data, session):
 # Recording 5-second Chunks using SpeechRecognition
 def record_audio(source, recognizer, duration=5):
     try:
-        audio = recognizer.listen(source, timeout=2, phrase_time_limit=duration)
+        audio = recognizer.listen(source, timeout=duration, phrase_time_limit=duration)
         audio_data = audio.get_wav_data()
         return audio_data
     except sr.WaitTimeoutError:
