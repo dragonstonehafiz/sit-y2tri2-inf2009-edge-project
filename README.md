@@ -12,8 +12,9 @@ The following components are required to build this project:
 
 - [2 SG90 Servos and Pan Tilt Kit](https://sg.cytron.io/p-pan-tilt-servo-kit-for-camera-unassembled) x1
 - [Laser Diode Module](https://shopee.sg/kuriosity.sg/8657033875) x1
-- [Raspberry Pi Zero 2 WH](https://sg.cytron.io/p-raspberry-pi-zero-2-w)
-- [Raspberry Pi Camera Module 2](https://sg.cytron.io/p-raspberry-pi-8mp-camera-module-v2)
+- [Raspberry Pi Zero 2 WH](https://sg.cytron.io/p-raspberry-pi-zero-2-w) x1
+- [Raspberry Pi Camera Module 2](https://sg.cytron.io/p-raspberry-pi-8mp-camera-module-v2) x1
+- Any USB microphone (or a webcam with a microphone) x1
 
 ## System Design
 
