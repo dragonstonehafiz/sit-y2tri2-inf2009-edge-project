@@ -25,12 +25,12 @@ A log of tests done with different YoloV5n models.
 
 - 192x192
 
-![ONNX Quadcore Image](imgs\onnx-quadcore-192.png)
+![ONNX Quadcore Image](imgs/onnx-quadcore-192.png)
 
 - 224x224
 
-![ONNX Quadcore Image](imgs\onnx-quadcore-224.png)
+![ONNX Quadcore Image](imgs/onnx-quadcore-224.png)
 
 - 256x256
 
-![ONNX Quadcore Image](imgs\onnx-quadcore-256.png)
+![ONNX Quadcore Image](imgs/onnx-quadcore-256.png)
